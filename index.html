@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResolveX - Authentication Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-navy: #1a1f71;
+        --primary-teal: #00897b;
+        --primary-indigo: #283593;
+        --dark-gray: #2d3748;
+        --light-gray: #f7fafc;
+        --gradient: linear-gradient(
+          135deg,
+          var(--primary-navy) 0%,
+          var(--primary-teal) 100%
+        );
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        scroll-behavior: smooth;
+        background: linear-gradient(
+          rgba(26, 31, 113, 0.05),
+          rgba(0, 137, 123, 0.05)
+        );
+      }
+
+      .logo-x {
+        color: var(--primary-teal);
+      }
+
+      .nav-scrolled {
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .gradient-bg {
+        background: var(--gradient);
+      }
+
+      .gradient-text {
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .feature-card {
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .testimonial-card {
+        transition: all 0.3s ease;
+      }
+
+      .testimonial-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .btn-gradient {
+        background: var(--gradient);
+        transition: all 0.3s ease;
+      }
+
+      .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .section-fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+      }
+
+      .section-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hero-bg {
+        background: linear-gradient(
+            rgba(26, 31, 113, 0.9),
+            rgba(0, 137, 123, 0.8)
+          ),
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231a1f71"/><path d="M0 50 L100 50 M50 0 L50 100" stroke="%2300897b" stroke-width="1" opacity="0.2"/></svg>');
+        background-size: cover;
+      }
+
+      /* Authentication specific styles */
+      .auth-container {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .user-type-btn {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .user-type-btn.active {
+        background: var(--gradient);
+        color: white;
+        border-color: var(--primary-navy);
+      }
+
+      .tab {
+        cursor: pointer;
+        padding: 12px 24px;
+        font-weight: 600;
+        color: #6b7280;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .tab.active {
+        color: var(--primary-navy);
+        border-bottom: 3px solid var(--primary-teal);
+      }
+
+      .form-input {
+        border: 1px solid #d1d5db;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.1);
+      }
+
+      .form-section {
+        transition: all 0.5s ease;
+      }
+
+      .hidden-section {
+        display: none;
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      .visible-section {
+        display: block;
+        opacity: 1;
+        transform: translateX(0);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Header Navigation -->
+    <header class="fixed w-full z-50 transition-all duration-300" id="navbar">
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-lg shadow-lg mr-3"
+          ></div>
+          <span class="text-xl font-bold text-gray-800"
+            >Resolve<span class="logo-x">X</span></span
+          >
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex space-x-8">
+          <a
+            href="#home"
+            class="text-black-800 hover:text-white font-medium transition-colors"
+            >Home</a
+          >
+          <a
+            href="#about"
+            class="text-black-800 hover:text-white font-medium transition-colors"
+            >About</a
+          >
+          <a
+            href="#features"
+            class="text-black-800 hover:text-white font-medium transition-colors"
+            >Features</a
+          >
+          <a
+            href="#testimonials"
+            class="text-black-800 hover:text-white font-medium transition-colors"
+            >Testimonials</a
+          >
+          <a
+            href="#contact"
+            class="text-black-800 hover:text-white font-medium transition-colors"
+            >Contact</a
+          >
+        </nav>
+
+        <div class="hidden md:flex items-center space-x-4">
+          <button
+            id="navLoginBtn"
+            class="text-black-700 hover:text-white font-medium transition-colors"
+          >
+            Login
+          </button>
+          <button
+            id="navRegisterBtn"
+            class="btn-gradient text-white font-semibold py-2 px-6 rounded-lg"
+          >
+            Register
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden text-gray-700" id="mobile-menu-button">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="md:hidden hidden bg-white shadow-lg" id="mobile-menu">
+        <div class="px-4 pt-2 pb-4 space-y-2">
+          <a
+            href="#home"
+            class="block py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >Home</a
+          >
+          <a
+            href="#about"
+            class="block py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >About</a
+          >
+          <a
+            href="#features"
+            class="block py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >Features</a
+          >
+          <a
+            href="#testimonials"
+            class="block py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >Testimonials</a
+          >
+          <a
+            href="#contact"
+            class="block py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >Contact</a
+          >
+          <div class="pt-2 border-t border-gray-200">
+            <button
+              id="mobileLoginBtn"
+              class="block w-full text-left py-2 text-gray-700 hover:text-[#1a1f71] font-medium"
+            >
+              Login
+            </button>
+            <button
+              id="mobileRegisterBtn"
+              class="btn-gradient block w-full text-center text-white font-semibold py-2 px-4 rounded-lg mt-2"
+            >
+              Register
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Authentication Modal -->
+    <!-- Authentication Modal -->
+    <div
+      id="authModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden"
+    >
+      <div
+        class="bg-white rounded-xl auth-container w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-8">
+          <!-- Modal Header -->
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">
+              Resolve<span class="logo-x">X</span>
+            </h2>
+            <button
+              id="closeAuthModal"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <!-- User Type Selection -->
+          <div class="mb-8 text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+              Select Your Role
+            </h3>
+            <div class="flex flex-wrap justify-center gap-4">
+              <button
+                id="userBtn"
+                class="user-type-btn active bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-lg"
+              >
+                <i class="fas fa-user mr-2"></i>User
+              </button>
+              <button
+                id="staffBtn"
+                class="user-type-btn bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-lg"
+              >
+                <i class="fas fa-user-tie mr-2"></i>Staff
+              </button>
+              <button
+                id="adminBtn"
+                class="user-type-btn bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-lg"
+              >
+                <i class="fas fa-user-shield mr-2"></i>Admin
+              </button>
+            </div>
+          </div>
+
+          <!-- User Section -->
+          <div id="userSection" class="form-section visible-section">
+            <!-- Tabs -->
+            <div class="flex justify-center border-b-2 border-gray-200 mb-8">
+              <div id="userSignUpTab" class="tab active">Sign UP</div>
+              <div id="userSignInTab" class="tab">Sign IN</div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <form id="userSignUpForm" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="First name"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+              </div>
+              <input
+                type="email"
+                placeholder="Email"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="tel"
+                placeholder="Phone"
+                class="w-full p-3 rounded-lg form-input"
+              />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="userTerms" class="mr-2" required />
+                <label for="userTerms" class="text-sm text-gray-600">
+                  I agree to the
+                  <a href="#" class="text-[#1a1f71] hover:underline"
+                    >Terms of Service</a
+                  >
+                  and
+                  <a href="#" class="text-[#1a1f71] hover:underline"
+                    >Privacy Policy</a
+                  >
+                </label>
+              </div>
+            </form>
+
+            <!-- Sign In Form -->
+            <form id="userSignInForm" class="space-y-4 hidden">
+              <input
+                type="text"
+                placeholder="Email or Phone"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <input type="checkbox" id="rememberMe" class="mr-2" />
+                  <label for="rememberMe" class="text-sm text-gray-600"
+                    >Remember me</label
+                  >
+                </div>
+                <a href="#" class="text-sm text-[#1a1f71] hover:underline"
+                  >Forgot Password?</a
+                >
+              </div>
+            </form>
+
+            <!-- Submit -->
+            <button
+              id="userSubmitBtn"
+              class="w-full mt-8 btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl"
+            >
+              SIGN UP
+            </button>
+          </div>
+
+          <!-- Staff Section -->
+          <div id="staffSection" class="form-section hidden-section">
+            <div class="flex justify-center border-b-2 border-gray-200 mb-8">
+              <div id="staffSignUpTab" class="tab active">
+                Staff Registration
+              </div>
+              <div id="staffSignInTab" class="tab">Staff Login</div>
+            </div>
+
+            <!-- Staff Sign Up Form -->
+            <form id="staffSignUpForm" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="First name"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+              </div>
+              <input
+                type="email"
+                placeholder="Work Email"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Staff ID"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="tel"
+                placeholder="Phone"
+                class="w-full p-3 rounded-lg form-input"
+              />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  class="w-full p-3 rounded-lg form-input"
+                  required
+                />
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="staffTerms" class="mr-2" required />
+                <label for="staffTerms" class="text-sm text-gray-600"
+                  >I agree to the
+                  <a href="#" class="text-[#1a1f71] hover:underline"
+                    >Staff Terms of Service</a
+                  ></label
+                >
+              </div>
+            </form>
+
+            <!-- Staff Sign In Form -->
+            <form id="staffSignInForm" class="space-y-4 hidden">
+              <input
+                type="text"
+                placeholder="Staff ID or Email"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <input type="checkbox" id="staffRememberMe" class="mr-2" />
+                  <label for="staffRememberMe" class="text-sm text-gray-600"
+                    >Remember me</label
+                  >
+                </div>
+                <a href="#" class="text-sm text-[#1a1f71] hover:underline"
+                  >Forgot Password?</a
+                >
+              </div>
+            </form>
+
+            <button
+              id="staffSubmitBtn"
+              class="w-full mt-8 btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl"
+            >
+              REGISTER AS STAFF
+            </button>
+          </div>
+
+          <!-- Admin Section -->
+          <div id="adminSection" class="form-section hidden-section">
+            <div class="flex justify-center border-b-2 border-gray-200 mb-8">
+              <div id="adminSignInTab" class="tab active">Admin Login</div>
+            </div>
+
+            <form id="adminSignInForm" class="space-y-4">
+              <input
+                type="text"
+                placeholder="Admin ID"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                class="w-full p-3 rounded-lg form-input"
+                required
+              />
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <input type="checkbox" id="adminRememberMe" class="mr-2" />
+                  <label for="adminRememberMe" class="text-sm text-gray-600"
+                    >Remember me</label
+                  >
+                </div>
+                <a href="#" class="text-sm text-[#1a1f71] hover:underline"
+                  >Forgot Password?</a
+                >
+              </div>
+            </form>
+
+            <button
+              id="adminSubmitBtn"
+              class="w-full mt-8 btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl"
+            >
+              ADMIN LOGIN
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg text-white pt-24 pb-20 md:pt-32 md:pb-28">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6">
+          Resolve<span class="logo-x">X</span>
+        </h1>
+        <p class="text-xl md:text-2xl max-w-2xl mx-auto mb-10">
+          Spot Issues. Get Them Fixed. Build Better Communities.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button
+            id="heroGetStartedBtn"
+            class="btn-gradient text-white font-bold text-lg py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300"
+          >
+            Get Started
+          </button>
+          <button
+            class="bg-white text-[#1a1f71] font-bold text-lg py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transform transition-all duration-300"
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white section-fade-in">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            Why Choose ResolveX?
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Our platform connects communities with solutions, making issue
+            resolution simple and efficient.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
+          >
+            <div
+              class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Fast Reporting</h3>
+            <p class="text-gray-600">
+              Report issues in seconds with our intuitive mobile and web
+              interface.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
+          >
+            <div
+              class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-map-marker-alt text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+              Real-Time Tracking
+            </h3>
+            <p class="text-gray-600">
+              Track the status of your reported issues in real-time with
+              updates.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
+          >
+            <div
+              class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-users text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+              Community Support
+            </h3>
+            <p class="text-gray-600">
+              Leverage the power of community to solve problems collectively.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
+          >
+            <div
+              class="w-14 h-14 gradient-bg rounded-lg flex items-center justify-center mb-4"
+            >
+              <i class="fas fa-check-circle text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Verified Fixes</h3>
+            <p class="text-gray-600">
+              All solutions are verified by our team to ensure quality and
+              reliability.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-16 bg-gray-50 section-fade-in">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            What Our Users Say
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Hear from communities that have transformed their issue resolution
+            process with ResolveX.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Testimonial 1 -->
+          <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-full mr-4"
+              ></div>
+              <div>
+                <h4 class="font-bold text-gray-800">Sarah Johnson</h4>
+                <p class="text-gray-600 text-sm">Community Manager</p>
+              </div>
+            </div>
+            <p class="text-gray-700">
+              "ResolveX has transformed how our neighborhood handles issues.
+              We've seen a 70% faster resolution time since implementing it."
+            </p>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-full mr-4"
+              ></div>
+              <div>
+                <h4 class="font-bold text-gray-800">Michael Chen</h4>
+                <p class="text-gray-600 text-sm">Property Manager</p>
+              </div>
+            </div>
+            <p class="text-gray-700">
+              "The real-time tracking feature has saved us countless hours. Our
+              tenants love being able to see exactly where their requests are in
+              the process."
+            </p>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-full mr-4"
+              ></div>
+              <div>
+                <h4 class="font-bold text-gray-800">Elena Rodriguez</h4>
+                <p class="text-gray-600 text-sm">City Council Member</p>
+              </div>
+            </div>
+            <p class="text-gray-700">
+              "We've implemented ResolveX across our district, and the community
+              engagement has been incredible. It's bridging the gap between
+              residents and local government."
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-16 gradient-bg text-white section-fade-in">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">
+          Ready to Transform Your Community?
+        </h2>
+        <p class="text-xl max-w-2xl mx-auto mb-10">
+          Join thousands of communities already using ResolveX to streamline
+          issue reporting and resolution.
+        </p>
+        <button
+          id="ctaSignUpBtn"
+          class="bg-white text-[#1a1f71] font-bold text-lg py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transform transition-all duration-300"
+        >
+          Sign Up Now
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <!-- About Column -->
+          <div>
+            <h3 class="text-lg font-bold mb-4">About ResolveX</h3>
+            <p class="text-gray-400 mb-4">
+              ResolveX connects communities with solutions, making issue
+              resolution simple, transparent, and efficient.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-instagram"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Support Column -->
+          <div>
+            <h3 class="text-lg font-bold mb-4">Support</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Community Guidelines</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Terms of Service</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Resources Column -->
+          <div>
+            <h3 class="text-lg font-bold mb-4">Resources</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Blog</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Case Studies</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >Documentation</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >API</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Contact Column -->
+          <div>
+            <h3 class="text-lg font-bold mb-4">Contact Us</h3>
+            <ul class="space-y-2">
+              <li class="text-gray-400">1234 Innovation Drive</li>
+              <li class="text-gray-400">San Francisco, CA 94107</li>
+              <li class="text-gray-400">contact@resolvex.com</li>
+              <li class="text-gray-400">+1 (555) 123-4567</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-gray-700 text-center text-gray-400">
+          <p>&copy; 2023 ResolveX. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Navbar scroll effect
+      window.addEventListener("scroll", function () {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 50) {
+          navbar.classList.add("nav-scrolled");
+        } else {
+          navbar.classList.remove("nav-scrolled");
+        }
+      });
+
+      // Mobile menu toggle
+      document
+        .getElementById("mobile-menu-button")
+        .addEventListener("click", function () {
+          const mobileMenu = document.getElementById("mobile-menu");
+          mobileMenu.classList.toggle("hidden");
+        });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href");
+          if (targetId === "#") return;
+
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: "smooth",
+            });
+
+            // Close mobile menu if open
+            document.getElementById("mobile-menu").classList.add("hidden");
+          }
+        });
+      });
+
+      // Section fade-in animation on scroll
+      const observerOptions = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.1,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("section-visible");
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".section-fade-in").forEach((section) => {
+        observer.observe(section);
+      });
+
+      // Authentication Modal Logic
+      const authModal = document.getElementById("authModal");
+      const closeAuthModal = document.getElementById("closeAuthModal");
+
+      // Open modal triggers
+      const navLoginBtn = document.getElementById("navLoginBtn");
+      const navRegisterBtn = document.getElementById("navRegisterBtn");
+      const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+      const mobileRegisterBtn = document.getElementById("mobileRegisterBtn");
+      const heroGetStartedBtn = document.getElementById("heroGetStartedBtn");
+      const ctaSignUpBtn = document.getElementById("ctaSignUpBtn");
+
+      // User type selection
+      const userBtn = document.getElementById("userBtn");
+      const staffBtn = document.getElementById("staffBtn");
+      const adminBtn = document.getElementById("adminBtn");
+
+      const userSection = document.getElementById("userSection");
+      const staffSection = document.getElementById("staffSection");
+      const adminSection = document.getElementById("adminSection");
+
+      // User authentication tabs
+      const userSignUpTab = document.getElementById("userSignUpTab");
+      const userSignInTab = document.getElementById("userSignInTab");
+      const userSignUpForm = document.getElementById("userSignUpForm");
+      const userSignInForm = document.getElementById("userSignInForm");
+      const userSubmitBtn = document.getElementById("userSubmitBtn");
+
+      // Staff authentication tabs
+      const staffSignUpTab = document.getElementById("staffSignUpTab");
+      const staffSignInTab = document.getElementById("staffSignInTab");
+      const staffSignUpForm = document.getElementById("staffSignUpForm");
+      const staffSignInForm = document.getElementById("staffSignInForm");
+      const staffSubmitBtn = document.getElementById("staffSubmitBtn");
+
+      // Admin authentication tabs
+      const adminSignInTab = document.getElementById("adminSignInTab");
+      const adminSignInForm = document.getElementById("adminSignInForm");
+      const adminSubmitBtn = document.getElementById("adminSubmitBtn");
+
+      // Function to open modal with specific user type and form
+      function openAuthModal(userType = "user", formType = "signup") {
+        authModal.classList.remove("hidden");
+        resetUserTypeButtons();
+
+        if (userType === "user") {
+          userBtn.classList.add("active");
+          userSection.classList.remove("hidden-section");
+          userSection.classList.add("visible-section");
+
+          if (formType === "signin") {
+            userSignInTab.click();
+          }
+        } else if (userType === "staff") {
+          staffBtn.classList.add("active");
+          staffSection.classList.remove("hidden-section");
+          staffSection.classList.add("visible-section");
+
+          if (formType === "signin") {
+            staffSignInTab.click();
+          }
+        } else if (userType === "admin") {
+          adminBtn.classList.add("active");
+          adminSection.classList.remove("hidden-section");
+          adminSection.classList.add("visible-section");
+        }
+      }
+
+      // Function to reset all user type buttons
+      function resetUserTypeButtons() {
+        userBtn.classList.remove("active");
+        staffBtn.classList.remove("active");
+        adminBtn.classList.remove("active");
+      }
+
+      // Function to hide all sections
+      function hideAllSections() {
+        userSection.classList.remove("visible-section");
+        userSection.classList.add("hidden-section");
+        staffSection.classList.remove("visible-section");
+        staffSection.classList.add("hidden-section");
+        adminSection.classList.remove("visible-section");
+        adminSection.classList.add("hidden-section");
+      }
+
+      // Event listeners for opening modal
+      navLoginBtn.addEventListener("click", () =>
+        openAuthModal("user", "signin")
+      );
+      navRegisterBtn.addEventListener("click", () =>
+        openAuthModal("user", "signup")
+      );
+      mobileLoginBtn.addEventListener("click", () => {
+        openAuthModal("user", "signin");
+        document.getElementById("mobile-menu").classList.add("hidden");
+      });
+      mobileRegisterBtn.addEventListener("click", () => {
+        openAuthModal("user", "signup");
+        document.getElementById("mobile-menu").classList.add("hidden");
+      });
+      heroGetStartedBtn.addEventListener("click", () =>
+        openAuthModal("user", "signup")
+      );
+      ctaSignUpBtn.addEventListener("click", () =>
+        openAuthModal("user", "signup")
+      );
+
+      // Close modal
+      closeAuthModal.addEventListener("click", () => {
+        authModal.classList.add("hidden");
+      });
+
+      // Close modal when clicking outside
+      authModal.addEventListener("click", (e) => {
+        if (e.target === authModal) {
+          authModal.classList.add("hidden");
+        }
+      });
+
+      // User type button event listeners
+      userBtn.addEventListener("click", () => {
+        resetUserTypeButtons();
+        userBtn.classList.add("active");
+        hideAllSections();
+        userSection.classList.remove("hidden-section");
+        userSection.classList.add("visible-section");
+      });
+
+      staffBtn.addEventListener("click", () => {
+        resetUserTypeButtons();
+        staffBtn.classList.add("active");
+        hideAllSections();
+        staffSection.classList.remove("hidden-section");
+        staffSection.classList.add("visible-section");
+      });
+
+      adminBtn.addEventListener("click", () => {
+        resetUserTypeButtons();
+        adminBtn.classList.add("active");
+        hideAllSections();
+        adminSection.classList.remove("hidden-section");
+        adminSection.classList.add("visible-section");
+      });
+
+      // User authentication tab switching
+      userSignUpTab.addEventListener("click", () => {
+        userSignUpTab.classList.add("active");
+        userSignInTab.classList.remove("active");
+        userSignUpForm.classList.remove("hidden");
+        userSignInForm.classList.add("hidden");
+        userSubmitBtn.textContent = "SIGN UP";
+      });
+
+      userSignInTab.addEventListener("click", () => {
+        userSignInTab.classList.add("active");
+        userSignUpTab.classList.remove("active");
+        userSignInForm.classList.remove("hidden");
+        userSignUpForm.classList.add("hidden");
+        userSubmitBtn.textContent = "SIGN IN";
+      });
+
+      // Staff authentication tab switching
+      staffSignUpTab.addEventListener("click", () => {
+        staffSignUpTab.classList.add("active");
+        staffSignInTab.classList.remove("active");
+        staffSignUpForm.classList.remove("hidden");
+        staffSignInForm.classList.add("hidden");
+        staffSubmitBtn.textContent = "REGISTER AS STAFF";
+      });
+
+      staffSignInTab.addEventListener("click", () => {
+        staffSignInTab.classList.add("active");
+        staffSignUpTab.classList.remove("active");
+        staffSignInForm.classList.remove("hidden");
+        staffSignUpForm.classList.add("hidden");
+        staffSubmitBtn.textContent = "STAFF LOGIN";
+      });
+
+      // Form submission handlers
+      userSubmitBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Add form validation and submission logic here
+        alert("User authentication submitted!");
+      });
+
+      staffSubmitBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Add form validation and submission logic here
+        alert("Staff authentication submitted!");
+      });
+
+      adminSubmitBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Add form validation and submission logic here
+        alert("Admin authentication submitted!");
+      });
+    </script>
+  </body>
+</html>

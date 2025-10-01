@@ -1,0 +1,71 @@
+import mongoose from "mongoose";
+
+const userComplaintSchema=new mongoose.Schema({
+    title:{
+        type:String,
+        required:true
+    },
+    description:{
+        type:String,
+        required:true
+    },
+    category:{
+        type:String,
+        enum:["road","water","electricity","sanitation","other"],
+        required:true
+    },
+    status:{
+        type:String,
+        enum:["pending","in-progress","resolved","rejected"],
+        default:"pending"
+    },
+    priority:{
+        type:String,
+        enum:["low","medium","high"],
+        default:"medium"
+    },
+    location:{
+        latitude:Number,
+        longitude:Numeber,
+        address:String
+    },
+    images:[{
+        type: String
+    }],
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true
+    },
+    department:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Department"
+    },
+    assignedTo:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Staff"
+    },
+    comments:[
+        {
+            staff:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"Staff"
+            },
+            message:String,
+            createdAt:{
+                type:Date,
+                default:Date.now
+            }
+        }
+    ],
+    createdAt:{
+        type:Date,
+        default:Date.now
+    },
+    updatedAt:{
+        type:Date,
+        default:Date.now
+    }
+});
+
+export default mongoose.model("UserComplaint",userComplaintSchema);

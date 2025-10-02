@@ -12,6 +12,12 @@ const staffSchema= new mongoose.Schema({
         unique:true,
         lowercase:true
     },
+        staffId: {
+        type: String,
+        required: true, 
+        unique: true,
+        trim: true
+    },
     phone:{
         type:String,
         match:/^[0-9]{10}$/

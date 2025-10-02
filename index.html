@@ -165,7 +165,6 @@
     </style>
   </head>
   <body class="bg-gray-50">
-    <!-- Header Navigation -->
     <header class="fixed w-full z-50 transition-all duration-300" id="navbar">
       <div
         class="container mx-auto px-4 py-3 flex justify-between items-center"
@@ -179,7 +178,6 @@
           >
         </div>
 
-        <!-- Desktop Navigation -->
         <nav class="hidden md:flex space-x-8">
           <a
             href="#home"
@@ -223,7 +221,6 @@
           </button>
         </div>
 
-        <!-- Mobile Menu Button -->
         <button class="md:hidden text-gray-700" id="mobile-menu-button">
           <svg
             class="w-6 h-6"
@@ -242,7 +239,6 @@
         </button>
       </div>
 
-      <!-- Mobile Menu -->
       <div class="md:hidden hidden bg-white shadow-lg" id="mobile-menu">
         <div class="px-4 pt-2 pb-4 space-y-2">
           <a
@@ -288,8 +284,6 @@
       </div>
     </header>
 
-    <!-- Authentication Modal -->
-    <!-- Authentication Modal -->
     <div
       id="authModal"
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden"
@@ -298,7 +292,6 @@
         class="bg-white rounded-xl auth-container w-full max-w-4xl max-h-[90vh] overflow-y-auto"
       >
         <div class="p-8">
-          <!-- Modal Header -->
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">
               Resolve<span class="logo-x">X</span>
@@ -311,7 +304,6 @@
             </button>
           </div>
 
-          <!-- User Type Selection -->
           <div class="mb-8 text-center">
             <h3 class="text-xl font-bold text-gray-800 mb-4">
               Select Your Role
@@ -338,27 +330,19 @@
             </div>
           </div>
 
-          <!-- User Section -->
           <div id="userSection" class="form-section visible-section">
-            <!-- Tabs -->
             <div class="flex justify-center border-b-2 border-gray-200 mb-8">
               <div id="userSignUpTab" class="tab active">Sign UP</div>
               <div id="userSignInTab" class="tab">Sign IN</div>
             </div>
 
-            <!-- Sign Up Form -->
             <form id="userSignUpForm" class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="text"
-                  placeholder="First name"
+                  placeholder="Full Name"
                   class="w-full p-3 rounded-lg form-input"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  class="w-full p-3 rounded-lg form-input"
+                  name="name"
                   required
                 />
               </div>
@@ -366,29 +350,72 @@
                 type="email"
                 placeholder="Email"
                 class="w-full p-3 rounded-lg form-input"
+                name="email"
                 required
               />
               <input
                 type="tel"
-                placeholder="Phone"
+                placeholder="Phone (10 digits)"
                 class="w-full p-3 rounded-lg form-input"
+                name="phone"
+                required
               />
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Street Address"
+                  class="w-full p-3 rounded-lg form-input"
+                  name="street"
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  class="w-full p-3 rounded-lg form-input"
+                  name="city"
+                />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="State/Region"
+                  class="w-full p-3 rounded-lg form-input"
+                  name="state"
+                />
+                <input
+                  type="text"
+                  placeholder="Pincode"
+                  class="w-full p-3 rounded-lg form-input"
+                  name="pincode"
+                />
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="password"
                   placeholder="Password"
                   class="w-full p-3 rounded-lg form-input"
+                  id="userPassword"
+                  name="password"
                   required
                 />
                 <input
                   type="password"
                   placeholder="Confirm Password"
                   class="w-full p-3 rounded-lg form-input"
+                  id="userConfirmPassword"
+                  name="confirmPassword"
                   required
                 />
               </div>
               <div class="flex items-center">
-                <input type="checkbox" id="userTerms" class="mr-2" required />
+                <input
+                  type="checkbox"
+                  id="userTerms"
+                  name="userTerms"
+                  class="mr-2"
+                  required
+                />
                 <label for="userTerms" class="text-sm text-gray-600">
                   I agree to the
                   <a href="#" class="text-[#1a1f71] hover:underline"
@@ -402,18 +429,19 @@
               </div>
             </form>
 
-            <!-- Sign In Form -->
             <form id="userSignInForm" class="space-y-4 hidden">
               <input
                 type="text"
                 placeholder="Email or Phone"
                 class="w-full p-3 rounded-lg form-input"
+                name="loginIdentifier"
                 required
               />
               <input
                 type="password"
                 placeholder="Password"
                 class="w-full p-3 rounded-lg form-input"
+                name="password"
                 required
               />
               <div class="flex justify-between items-center">
@@ -428,8 +456,6 @@
                 >
               </div>
             </form>
-
-            <!-- Submit -->
             <button
               id="userSubmitBtn"
               class="w-full mt-8 btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl"
@@ -438,7 +464,6 @@
             </button>
           </div>
 
-          <!-- Staff Section -->
           <div id="staffSection" class="form-section hidden-section">
             <div class="flex justify-center border-b-2 border-gray-200 mb-8">
               <div id="staffSignUpTab" class="tab active">
@@ -447,19 +472,20 @@
               <div id="staffSignInTab" class="tab">Staff Login</div>
             </div>
 
-            <!-- Staff Sign Up Form -->
             <form id="staffSignUpForm" class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="text"
                   placeholder="First name"
                   class="w-full p-3 rounded-lg form-input"
+                  name="firstname"
                   required
                 />
                 <input
                   type="text"
                   placeholder="Last name"
                   class="w-full p-3 rounded-lg form-input"
+                  name="lastname"
                   required
                 />
               </div>
@@ -467,35 +493,49 @@
                 type="email"
                 placeholder="Work Email"
                 class="w-full p-3 rounded-lg form-input"
+                name="workEmail"
                 required
               />
               <input
                 type="text"
                 placeholder="Staff ID"
                 class="w-full p-3 rounded-lg form-input"
+                name="staffId"
                 required
               />
               <input
                 type="tel"
-                placeholder="Phone"
+                placeholder="Phone (10 digits)"
                 class="w-full p-3 rounded-lg form-input"
+                name="phone"
+                required
               />
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input
                   type="password"
                   placeholder="Password"
                   class="w-full p-3 rounded-lg form-input"
+                  id="staffPassword"
+                  name="password"
                   required
                 />
                 <input
                   type="password"
                   placeholder="Confirm Password"
                   class="w-full p-3 rounded-lg form-input"
+                  id="staffConfirmPassword"
+                  name="confirmPassword"
                   required
                 />
               </div>
               <div class="flex items-center">
-                <input type="checkbox" id="staffTerms" class="mr-2" required />
+                <input
+                  type="checkbox"
+                  id="staffTerms"
+                  name="staffTerms"
+                  class="mr-2"
+                  required
+                />
                 <label for="staffTerms" class="text-sm text-gray-600"
                   >I agree to the
                   <a href="#" class="text-[#1a1f71] hover:underline"
@@ -505,18 +545,19 @@
               </div>
             </form>
 
-            <!-- Staff Sign In Form -->
             <form id="staffSignInForm" class="space-y-4 hidden">
               <input
                 type="text"
                 placeholder="Staff ID or Email"
                 class="w-full p-3 rounded-lg form-input"
+                name="staffIdOrEmail"
                 required
               />
               <input
                 type="password"
                 placeholder="Password"
                 class="w-full p-3 rounded-lg form-input"
+                name="password"
                 required
               />
               <div class="flex justify-between items-center">
@@ -540,7 +581,6 @@
             </button>
           </div>
 
-          <!-- Admin Section -->
           <div id="adminSection" class="form-section hidden-section">
             <div class="flex justify-center border-b-2 border-gray-200 mb-8">
               <div id="adminSignInTab" class="tab active">Admin Login</div>
@@ -549,14 +589,16 @@
             <form id="adminSignInForm" class="space-y-4">
               <input
                 type="text"
-                placeholder="Admin ID"
+                placeholder="Admin ID (Email or Phone)"
                 class="w-full p-3 rounded-lg form-input"
+                name="adminId"
                 required
               />
               <input
                 type="password"
                 placeholder="Password"
                 class="w-full p-3 rounded-lg form-input"
+                name="password"
                 required
               />
               <div class="flex justify-between items-center">
@@ -583,7 +625,6 @@
       </div>
     </div>
 
-    <!-- Hero Section -->
     <section id="home" class="hero-bg text-white pt-24 pb-20 md:pt-32 md:pb-28">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6">
@@ -608,7 +649,6 @@
       </div>
     </section>
 
-    <!-- Features Section -->
     <section id="features" class="py-16 bg-white section-fade-in">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -622,7 +662,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <!-- Feature 1 -->
           <div
             class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
           >
@@ -638,7 +677,6 @@
             </p>
           </div>
 
-          <!-- Feature 2 -->
           <div
             class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
           >
@@ -656,7 +694,6 @@
             </p>
           </div>
 
-          <!-- Feature 3 -->
           <div
             class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
           >
@@ -673,7 +710,6 @@
             </p>
           </div>
 
-          <!-- Feature 4 -->
           <div
             class="feature-card bg-white p-6 rounded-xl shadow-md border border-gray-100"
           >
@@ -692,7 +728,6 @@
       </div>
     </section>
 
-    <!-- Testimonials Section -->
     <section id="testimonials" class="py-16 bg-gray-50 section-fade-in">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -706,7 +741,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Testimonial 1 -->
           <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
             <div class="flex items-center mb-4">
               <div
@@ -723,7 +757,6 @@
             </p>
           </div>
 
-          <!-- Testimonial 2 -->
           <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
             <div class="flex items-center mb-4">
               <div
@@ -741,7 +774,6 @@
             </p>
           </div>
 
-          <!-- Testimonial 3 -->
           <div class="testimonial-card bg-white p-6 rounded-xl shadow-md">
             <div class="flex items-center mb-4">
               <div
@@ -762,7 +794,6 @@
       </div>
     </section>
 
-    <!-- Call to Action Section -->
     <section class="py-16 gradient-bg text-white section-fade-in">
       <div class="container mx-auto px-4 text-center">
         <h2 class="text-3xl md:text-4xl font-bold mb-6">
@@ -781,11 +812,9 @@
       </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white pt-12 pb-8">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          <!-- About Column -->
           <div>
             <h3 class="text-lg font-bold mb-4">About ResolveX</h3>
             <p class="text-gray-400 mb-4">
@@ -820,7 +849,6 @@
             </div>
           </div>
 
-          <!-- Support Column -->
           <div>
             <h3 class="text-lg font-bold mb-4">Support</h3>
             <ul class="space-y-2">
@@ -855,7 +883,6 @@
             </ul>
           </div>
 
-          <!-- Resources Column -->
           <div>
             <h3 class="text-lg font-bold mb-4">Resources</h3>
             <ul class="space-y-2">
@@ -890,7 +917,6 @@
             </ul>
           </div>
 
-          <!-- Contact Column -->
           <div>
             <h3 class="text-lg font-bold mb-4">Contact Us</h3>
             <ul class="space-y-2">
@@ -908,260 +934,432 @@
       </div>
     </footer>
 
-    <script>
-      // Navbar scroll effect
-      window.addEventListener("scroll", function () {
+  <script>
+    // DEFINE THE BASE URL FOR YOUR BACKEND HERE (CRITICAL FIX)
+    const BASE_URL = "http://localhost:3000";
+
+    // Navbar scroll effect
+    window.addEventListener("scroll", function () {
         const navbar = document.getElementById("navbar");
         if (window.scrollY > 50) {
-          navbar.classList.add("nav-scrolled");
+            navbar.classList.add("nav-scrolled");
         } else {
-          navbar.classList.remove("nav-scrolled");
+            navbar.classList.remove("nav-scrolled");
         }
-      });
+    });
 
-      // Mobile menu toggle
-      document
+    // Mobile menu toggle
+    document
         .getElementById("mobile-menu-button")
         .addEventListener("click", function () {
-          const mobileMenu = document.getElementById("mobile-menu");
-          mobileMenu.classList.toggle("hidden");
+            const mobileMenu = document.getElementById("mobile-menu");
+            mobileMenu.classList.toggle("hidden");
         });
 
-      // Smooth scrolling for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener("click", function (e) {
-          e.preventDefault();
-          const targetId = this.getAttribute("href");
-          if (targetId === "#") return;
+            e.preventDefault();
+            const targetId = this.getAttribute("href");
+            if (targetId === "#") return;
 
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 80,
-              behavior: "smooth",
-            });
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: "smooth",
+                });
 
-            // Close mobile menu if open
-            document.getElementById("mobile-menu").classList.add("hidden");
-          }
+                // Close mobile menu if open
+                document.getElementById("mobile-menu").classList.add("hidden");
+            }
         });
-      });
+    });
 
-      // Section fade-in animation on scroll
-      const observerOptions = {
+    // Section fade-in animation on scroll
+    const observerOptions = {
         root: null,
         rootMargin: "0px",
         threshold: 0.1,
-      };
+    };
 
-      const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("section-visible");
-          }
+            if (entry.isIntersecting) {
+                entry.target.classList.add("section-visible");
+            }
         });
-      }, observerOptions);
+    }, observerOptions);
 
-      document.querySelectorAll(".section-fade-in").forEach((section) => {
+    document.querySelectorAll(".section-fade-in").forEach((section) => {
         observer.observe(section);
-      });
+    });
 
-      // Authentication Modal Logic
-      const authModal = document.getElementById("authModal");
-      const closeAuthModal = document.getElementById("closeAuthModal");
+    // Authentication Modal Logic
+    const authModal = document.getElementById("authModal");
+    const closeAuthModal = document.getElementById("closeAuthModal");
 
-      // Open modal triggers
-      const navLoginBtn = document.getElementById("navLoginBtn");
-      const navRegisterBtn = document.getElementById("navRegisterBtn");
-      const mobileLoginBtn = document.getElementById("mobileLoginBtn");
-      const mobileRegisterBtn = document.getElementById("mobileRegisterBtn");
-      const heroGetStartedBtn = document.getElementById("heroGetStartedBtn");
-      const ctaSignUpBtn = document.getElementById("ctaSignUpBtn");
+    // Open modal triggers
+    const navLoginBtn = document.getElementById("navLoginBtn");
+    const navRegisterBtn = document.getElementById("navRegisterBtn");
+    const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+    const mobileRegisterBtn = document.getElementById("mobileRegisterBtn");
+    const heroGetStartedBtn = document.getElementById("heroGetStartedBtn");
+    const ctaSignUpBtn = document.getElementById("ctaSignUpBtn");
 
-      // User type selection
-      const userBtn = document.getElementById("userBtn");
-      const staffBtn = document.getElementById("staffBtn");
-      const adminBtn = document.getElementById("adminBtn");
+    // User type selection
+    const userBtn = document.getElementById("userBtn");
+    const staffBtn = document.getElementById("staffBtn");
+    const adminBtn = document.getElementById("adminBtn");
 
-      const userSection = document.getElementById("userSection");
-      const staffSection = document.getElementById("staffSection");
-      const adminSection = document.getElementById("adminSection");
+    const userSection = document.getElementById("userSection");
+    const staffSection = document.getElementById("staffSection");
+    const adminSection = document.getElementById("adminSection");
 
-      // User authentication tabs
-      const userSignUpTab = document.getElementById("userSignUpTab");
-      const userSignInTab = document.getElementById("userSignInTab");
-      const userSignUpForm = document.getElementById("userSignUpForm");
-      const userSignInForm = document.getElementById("userSignInForm");
-      const userSubmitBtn = document.getElementById("userSubmitBtn");
+    // User authentication tabs
+    const userSignUpTab = document.getElementById("userSignUpTab");
+    const userSignInTab = document.getElementById("userSignInTab");
+    const userSignUpForm = document.getElementById("userSignUpForm");
+    const userSignInForm = document.getElementById("userSignInForm");
+    const userSubmitBtn = document.getElementById("userSubmitBtn");
 
-      // Staff authentication tabs
-      const staffSignUpTab = document.getElementById("staffSignUpTab");
-      const staffSignInTab = document.getElementById("staffSignInTab");
-      const staffSignUpForm = document.getElementById("staffSignUpForm");
-      const staffSignInForm = document.getElementById("staffSignInForm");
-      const staffSubmitBtn = document.getElementById("staffSubmitBtn");
+    // Staff authentication tabs
+    const staffSignUpTab = document.getElementById("staffSignUpTab");
+    const staffSignInTab = document.getElementById("staffSignInTab");
+    const staffSignUpForm = document.getElementById("staffSignUpForm");
+    const staffSignInForm = document.getElementById("staffSignInForm");
+    const staffSubmitBtn = document.getElementById("staffSubmitBtn");
 
-      // Admin authentication tabs
-      const adminSignInTab = document.getElementById("adminSignInTab");
-      const adminSignInForm = document.getElementById("adminSignInForm");
-      const adminSubmitBtn = document.getElementById("adminSubmitBtn");
+    // Admin authentication tabs
+    const adminSignInTab = document.getElementById("adminSignInTab");
+    const adminSignInForm = document.getElementById("adminSignInForm");
+    const adminSubmitBtn = document.getElementById("adminSubmitBtn");
 
-      // Function to open modal with specific user type and form
-      function openAuthModal(userType = "user", formType = "signup") {
+    // Function to open modal with specific user type and form
+    function openAuthModal(userType = "user", formType = "signup") {
         authModal.classList.remove("hidden");
         resetUserTypeButtons();
 
+        // Hide all sections initially
+        hideAllSections();
+
         if (userType === "user") {
-          userBtn.classList.add("active");
-          userSection.classList.remove("hidden-section");
-          userSection.classList.add("visible-section");
+            userBtn.classList.add("active");
+            userSection.classList.remove("hidden-section");
+            userSection.classList.add("visible-section");
 
-          if (formType === "signin") {
-            userSignInTab.click();
-          }
+            // Trigger tab click to set form/button state
+            if (formType === "signin") {
+                userSignInTab.click();
+            } else {
+                userSignUpTab.click();
+            }
         } else if (userType === "staff") {
-          staffBtn.classList.add("active");
-          staffSection.classList.remove("hidden-section");
-          staffSection.classList.add("visible-section");
+            staffBtn.classList.add("active");
+            staffSection.classList.remove("hidden-section");
+            staffSection.classList.add("visible-section");
 
-          if (formType === "signin") {
-            staffSignInTab.click();
-          }
+            // Trigger tab click to set form/button state
+            if (formType === "signin") {
+                staffSignInTab.click();
+            } else {
+                staffSignUpTab.click();
+            }
         } else if (userType === "admin") {
-          adminBtn.classList.add("active");
-          adminSection.classList.remove("hidden-section");
-          adminSection.classList.add("visible-section");
+            adminBtn.classList.add("active");
+            adminSection.classList.remove("hidden-section");
+            adminSection.classList.add("visible-section");
+            // Admin only has a sign-in tab visible
         }
-      }
+    }
 
-      // Function to reset all user type buttons
-      function resetUserTypeButtons() {
+    // Function to reset all user type buttons
+    function resetUserTypeButtons() {
         userBtn.classList.remove("active");
         staffBtn.classList.remove("active");
         adminBtn.classList.remove("active");
-      }
+    }
 
-      // Function to hide all sections
-      function hideAllSections() {
+    // Function to hide all sections
+    function hideAllSections() {
         userSection.classList.remove("visible-section");
         userSection.classList.add("hidden-section");
         staffSection.classList.remove("visible-section");
         staffSection.classList.add("hidden-section");
         adminSection.classList.remove("visible-section");
         adminSection.classList.add("hidden-section");
-      }
+    }
 
-      // Event listeners for opening modal
-      navLoginBtn.addEventListener("click", () =>
+    // --- CORE FORM SUBMISSION LOGIC ---
+    async function handleFormSubmission(
+        formElement,
+        submitBtnElement,
+        endpoint, // <-- Changed 'url' to 'endpoint' for clarity
+        successMessage,
+        isSignUp = false,
+        isStaff = false
+    ) {
+        // Simple client-side validation check
+        if (!formElement.checkValidity()) {
+            formElement.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(formElement);
+        const data = Object.fromEntries(formData.entries());
+
+        // Password Mismatch Check for Sign Up forms (applied before sending)
+        if (isSignUp) {
+            if (data.password !== data.confirmPassword) {
+                alert("Error: Passwords do not match.");
+                return;
+            }
+        }
+
+        // Prevent double submission
+        const originalText = submitBtnElement.textContent;
+        submitBtnElement.disabled = true;
+        submitBtnElement.textContent = "Processing...";
+
+        // Prepare data structure for the backend
+        let payload = {};
+        if (isSignUp && !isStaff) {
+            // User Signup
+            payload = {
+                name: data.name,
+                email: data.email,
+                password: data.password,
+                phone: data.phone,
+                street: data.street,
+                city: data.city,
+                state: data.state,
+                pincode: data.pincode,
+            };
+        } else if (!isSignUp && !isStaff) {
+            // User Sign In
+            payload = {
+                email: data.loginIdentifier, // Matches the backend's `email` parameter
+                password: data.password,
+            };
+        } else if (isStaff && isSignUp) {
+            // Staff Signup: Concatenate first/last name as required by the backend
+            payload = {
+                name: `${data.firstname} ${data.lastname}`,
+                email: data.workEmail, 
+                staffId: data.staffId, 
+                phone: data.phone,
+                password: data.password,
+            };
+        } else if (isStaff && !isSignUp) {
+            // Staff Sign In
+            payload = {
+                staffIdOrEmail: data.staffIdOrEmail, 
+                password: data.password,
+            };
+        } else {
+            // Admin Sign In
+            payload = {
+                adminId: data.adminId,
+                password: data.password,
+            };
+        }
+
+        // 🚨 CRITICAL FIX: Use the absolute URL with BASE_URL
+        const finalUrl = BASE_URL + endpoint;
+
+        try {
+            const response = await fetch(finalUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            // Check if the server responded but with an error status (4xx, 5xx)
+            if (!response.ok) {
+                // If the response is not valid JSON (e.g., empty body), .json() will throw the "Unexpected end of JSON input" error.
+                // We attempt to read it, but catch the error if it fails and provide a generic status message.
+                try {
+                    const errorResult = await response.json();
+                    throw new Error(errorResult.message || `Server responded with status ${response.status}`);
+                } catch (e) {
+                    // This handles the 'Unexpected end of JSON input' error
+                    throw new Error(`Server returned status ${response.status}. Please check backend console for crash details.`);
+                }
+            }
+            
+            const result = await response.json();
+            
+            // SUCCESS PATH
+            alert(`${successMessage}: ${result.message}`);
+
+            formElement.reset();
+            authModal.classList.add("hidden");
+            window.location.reload(); 
+            
+        } catch (error) {
+            // NETWORK OR GENERAL JS ERROR PATH
+            console.error("Submission failed:", error);
+            alert(`Error: ${error.message || "A network error occurred. Please check your server connection."}`);
+        } finally {
+            submitBtnElement.disabled = false;
+            submitBtnElement.textContent = originalText;
+        }
+    }
+
+    // Event listeners for opening modal
+    navLoginBtn.addEventListener("click", () =>
         openAuthModal("user", "signin")
-      );
-      navRegisterBtn.addEventListener("click", () =>
+    );
+    navRegisterBtn.addEventListener("click", () =>
         openAuthModal("user", "signup")
-      );
-      mobileLoginBtn.addEventListener("click", () => {
+    );
+    mobileLoginBtn.addEventListener("click", () => {
         openAuthModal("user", "signin");
         document.getElementById("mobile-menu").classList.add("hidden");
-      });
-      mobileRegisterBtn.addEventListener("click", () => {
+    });
+    mobileRegisterBtn.addEventListener("click", () => {
         openAuthModal("user", "signup");
         document.getElementById("mobile-menu").classList.add("hidden");
-      });
-      heroGetStartedBtn.addEventListener("click", () =>
+    });
+    heroGetStartedBtn.addEventListener("click", () =>
         openAuthModal("user", "signup")
-      );
-      ctaSignUpBtn.addEventListener("click", () =>
+    );
+    ctaSignUpBtn.addEventListener("click", () =>
         openAuthModal("user", "signup")
-      );
+    );
 
-      // Close modal
-      closeAuthModal.addEventListener("click", () => {
+    // Close modal
+    closeAuthModal.addEventListener("click", () => {
         authModal.classList.add("hidden");
-      });
+    });
 
-      // Close modal when clicking outside
-      authModal.addEventListener("click", (e) => {
+    // Close modal when clicking outside
+    authModal.addEventListener("click", (e) => {
         if (e.target === authModal) {
-          authModal.classList.add("hidden");
+            authModal.classList.add("hidden");
         }
-      });
+    });
 
-      // User type button event listeners
-      userBtn.addEventListener("click", () => {
+    // User type button event listeners
+    userBtn.addEventListener("click", () => {
         resetUserTypeButtons();
         userBtn.classList.add("active");
         hideAllSections();
         userSection.classList.remove("hidden-section");
         userSection.classList.add("visible-section");
-      });
+        userSignUpTab.click();
+    });
 
-      staffBtn.addEventListener("click", () => {
+    staffBtn.addEventListener("click", () => {
         resetUserTypeButtons();
         staffBtn.classList.add("active");
         hideAllSections();
         staffSection.classList.remove("hidden-section");
         staffSection.classList.add("visible-section");
-      });
+        staffSignUpTab.click();
+    });
 
-      adminBtn.addEventListener("click", () => {
+    adminBtn.addEventListener("click", () => {
         resetUserTypeButtons();
         adminBtn.classList.add("active");
         hideAllSections();
         adminSection.classList.remove("hidden-section");
         adminSection.classList.add("visible-section");
-      });
+    });
 
-      // User authentication tab switching
-      userSignUpTab.addEventListener("click", () => {
+    // User authentication tab switching
+    userSignUpTab.addEventListener("click", () => {
         userSignUpTab.classList.add("active");
         userSignInTab.classList.remove("active");
         userSignUpForm.classList.remove("hidden");
         userSignInForm.classList.add("hidden");
         userSubmitBtn.textContent = "SIGN UP";
-      });
+    });
 
-      userSignInTab.addEventListener("click", () => {
+    userSignInTab.addEventListener("click", () => {
         userSignInTab.classList.add("active");
         userSignUpTab.classList.remove("active");
         userSignInForm.classList.remove("hidden");
         userSignUpForm.classList.add("hidden");
         userSubmitBtn.textContent = "SIGN IN";
-      });
+    });
 
-      // Staff authentication tab switching
-      staffSignUpTab.addEventListener("click", () => {
+    // Staff authentication tab switching
+    staffSignUpTab.addEventListener("click", () => {
         staffSignUpTab.classList.add("active");
         staffSignInTab.classList.remove("active");
         staffSignUpForm.classList.remove("hidden");
         staffSignInForm.classList.add("hidden");
         staffSubmitBtn.textContent = "REGISTER AS STAFF";
-      });
+    });
 
-      staffSignInTab.addEventListener("click", () => {
+    staffSignInTab.addEventListener("click", () => {
         staffSignInTab.classList.add("active");
         staffSignUpTab.classList.remove("active");
         staffSignInForm.classList.remove("hidden");
         staffSignUpForm.classList.add("hidden");
         staffSubmitBtn.textContent = "STAFF LOGIN";
-      });
+    });
 
-      // Form submission handlers
-      userSubmitBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        // Add form validation and submission logic here
-        alert("User authentication submitted!");
-      });
+    // --- FORM SUBMISSION HANDLERS ---
 
-      staffSubmitBtn.addEventListener("click", (e) => {
+    // User Submission
+    userSubmitBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        // Add form validation and submission logic here
-        alert("Staff authentication submitted!");
-      });
+        const isSignUp = !userSignUpForm.classList.contains("hidden");
+        const formElement = isSignUp ? userSignUpForm : userSignInForm;
+        const endpoint = isSignUp ? "/api/users/signup" : "/api/users/login";
+        const message = isSignUp
+            ? "User Registration Successful"
+            : "User Login Successful";
 
-      adminSubmitBtn.addEventListener("click", (e) => {
+        handleFormSubmission(
+            formElement,
+            userSubmitBtn,
+            endpoint,
+            message,
+            isSignUp,
+            false
+        );
+    });
+
+    // Staff Submission
+    staffSubmitBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        // Add form validation and submission logic here
-        alert("Admin authentication submitted!");
-      });
-    </script>
+        const isSignUp = !staffSignUpForm.classList.contains("hidden");
+        const formElement = isSignUp ? staffSignUpForm : staffSignInForm;
+        const endpoint = isSignUp ? "/api/staff/register" : "/api/staff/login";
+        const message = isSignUp
+            ? "Staff Registration Successful"
+            : "Staff Login Successful";
+
+        handleFormSubmission(
+            formElement,
+            staffSubmitBtn,
+            endpoint,
+            message,
+            isSignUp,
+            true
+        );
+    });
+
+    // Admin Submission
+    adminSubmitBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const endpoint = "/api/admin/login";
+        const message = "Admin Login Successful";
+
+        handleFormSubmission(
+            adminSignInForm,
+            adminSubmitBtn,
+            endpoint,
+            message,
+            false,
+            true
+        );
+    });
+</script>  
   </body>
 </html>

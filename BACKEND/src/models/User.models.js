@@ -27,6 +27,11 @@ const userSchema=new mongoose.Schema({
         state:String,
         pincode:String
     },
+    role:{
+        type:String,
+        enum:["user","staff","admin"],
+        default: "user"
+    },
     profileImage:{
         type:String,
         default:""  //cloudinary ka url

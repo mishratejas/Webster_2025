@@ -157,7 +157,7 @@ function hideAllSections() {
 async function handleFormSubmission(
     formElement,
     submitBtnElement,
-    endpoint, // <-- Changed 'url' to 'endpoint' for clarity
+    endpoint,
     successMessage,
     isSignUp = false,
     isStaff = false
@@ -171,7 +171,9 @@ async function handleFormSubmission(
     const formData = new FormData(formElement);
     const data = Object.fromEntries(formData.entries());
 
-    // Password Mismatch Check for Sign Up forms (applied before sending)
+    console.log("🔍 Form data collected:", data);
+
+    // Password Mismatch Check for Sign Up forms
     if (isSignUp) {
         if (data.password !== data.confirmPassword) {
             alert("Error: Passwords do not match.");
@@ -201,11 +203,11 @@ async function handleFormSubmission(
     } else if (!isSignUp && !isStaff) {
         // User Sign In
         payload = {
-            email: data.loginIdentifier, // Matches the backend's `email` parameter
+            email: data.loginIdentifier,
             password: data.password,
         };
     } else if (isStaff && isSignUp) {
-        // Staff Signup: Concatenate first/last name as required by the backend
+        // Staff Signup
         payload = {
             name: `${data.firstname} ${data.lastname}`,
             email: data.workEmail,
@@ -227,8 +229,14 @@ async function handleFormSubmission(
         };
     }
 
-    // 🚨 CRITICAL FIX: Use the absolute URL with BASE_URL
     const finalUrl = BASE_URL + endpoint;
+
+    console.log("🚀 SENDING REQUEST:");
+    console.log("URL:", finalUrl);
+    console.log("Method: POST");
+    console.log("Payload:", payload);
+    console.log("Is Signup:", isSignUp);
+    console.log("Is Staff:", isStaff);
 
     try {
         const response = await fetch(finalUrl, {
@@ -239,35 +247,128 @@ async function handleFormSubmission(
             body: JSON.stringify(payload),
         });
 
-        // Check if the server responded but with an error status (4xx, 5xx)
+        console.log("📨 RESPONSE RECEIVED:");
+        console.log("Status:", response.status);
+        console.log("Status Text:", response.statusText);
+        console.log("OK:", response.ok);
+        console.log("Headers:", Object.fromEntries(response.headers.entries()));
+
+        // Get response as text first to see what we're getting
+        const responseText = await response.text();
+        console.log("Raw Response Text:", responseText);
+
+        // Check if the server responded but with an error status
         if (!response.ok) {
-            // If the response is not valid JSON (e.g., empty body), .json() will throw the "Unexpected end of JSON input" error.
-            // We attempt to read it, but catch the error if it fails and provide a generic status message.
-            try {
-                const errorResult = await response.json();
-                throw new Error(errorResult.message || `Server responded with status ${response.status}`);
-            } catch (e) {
-                // This handles the 'Unexpected end of JSON input' error
-                throw new Error(`Server returned status ${response.status}. Please check backend console for crash details.`);
+            console.log("❌ SERVER RETURNED ERROR STATUS");
+            
+            // Try to parse as JSON, but if it fails, use the raw text
+            let errorMessage = `Server returned status ${response.status}`;
+            
+            if (responseText) {
+                try {
+                    const errorResult = JSON.parse(responseText);
+                    errorMessage = errorResult.message || errorResult.error || JSON.stringify(errorResult);
+                } catch (e) {
+                    // If it's not JSON, use the raw text
+                    errorMessage = `Server returned status ${response.status}: ${responseText}`;
+                }
             }
+            
+            console.log("Error Message:", errorMessage);
+            throw new Error(errorMessage);
         }
 
-        const result = await response.json();
+        // If we got here, response is OK (200-299)
+        console.log("✅ SERVER RETURNED SUCCESS STATUS");
+        
+        let result;
+        if (responseText) {
+            try {
+                result = JSON.parse(responseText);
+                console.log("Parsed JSON Result:", result);
+            } catch (e) {
+                console.error("Failed to parse JSON:", e);
+                throw new Error("Server returned invalid JSON response");
+            }
+        } else {
+            console.warn("Server returned empty response");
+            result = { message: "Empty response from server" };
+        }
 
-        // SUCCESS PATH
-        alert(`${successMessage}: ${result.message}`);
+        // 🚨 UPDATED SUCCESS PATH - STORE TOKENS AND REDIRECT
+        console.log("🎉 SUCCESS - Processing result:", result);
 
-        formElement.reset();
-        authModal.classList.add("hidden");
-        window.location.reload();
+        // Store token and user data for homepage
+        if (result.accessToken && result.user) {
+            console.log("📦 Storing token and user data");
+            localStorage.setItem('accessToken', result.accessToken);
+            localStorage.setItem('user', JSON.stringify(result.user));
+            
+            formElement.reset();
+            authModal.classList.add("hidden");
+            
+            // Redirect to homepage after successful login/signup
+            setTimeout(() => {
+                console.log("🔄 Redirecting to homepage...");
+                window.location.href = 'home.html';
+            }, 1000);
+            
+        } else if (isSignUp && result.message && result.message.toLowerCase().includes("success")) {
+            // For signup without auto-login, show success and switch to login
+            console.log("📝 Signup successful, switching to login");
+            formElement.reset();
+            authModal.classList.add("hidden");
+            setTimeout(() => {
+                alert('Registration successful! Please login with your credentials.');
+                openAuthModal("user", "signin");
+            }, 500);
+            
+        } else if (result.message) {
+            // Generic success case
+            console.log("✅ Operation completed successfully");
+            formElement.reset();
+            authModal.classList.add("hidden");
+            
+            if (result.message.toLowerCase().includes("login")) {
+                // If it's a login but no token, something went wrong
+                console.warn("Login successful but no token received");
+                alert("Login successful but technical issue occurred. Please try again.");
+            } else {
+                alert(result.message);
+            }
+            
+        } else {
+            // Fallback for other cases
+            console.warn("No specific success handler, using fallback");
+            formElement.reset();
+            authModal.classList.add("hidden");
+            window.location.reload();
+        }
 
     } catch (error) {
         // NETWORK OR GENERAL JS ERROR PATH
-        console.error("Submission failed:", error);
-        alert(`Error: ${error.message || "A network error occurred. Please check your server connection."}`);
+        console.error("💥 SUBMISSION FAILED:");
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
+        console.error("Full error:", error);
+        
+        let userFriendlyMessage = error.message;
+        
+        // Provide more specific error messages
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            userFriendlyMessage = "Network error: Cannot connect to server. Make sure the backend is running.";
+        } else if (error.message.includes('Failed to fetch')) {
+            userFriendlyMessage = "Network error: Cannot connect to server. Check if the backend is running on port 3000.";
+        } else if (error.message.includes('CORS')) {
+            userFriendlyMessage = "CORS error: Browser blocked the request. Check server CORS configuration.";
+        }
+        
+        alert(`Error: ${userFriendlyMessage}`);
+        
     } finally {
         submitBtnElement.disabled = false;
         submitBtnElement.textContent = originalText;
+        console.log("🏁 Form submission process completed");
     }
 }
 

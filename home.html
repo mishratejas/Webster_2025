@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveX - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./stylesheets/home.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-lg shadow-lg mr-3"></div>
+                <span class="text-xl font-bold text-gray-800">
+                    Resolve<span class="logo-x">X</span>
+                </span>
+            </div>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-blue-600 font-medium transition-colors border-b-2 border-blue-600">Home</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Issues</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Report Issue</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Profile</a>
+            </nav>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <span class="text-gray-600">Welcome, John Doe!</span>
+                <button class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                    Logout
+                </button>
+            </div>
+
+            <button class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full pt-8 p-4 md:p-8">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white rounded-2xl p-8 md:p-12 mb-8 shadow-lg">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-6">
+                    Resolve<span class="logo-x">X</span>
+                </h1>
+                <p class="text-xl md:text-2xl max-w-2xl mx-auto mb-10">
+                    Spot Issues. Get Them Fixed. Build Better Communities.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button id="reportIssueBtn" class="btn-gradient text-white font-bold text-lg py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300">
+                        Report New Issue
+                    </button>
+                    <button class="bg-white text-[#1a1f71] font-bold text-lg py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transform transition-all duration-300">
+                        View My Reports
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slider Tabs -->
+        <div class="flex justify-center mb-6">
+            <div class="tab-container flex items-center bg-white rounded-full p-1 shadow-md">
+                <div id="highlight"></div>
+                <div id="openTab" class="tab active">Open</div>
+                <div id="inProgressTab" class="tab">In-Progress</div>
+                <div id="closedTab" class="tab">Closed</div>
+            </div>
+        </div>
+        
+        <!-- Filter and List -->
+        <div class="flex gap-6">
+            <!-- Filter Icon -->
+            <div class="hidden md:flex flex-col items-center">
+                 <svg class="w-8 h-8 text-gray-600 cursor-pointer hover:text-[#1a1f71] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18"></path>
+                     <path d="M4 6h16M6 10h12M8 14h8m-6 4h4"></path>
+                 </svg>
+            </div>
+
+            <!-- Scrollable Issues List -->
+            <div class="flex-grow h-[60vh] scrollable-list overflow-y-auto pr-2 space-y-4" id="issuesContainer">
+                <!-- Sample Issue Cards will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button id="floatingReportBtn" class="fixed bottom-8 right-8 gradient-bg text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <!-- Report Issue Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        Report New Issue
+                    </h2>
+                    <button id="closeReportModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="reportIssueForm" class="space-y-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Issue Title</label>
+                        <input type="text" placeholder="Brief description of the issue" 
+                               class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                               name="title" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Description</label>
+                        <textarea placeholder="Detailed description of the issue..." 
+                                  class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors h-32"
+                                  name="description" required></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Location</label>
+                            <input type="text" placeholder="Street, Area" 
+                                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                                   name="location" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Category</label>
+                            <select class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                                    name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="infrastructure">Infrastructure</option>
+                                <option value="safety">Public Safety</option>
+                                <option value="environment">Environment</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Upload Image (Optional)</label>
+                        <input type="file" 
+                               class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                               name="image" accept="image/*">
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl mt-4">
+                        Submit Issue
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/home.js"></script>
+</body>
+</html>

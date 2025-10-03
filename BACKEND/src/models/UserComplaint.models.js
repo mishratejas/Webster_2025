@@ -26,7 +26,7 @@ const userComplaintSchema=new mongoose.Schema({
     },
     location:{
         latitude:Number,
-        longitude:Numeber,
+        longitude:Number,
         address:String
     },
     images:[{
@@ -36,6 +36,10 @@ const userComplaintSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true
+    },
+    voteCount: {
+        type: Number,
+        default: 0
     },
     department:{
         type:mongoose.Schema.Types.ObjectId,

@@ -1,0 +1,100 @@
+:root {
+    --primary-navy: #1a1f71;
+    --primary-teal: #00897b;
+    --gradient: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-teal) 100%);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(rgba(26, 31, 113, 0.05), rgba(0, 137, 123, 0.05));
+}
+
+.logo-x {
+    color: var(--primary-teal);
+}
+
+.gradient-bg {
+    background: var(--gradient);
+}
+
+.btn-gradient {
+    background: var(--gradient);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.tab-container {
+    border: 2px solid var(--primary-navy);
+    position: relative;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #6b7280;
+    z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.tab.active {
+    color: white;
+}
+
+#highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 9999px;
+    transition: all 0.3s ease-in-out;
+    z-index: 5;
+}
+
+.issue-card {
+    border-left: 4px solid var(--primary-teal);
+    transition: all 0.3s ease;
+}
+
+.issue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom scrollbar */
+.scrollable-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background: var(--primary-teal);
+    border-radius: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-navy);
+}
+
+.vote-btn {
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.vote-btn:hover {
+    color: var(--primary-teal);
+    transform: scale(1.1);
+}
+
+.vote-btn.active {
+    color: var(--primary-teal);
+}

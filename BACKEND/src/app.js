@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 //signin/signup (no auth)
 app.use("/api/users", userRoutes);
 app.use("/api/staff",staffRoutes);
-//app.use("/api/admin",adminRoutes);
+app.use("/api/admin",adminRoutes);
 
 //(auth req)
 app.use("/api/user_issues", user_issue);

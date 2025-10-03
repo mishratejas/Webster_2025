@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveX - Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --staff-primary: #00897b; /* Teal */
+            --staff-accent: #1a1f71; /* Navy */
+            --gradient: linear-gradient(135deg, var(--staff-accent) 0%, var(--staff-primary) 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0fdfa; /* Light mint/teal background */
+        }
+
+        .logo-x {
+            color: var(--staff-primary);
+        }
+
+        .staff-bg-primary {
+            background-color: var(--staff-primary);
+        }
+
+        .staff-btn-gradient {
+            background: var(--gradient);
+            transition: all 0.3s ease;
+        }
+
+        .issue-card-staff {
+            border-left: 6px solid var(--staff-primary); 
+            transition: all 0.3s ease;
+        }
+        .issue-card-staff:hover {
+            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* STAFF SPECIFIC TABS (Slider style) */
+        .tab-staff.active {
+            color: white;
+        }
+        #highlight-staff {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 9999px;
+            transition: all 0.3s ease-in-out;
+            z-index: 5;
+        }
+        .tab-container-staff {
+             border: 2px solid var(--staff-primary);
+             position: relative;
+        }
+        
+        /* Custom scrollbar */
+        .scrollable-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollable-list::-webkit-scrollbar-thumb {
+            background: var(--staff-primary);
+            border-radius: 10px;
+        }
+        
+        /* Animation for new tasks */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 137, 123, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0); }
+        }
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        /* Line clamp utility */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <span class="text-xl font-bold text-gray-800">
+                    Resolve<span class="logo-x">X</span> <span class="text-sm staff-bg-primary text-white px-2 py-1 rounded ml-2 font-black">STAFF PORTAL</span>
+                </span>
+            </div>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-blue-600 font-medium transition-colors border-b-2 border-blue-600">My Tasks</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Team View</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">SOPs</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Reports</a>
+            </nav>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <button id="notificationBtn" class="text-gray-600 hover:text-blue-600 transition-colors relative">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+                <span class="text-gray-600 font-semibold">Welcome, Tech A!</span>
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
+                        <div class="w-8 h-8 rounded-full staff-btn-gradient flex items-center justify-center text-white font-bold">A</div>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i>Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i>Settings</a>
+                        <div class="border-t my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu button -->
+            <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="md:hidden bg-white border-t py-4 px-4 hidden">
+            <div class="flex flex-col space-y-4">
+                <a href="#" class="text-blue-600 font-medium">My Tasks</a>
+                <a href="#" class="text-gray-600 font-medium">Team View</a>
+                <a href="#" class="text-gray-600 font-medium">SOPs</a>
+                <a href="#" class="text-gray-600 font-medium">Reports</a>
+                <div class="pt-4 border-t flex items-center justify-between">
+                    <span class="text-gray-600 font-medium">Tech A</span>
+                    <button class="text-red-600 font-medium">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full pt-8 p-4 md:p-8 container mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">My Task Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search tasks..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <button class="bg-white border border-gray-300 rounded-lg px-4 py-2 flex items-center space-x-2 hover:bg-gray-50">
+                    <i class="fas fa-filter text-gray-600"></i>
+                    <span>Filter</span>
+                </button>
+            </div>
+        </div>
+        
+        <section class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-gray-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">MY OPEN TASKS</p>
+                <div class="text-4xl font-black text-gray-800">18</div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <span class="w-2 h-2 bg-gray-600 rounded-full mr-2"></span>
+                    <span>2 new since yesterday</span>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-red-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">SLA RISK</p>
+                <div class="text-4xl font-black text-red-600">1 URGENT</div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                    <span>Due in 2 hours</span>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-blue-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">AVG TIME TO RESOLVE</p>
+                <div class="text-4xl font-black text-blue-600">1.8 DAYS</div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                    <span>Below target of 2.1 days</span>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-orange-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">NEW MESSAGES</p>
+                <div class="text-4xl font-black text-orange-600">2 CHATS</div>
+                <div class="mt-2 text-xs text-gray-500 flex items-center">
+                    <span class="w-2 h-2 bg-orange-600 rounded-full mr-2"></span>
+                    <span>1 requires attention</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-start overflow-x-auto">
+                <div class="tab-container-staff flex items-center bg-white rounded-full p-1 shadow-md">
+                    <div id="highlight-staff"></div>
+                    <div id="assignedTab" class="tab-staff active relative z-10 px-4 py-2 cursor-pointer font-medium">Assigned</div>
+                    <div id="inProgressTab" class="tab-staff relative z-10 px-4 py-2 cursor-pointer font-medium">In-Progress</div>
+                    <div id="onHoldTab" class="tab-staff relative z-10 px-4 py-2 cursor-pointer font-medium">On Hold</div>
+                    <div id="closedTab" class="tab-staff relative z-10 px-4 py-2 cursor-pointer font-medium">Resolved</div>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+                <span>Sort by:</span>
+                <select class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <option>Due Date</option>
+                    <option>Priority</option>
+                    <option>Location</option>
+                    <option>Date Created</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="flex gap-6">
+             <aside class="hidden lg:block w-64 bg-white p-4 rounded-xl shadow-lg h-fit sticky top-24">
+                <h3 class="font-bold text-lg mb-4 border-b pb-2 text-gray-700">Quick Tools</h3>
+                <div class="space-y-3 text-sm">
+                    <button class="w-full staff-btn-gradient text-white py-2 rounded-lg flex items-center justify-center"><i class="fas fa-map mr-2"></i> Field Map View</button>
+                    <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 flex items-center justify-center"><i class="fas fa-search mr-2"></i> Search Inventory</button>
+                    <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 flex items-center justify-center"><i class="fas fa-history mr-2"></i> My Resolution History</button>
+                </div>
+                
+                <h3 class="font-bold text-lg mt-6 mb-4 border-b pb-2 text-gray-700">Task Stats</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>High Priority</span>
+                            <span>5</span>
+                        </div>
+                        <div class="progress-bar bg-gray-200">
+                            <div class="bg-red-500 h-full" style="width: 28%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Medium Priority</span>
+                            <span>8</span>
+                        </div>
+                        <div class="progress-bar bg-gray-200">
+                            <div class="bg-yellow-500 h-full" style="width: 44%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Low Priority</span>
+                            <span>5</span>
+                        </div>
+                        <div class="progress-bar bg-gray-200">
+                            <div class="bg-green-500 h-full" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="font-bold text-lg mt-6 mb-4 border-b pb-2 text-gray-700">Quick Actions</h3>
+                <div class="space-y-3 text-sm">
+                    <button class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 flex items-center justify-center"><i class="fas fa-plus-circle mr-2"></i> Create Task</button>
+                    <button class="w-full bg-purple-100 text-purple-700 py-2 rounded-lg hover:bg-purple-200 flex items-center justify-center"><i class="fas fa-file-export mr-2"></i> Export Report</button>
+                </div>
+            </aside>
+
+            <div class="flex-grow">
+                <div class="bg-white rounded-xl shadow-md p-4 mb-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-600"><i class="fas fa-info-circle"></i></span>
+                        <span class="text-sm">Showing <span class="font-semibold" id="taskCount">0</span> tasks</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="listViewBtn" class="p-2 rounded-lg bg-blue-100 text-blue-600">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button id="gridViewBtn" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="h-[60vh] scrollable-list overflow-y-auto pr-2 space-y-4" id="issuesContainer">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button id="floatingCreateTaskBtn" class="fixed bottom-8 right-8 staff-btn-gradient text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+    
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="fixed top-16 right-4 w-80 bg-white rounded-xl shadow-2xl z-50 hidden">
+        <div class="p-4 border-b flex justify-between items-center">
+            <h3 class="font-bold text-gray-800">Notifications</h3>
+            <button id="closeNotifications" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="max-h-96 overflow-y-auto">
+            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div class="flex justify-between">
+                    <span class="font-semibold text-sm">New Task Assigned</span>
+                    <span class="text-xs text-gray-500">10 min ago</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">You've been assigned "Broken Traffic Light"</p>
+            </div>
+            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div class="flex justify-between">
+                    <span class="font-semibold text-sm">SLA Warning</span>
+                    <span class="text-xs text-gray-500">1 hour ago</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">"Large Pothole" is due in 2 hours</p>
+            </div>
+            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div class="flex justify-between">
+                    <span class="font-semibold text-sm">New Message</span>
+                    <span class="text-xs text-gray-500">2 hours ago</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">You have a new message from Jane Doe</p>
+            </div>
+        </div>
+        <div class="p-4 text-center">
+            <button class="text-blue-600 text-sm font-medium">View All Notifications</button>
+        </div>
+    </div>
+    
+    <!-- Create Task Modal -->
+    <div id="createTaskModal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Create New Task</h3>
+            </div>
+            <div class="p-6">
+                <form id="taskForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter task title">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter task description"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskPriority">Priority</label>
+                        <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskLocation">Location</label>
+                        <input type="text" id="taskLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter location">
+                    </div>
+                </form>
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-4">
+                <button id="cancelTask" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                <button id="submitTask" class="px-4 py-2 staff-btn-gradient text-white rounded-lg hover:shadow-lg">Create Task</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // --- STAFF DASHBOARD JAVASCRIPT ---
+        
+        const sampleIssues = {
+            'Assigned': [
+                { 
+                    id: 1, 
+                    title: "Large Pothole on Main Street", 
+                    description: "A large and dangerous pothole has formed near the intersection of Main St and 1st Ave. Requires 2 tons of asphalt.", 
+                    date: "2025-09-28", 
+                    postedBy: "Jane Doe", 
+                    location: "Downtown", 
+                    assignedTo: "Tech A", 
+                    priority: "High", 
+                    votes: 128, 
+                    statusColor: 'border-red-500', 
+                    unreadChat: true,
+                    dueDate: "2025-10-05",
+                    new: true
+                },
+                { 
+                    id: 2, 
+                    title: "Malfunctioning Traffic Light", 
+                    description: "The traffic light at Oak and 5th is stuck on red in all directions, causing traffic congestion.", 
+                    date: "2025-09-29", 
+                    postedBy: "Robert Smith", 
+                    location: "Oak Street", 
+                    assignedTo: "Tech A", 
+                    priority: "High", 
+                    votes: 95, 
+                    statusColor: 'border-red-500', 
+                    unreadChat: false,
+                    dueDate: "2025-10-02",
+                    new: true
+                },
+                { 
+                    id: 3, 
+                    title: "Street Sign Replacement", 
+                    description: "Stop sign at the corner of Maple and Elm has been damaged and needs replacement.", 
+                    date: "2025-09-27", 
+                    postedBy: "City Planning Dept", 
+                    location: "Maple Street", 
+                    assignedTo: "Tech A", 
+                    priority: "Medium", 
+                    votes: 42, 
+                    statusColor: 'border-yellow-500', 
+                    unreadChat: true,
+                    dueDate: "2025-10-10",
+                    new: false
+                }
+            ],
+            'In-Progress': [
+                { 
+                    id: 4, 
+                    title: "Graffiti on Library Wall", 
+                    description: "A large amount of graffiti was painted on the back wall of the public library over the weekend.", 
+                    date: "2025-09-25", 
+                    postedBy: "Michael Brown", 
+                    location: "Public Library", 
+                    assignedTo: "Cleanup Crew", 
+                    priority: "Medium", 
+                    votes: 52, 
+                    statusColor: 'border-blue-500', 
+                    unreadChat: false,
+                    dueDate: "2025-10-01",
+                    new: false
+                },
+                { 
+                    id: 6, 
+                    title: "Park Bench Repair", 
+                    description: "Two park benches in Central Park have broken slats and need repair or replacement.", 
+                    date: "2025-09-26", 
+                    postedBy: "Parks Department", 
+                    location: "Central Park", 
+                    assignedTo: "Tech A", 
+                    priority: "Low", 
+                    votes: 31, 
+                    statusColor: 'border-green-500', 
+                    unreadChat: false,
+                    dueDate: "2025-10-15",
+                    new: false
+                }
+            ],
+            'On Hold': [
+                { 
+                    id: 5, 
+                    title: "Damaged Playground Equipment", 
+                    description: "The swing set at the community playground has broken chains and needs immediate repair.", 
+                    date: "2025-09-24", 
+                    postedBy: "Sarah Johnson", 
+                    location: "Community Park", 
+                    assignedTo: "Park Maintenance", 
+                    priority: "High", 
+                    votes: 43, 
+                    statusColor: 'border-orange-500', 
+                    unreadChat: false,
+                    dueDate: "2025-10-05",
+                    new: false
+                }
+            ],
+            'Resolved': [
+                { 
+                    id: 7, 
+                    title: "Water Leak on Maple Street", 
+                    description: "Constant water leakage from a broken pipe is causing pavement damage and water wastage. Resolved after pipe replacement.", 
+                    date: "2025-09-18", 
+                    postedBy: "Lisa Garcia", 
+                    location: "Maple Street", 
+                    assignedTo: "Plumbing Team", 
+                    priority: "Low", 
+                    votes: 67, 
+                    statusColor: 'border-green-500', 
+                    unreadChat: false,
+                    dueDate: "2025-09-25",
+                    new: false
+                },
+                { 
+                    id: 8, 
+                    title: "Fallen Tree Branch", 
+                    description: "Large tree branch fell on power lines during storm. Branch has been removed and power restored.", 
+                    date: "2025-09-20", 
+                    postedBy: "Emergency Services", 
+                    location: "Pine Street", 
+                    assignedTo: "Tech A", 
+                    priority: "High", 
+                    votes: 89, 
+                    statusColor: 'border-green-500', 
+                    unreadChat: false,
+                    dueDate: "2025-09-22",
+                    new: false
+                }
+            ]
+        };
+
+        const tabs = [
+            document.getElementById('assignedTab'),
+            document.getElementById('inProgressTab'),
+            document.getElementById('onHoldTab'),
+            document.getElementById('closedTab')
+        ];
+        const highlight = document.getElementById('highlight-staff'); 
+        const issuesContainer = document.getElementById('issuesContainer');
+        const taskCount = document.getElementById('taskCount');
+        let currentActiveTab = 'Assigned'; 
+        let isGridView = false;
+
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'High': return 'text-red-500 bg-red-100';
+                case 'Medium': return 'text-yellow-600 bg-yellow-100';
+                case 'Low': return 'text-green-600 bg-green-100';
+                default: return 'text-gray-500 bg-gray-100';
+            }
+        }
+        
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Assigned': return 'bg-blue-100 text-blue-800';
+                case 'In-Progress': return 'bg-purple-100 text-purple-800';
+                case 'On Hold': return 'bg-orange-100 text-orange-800';
+                case 'Resolved': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+        
+        // --- ENHANCED STAFF ACTIONS ---
+        function handleStaffQuickUpdate(issueId, newStatus) {
+            alert(`ACTION: Staff updated Issue #${issueId} status to '${newStatus}'. (Updates DB via API)`);
+            // In a real app, this would trigger an API PUT request and UI refresh.
+        }
+        
+        function openTaskDetails(issueId) {
+            alert(`Opening detailed view for task #${issueId}`);
+            // In a real app, this would open a modal or navigate to a detail page
+        }
+        // --- END ENHANCED STAFF ACTIONS ---
+
+        function moveHighlight(tab) {
+            highlight.style.width = `${tab.offsetWidth}px`;
+            highlight.style.left = `${tab.offsetLeft}px`;
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            currentActiveTab = tab.textContent.trim();
+            loadIssues(currentActiveTab); 
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                moveHighlight(tab);
+            });
+        });
+
+        function displayIssues(issues) {
+            issuesContainer.innerHTML = '';
+            taskCount.textContent = issues.length;
+
+            if (issues.length === 0) {
+                issuesContainer.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                        <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-500 mb-2">No tasks found</h3>
+                        <p class="text-gray-400">There are no tasks in this category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            issues.forEach(issue => {
+                const priorityColor = getPriorityColor(issue.priority);
+                const statusBadge = getStatusBadge(currentActiveTab);
+                const colorMap = { 'red': '#ef4444', 'yellow': '#f59e0b', 'blue': '#3b82f6', 'orange': '#f97316', 'green': '#10b981' };
+                const borderColorKey = issue.statusColor.split('-').pop();
+                const actualBorderColor = colorMap[borderColorKey] || '#00897b'; 
+                
+                const commIndicator = issue.unreadChat ? 
+                    `<span class="text-xs font-semibold text-red-600 flex items-center"><i class="fas fa-exclamation-circle mr-1"></i> New Chat</span>` :
+                    `<span class="text-xs text-gray-400 flex items-center"><i class="fas fa-comment-dots mr-1"></i> Cleared</span>`;
+                
+                const quickActionButton = currentActiveTab === 'Assigned' ? 
+                    `<button onclick="handleStaffQuickUpdate(${issue.id}, 'In-Progress')" class="bg-blue-500 text-white px-3 py-1 text-xs rounded-lg hover:bg-blue-600 transition-colors flex items-center"><i class="fas fa-play-circle mr-1"></i> Start Work</button>` :
+                    (currentActiveTab === 'In-Progress' ?
+                    `<button onclick="handleStaffQuickUpdate(${issue.id}, 'Resolved')" class="bg-green-500 text-white px-3 py-1 text-xs rounded-lg hover:bg-green-600 transition-colors flex items-center"><i class="fas fa-check-circle mr-1"></i> Resolve</button>` :
+                    '');
+                    
+                const newIndicator = issue.new ? `<span class="pulse-glow absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">NEW</span>` : '';
+                
+                const dueDate = new Date(issue.dueDate);
+                const today = new Date();
+                const timeDiff = dueDate.getTime() - today.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                let dueText = '';
+                let dueColor = 'text-gray-500';
+                
+                if (daysDiff < 0) {
+                    dueText = 'Overdue';
+                    dueColor = 'text-red-500';
+                } else if (daysDiff === 0) {
+                    dueText = 'Due today';
+                    dueColor = 'text-red-500';
+                } else if (daysDiff === 1) {
+                    dueText = 'Due tomorrow';
+                    dueColor = 'text-orange-500';
+                } else if (daysDiff <= 7) {
+                    dueText = `Due in ${daysDiff} days`;
+                    dueColor = 'text-orange-500';
+                } else {
+                    dueText = `Due ${dueDate.toLocaleDateString()}`;
+                }
+
+                const issueCard = `
+                    <div class="bg-white rounded-xl shadow-md p-4 issue-card-staff relative cursor-pointer ${isGridView ? 'md:w-80' : ''}" style="border-left-color: ${actualBorderColor};" onclick="openTaskDetails(${issue.id})">
+                        ${newIndicator}
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-gray-800 flex-1 pr-4">${issue.title}</h3>
+                            <div class="flex flex-col items-end space-y-1">
+                                <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">${issue.priority}</span>
+                                <span class="status-badge ${statusBadge}">${currentActiveTab}</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">${issue.description}</p>
+                        
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center space-x-2 text-xs text-gray-500">
+                                <span><i class="fas fa-user mr-1"></i> ${issue.postedBy}</span>
+                                <span><i class="fas fa-calendar mr-1"></i> ${new Date(issue.date).toLocaleDateString()}</span>
+                            </div>
+                            <span class="text-xs ${dueColor} font-medium">${dueText}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center border-t pt-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs text-gray-600 flex items-center"><i class="fas fa-map-marker-alt mr-1"></i> ${issue.location}</span>
+                                ${commIndicator}
+                            </div>
+                            ${quickActionButton}
+                        </div>
+                    </div>
+                `;
+                issuesContainer.innerHTML += issueCard;
+            });
+        }
+
+        function loadIssues(status) {
+            const issues = sampleIssues[status] || [];
+            displayIssues(issues);
+        }
+
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Notification panel toggle
+        document.getElementById('notificationBtn').addEventListener('click', function() {
+            const notificationPanel = document.getElementById('notificationPanel');
+            notificationPanel.classList.toggle('hidden');
+        });
+
+        document.getElementById('closeNotifications').addEventListener('click', function() {
+            document.getElementById('notificationPanel').classList.add('hidden');
+        });
+
+        // Create task modal
+        document.getElementById('floatingCreateTaskBtn').addEventListener('click', function() {
+            document.getElementById('createTaskModal').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelTask').addEventListener('click', function() {
+            document.getElementById('createTaskModal').classList.add('hidden');
+        });
+
+        document.getElementById('submitTask').addEventListener('click', function() {
+            const title = document.getElementById('taskTitle').value;
+            if (title) {
+                alert(`Task "${title}" created successfully!`);
+                document.getElementById('createTaskModal').classList.add('hidden');
+                document.getElementById('taskForm').reset();
+            } else {
+                alert('Please enter a task title');
+            }
+        });
+
+        // View toggle
+        document.getElementById('listViewBtn').addEventListener('click', function() {
+            isGridView = false;
+            document.getElementById('listViewBtn').classList.add('bg-blue-100', 'text-blue-600');
+            document.getElementById('gridViewBtn').classList.remove('bg-blue-100', 'text-blue-600');
+            document.getElementById('gridViewBtn').classList.add('text-gray-500', 'hover:bg-gray-100');
+            issuesContainer.classList.remove('md:grid', 'md:grid-cols-2', 'md:gap-4');
+            loadIssues(currentActiveTab);
+        });
+
+        document.getElementById('gridViewBtn').addEventListener('click', function() {
+            isGridView = true;
+            document.getElementById('gridViewBtn').classList.add('bg-blue-100', 'text-blue-600');
+            document.getElementById('listViewBtn').classList.remove('bg-blue-100', 'text-blue-600');
+            document.getElementById('listViewBtn').classList.add('text-gray-500', 'hover:bg-gray-100');
+            issuesContainer.classList.add('md:grid', 'md:grid-cols-2', 'md:gap-4');
+            loadIssues(currentActiveTab);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            moveHighlight(tabs[0]);
+            // Set initial view to list
+            document.getElementById('listViewBtn').classList.add('bg-blue-100', 'text-blue-600');
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationBtn = document.getElementById('notificationBtn');
+            
+            if (!notificationPanel.contains(event.target) && !notificationBtn.contains(event.target)) {
+                notificationPanel.classList.add('hidden');
+            }
+            
+            const createTaskModal = document.getElementById('createTaskModal');
+            const floatingCreateTaskBtn = document.getElementById('floatingCreateTaskBtn');
+            
+            if (createTaskModal && !createTaskModal.contains(event.target) && !floatingCreateTaskBtn.contains(event.target)) {
+                createTaskModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

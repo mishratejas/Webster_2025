@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveX - ADMIN CONSOLE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-primary: #1a1f71; /* Navy */
+            --admin-accent: #ef4444; /* Red */
+            --gradient: linear-gradient(135deg, var(--admin-primary) 0%, #1d4ed8 100%); /* Navy to Blue */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc; /* Light Gray */
+        }
+
+        .logo-x {
+            color: var(--admin-accent);
+        }
+
+        .admin-bg-primary {
+            background-color: var(--admin-primary);
+        }
+
+        .admin-btn-gradient {
+            background: var(--gradient);
+            transition: all 0.3s ease;
+        }
+
+        .issue-card-admin {
+            border-top: 4px solid var(--admin-primary);
+            transition: all 0.3s ease;
+        }
+        .issue-card-admin:hover {
+            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        /* ADMIN SPECIFIC TABS */
+        .tab-admin.active {
+            color: white;
+            background: var(--gradient);
+        }
+        .tab-admin {
+            cursor: pointer;
+            padding: 10px 15px;
+            font-weight: 700;
+            color: var(--admin-primary);
+            z-index: 10;
+            transition: all 0.3s ease;
+            background-color: #e5e7eb;
+        }
+        
+        /* Enhanced styles */
+        .scrollable-list {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+        
+        .scrollable-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollable-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .scrollable-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .scrollable-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--admin-accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+        
+        .issue-priority-high {
+            border-left-color: #ef4444;
+        }
+        
+        .issue-priority-medium {
+            border-left-color: #f59e0b;
+        }
+        
+        .issue-priority-low {
+            border-left-color: #10b981;
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .search-box {
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            box-shadow: 0 0 0 3px rgba(26, 31, 113, 0.1);
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0f172a;
+                color: #f1f5f9;
+            }
+            
+            .bg-white {
+                background-color: #1e293b;
+            }
+            
+            .text-gray-800 {
+                color: #f1f5f9;
+            }
+            
+            .text-gray-600 {
+                color: #cbd5e1;
+            }
+            
+            .text-gray-500 {
+                color: #94a3b8;
+            }
+            
+            .border-gray-300 {
+                border-color: #334155;
+            }
+            
+            .bg-gray-50 {
+                background-color: #334155;
+            }
+            
+            .scrollable-list::-webkit-scrollbar-track {
+                background: #1e293b;
+            }
+            
+            .scrollable-list::-webkit-scrollbar-thumb {
+                background: #475569;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex">
+    
+    <aside class="w-64 admin-bg-primary text-white p-6 flex flex-col shadow-2xl sticky top-0 h-screen">
+        <div class="mb-8">
+            <span class="text-3xl font-black">
+                Admin<span class="logo-x">X</span>
+            </span>
+            <p class="text-sm text-gray-400">Control Panel</p>
+        </div>
+
+        <nav class="space-y-4 flex-grow">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">OVERSIGHT</h3>
+            <a href="#" class="flex items-center p-3 rounded-lg bg-red-600 font-bold transition-colors">
+                <i class="fas fa-chart-line mr-3"></i> Triage Dashboard
+            </a>
+            <a href="#" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <i class="fas fa-users-cog mr-3"></i> Staff Management
+            </a>
+            <a href="#" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <i class="fas fa-chart-pie mr-3"></i> Analytics
+            </a>
+            <a href="#" class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <i class="fas fa-cog mr-3"></i> Settings
+            </a>
+            
+            <div class="p-3 bg-white/10 rounded-lg mt-4">
+                <h4 class="font-semibold mb-2">Staff Workload</h4>
+                <div class="text-xs space-y-1">
+                    <div class="flex justify-between">
+                        <span>Tech A</span>
+                        <span>7 issues</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-red-400" style="width: 70%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span>Road Crew</span>
+                        <span>12 issues</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-400" style="width: 100%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span>Cleanup</span>
+                        <span>3 issues</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-green-400" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="mt-8 pt-4 border-t border-gray-700">
+            <p class="text-sm font-semibold">Administrator</p>
+            <button class="text-sm text-gray-400 hover:text-red-400 mt-1">
+                <i class="fas fa-sign-out-alt mr-1"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-grow p-8">
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Triage Dashboard</h1>
+                <p class="text-gray-600">Manage and assign reported issues</p>
+            </div>
+            
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="relative flex-grow md:flex-grow-0">
+                    <input type="text" placeholder="Search issues..." class="search-box w-full md:w-64 p-2 pl-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                
+                <div class="relative">
+                    <button id="notificationBtn" class="p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-bell text-gray-600"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                </div>
+                
+                <button class="p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-filter text-gray-600"></i>
+                </button>
+            </div>
+        </header>
+        
+        <section class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-l-4 border-red-600">
+                <p class="text-sm text-gray-500">NEW FOR ASSIGNMENT</p>
+                <div class="text-4xl font-black text-red-600">12</div>
+                <div class="text-xs text-gray-500 mt-2">+2 since yesterday</div>
+            </div>
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-l-4 border-gray-600">
+                <p class="text-sm text-gray-500">TOTAL ACTIVE</p>
+                <div class="text-4xl font-black text-gray-800">75</div>
+                <div class="text-xs text-gray-500 mt-2">-5 since last week</div>
+            </div>
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-l-4 border-blue-600">
+                <p class="text-sm text-gray-500">SLA COMPLIANCE</p>
+                <div class="text-4xl font-black text-blue-600">92%</div>
+                <div class="text-xs text-gray-500 mt-2">+3% improvement</div>
+            </div>
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-l-4 border-orange-600">
+                <p class="text-sm text-gray-500">STAFF CHAT ALERT</p>
+                <div class="text-4xl font-black text-orange-600">3 UNREAD</div>
+                <div class="text-xs text-gray-500 mt-2">Click to view</div>
+            </div>
+        </section>
+
+        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+            <div class="flex items-center bg-white rounded-lg p-0 shadow-md border-2 border-red-600">
+                <div id="newTab" class="tab-admin rounded-l-lg active">New (Triage)</div> 
+                <div id="assignedTab" class="tab-admin">Assigned</div>
+                <div id="inProgressTab" class="tab-admin">In-Progress</div>
+                <div id="onHoldTab" class="tab-admin">On Hold</div>
+                <div id="closedTab" class="tab-admin rounded-r-lg">Resolved (Audit)</div>
+            </div>
+            
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+                <span>View:</span>
+                <button id="listViewBtn" class="p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors active">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button id="gridViewBtn" class="p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-th-large"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex gap-6">
+            <div class="flex-grow h-[60vh] scrollable-list overflow-y-auto pr-2 space-y-4" id="issuesContainer">
+                <!-- Issues will be loaded here -->
+            </div>
+            
+            <div class="hidden md:block w-80 bg-white rounded-xl shadow-md p-4 h-fit sticky top-8">
+                <h3 class="font-bold text-lg mb-4 text-gray-800">Performance Metrics</h3>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Issue Resolution Rate</span>
+                        <span class="text-sm font-medium text-gray-700">78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-green-500" style="width: 78%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Average Resolution Time</span>
+                        <span class="text-sm font-medium text-gray-700">2.3 days</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: 65%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">Staff Response Rate</span>
+                        <span class="text-sm font-medium text-gray-700">94%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-purple-500" style="width: 94%"></div>
+                    </div>
+                </div>
+                
+                <h4 class="font-bold text-md mb-2 text-gray-800">Top Performing Teams</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>Road Crew Team</span>
+                        <span class="font-semibold text-green-600">98%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Cleanup Crew</span>
+                        <span class="font-semibold text-green-600">95%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Electrician Team</span>
+                        <span class="font-semibold text-yellow-600">87%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button id="floatingAdminActionBtn" class="fixed bottom-8 right-8 bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-50">
+        <i class="fas fa-hammer text-xl"></i>
+    </button>
+    
+    <!-- Modal for Issue Details -->
+    <div id="issueModal" class="modal-overlay">
+        <div class="modal-content w-11/12 md:w-3/4 lg:w-2/3 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Issue Details</h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="modalContent" class="space-y-4">
+                <!-- Modal content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // --- ADMIN DASHBOARD JAVASCRIPT ---
+        
+        const sampleIssues = {
+            'New (Triage)': [
+                { 
+                    id: 8, 
+                    title: "Noise from Construction Site", 
+                    description: "Construction site operating outside permitted hours. Requires Admin Assignment.", 
+                    date: "2025-10-01", 
+                    postedBy: "Anon", 
+                    location: "West Side", 
+                    assignedTo: "Unassigned", 
+                    priority: "Medium", 
+                    votes: 40, 
+                    statusColor: 'border-red-500', 
+                    unreadChat: true,
+                    attachments: 2,
+                    comments: 5
+                },
+                { 
+                    id: 9, 
+                    title: "Fallen Tree Blocking Road", 
+                    description: "Large tree fell during last night's storm, completely blocking Oak Street between 5th and 6th Ave.", 
+                    date: "2025-10-02", 
+                    postedBy: "Robert Wilson", 
+                    location: "Oak Street", 
+                    assignedTo: "Unassigned", 
+                    priority: "High", 
+                    votes: 23, 
+                    statusColor: 'border-red-500', 
+                    unreadChat: false,
+                    attachments: 3,
+                    comments: 2
+                }
+            ],
+            'Assigned': [
+                { 
+                    id: 1, 
+                    title: "Large Pothole on Main Street", 
+                    description: "A large and dangerous pothole has formed near the intersection of Main St and 1st Ave. Admin can re-assign if necessary.", 
+                    date: "2025-09-28", 
+                    postedBy: "Jane Doe", 
+                    location: "Downtown", 
+                    assignedTo: "Tech A", 
+                    priority: "High", 
+                    votes: 128, 
+                    statusColor: 'border-yellow-500', 
+                    unreadChat: false,
+                    attachments: 1,
+                    comments: 12
+                },
+                { 
+                    id: 2, 
+                    title: "Broken Streetlight at City Park", 
+                    description: "The streetlight on the corner of the park entrance has been out for over a week.", 
+                    date: "2025-08-27", 
+                    postedBy: "John Smith", 
+                    location: "City Park", 
+                    assignedTo: "Electrician Team", 
+                    priority: "Medium", 
+                    votes: 97, 
+                    statusColor: 'border-yellow-500', 
+                    unreadChat: true,
+                    attachments: 0,
+                    comments: 8
+                }
+            ],
+            'In-Progress': [
+                { 
+                    id: 4, 
+                    title: "Graffiti on Library Wall", 
+                    description: "A large amount of graffiti was painted on the back wall of the public library over the weekend.", 
+                    date: "2025-09-25", 
+                    postedBy: "Michael Brown", 
+                    location: "Public Library", 
+                    assignedTo: "Cleanup Crew", 
+                    priority: "Medium", 
+                    votes: 52, 
+                    statusColor: 'border-blue-500', 
+                    unreadChat: false,
+                    attachments: 4,
+                    comments: 6
+                }
+            ],
+            'On Hold': [
+                { 
+                    id: 5, 
+                    title: "Damaged Playground Equipment", 
+                    description: "The swing set at the community playground has broken chains and needs immediate repair.", 
+                    date: "2025-09-24", 
+                    postedBy: "Sarah Johnson", 
+                    location: "Community Park", 
+                    assignedTo: "Park Maintenance", 
+                    priority: "High", 
+                    votes: 43, 
+                    statusColor: 'border-orange-500', 
+                    unreadChat: false,
+                    attachments: 2,
+                    comments: 9
+                }
+            ],
+            'Resolved (Audit)': [
+                { 
+                    id: 7, 
+                    title: "Water Leak on Maple Street", 
+                    description: "Constant water leakage from a broken pipe is causing pavement damage and water wastage.", 
+                    date: "2025-09-18", 
+                    postedBy: "Lisa Garcia", 
+                    location: "Maple Street", 
+                    assignedTo: "Plumbing Team", 
+                    priority: "Low", 
+                    votes: 67, 
+                    statusColor: 'border-green-500', 
+                    unreadChat: false,
+                    attachments: 3,
+                    comments: 15
+                }
+            ]
+        };
+        
+        const ALL_STAFF = ['Tech A', 'Road Crew Team', 'Cleanup Crew', 'Electrician Team', 'Unassigned'];
+
+        // DOM Elements
+        const tabs = [
+            document.getElementById('newTab'),
+            document.getElementById('assignedTab'),
+            document.getElementById('inProgressTab'),
+            document.getElementById('onHoldTab'),
+            document.getElementById('closedTab')
+        ];
+        const issuesContainer = document.getElementById('issuesContainer');
+        const issueModal = document.getElementById('issueModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModal = document.getElementById('closeModal');
+        const floatingAdminActionBtn = document.getElementById('floatingAdminActionBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const notificationBtn = document.getElementById('notificationBtn');
+        
+        let currentActiveTab = 'New (Triage)'; 
+        let currentView = 'list'; // 'list' or 'grid'
+
+        // Utility Functions
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'High': return 'text-red-500 bg-red-100';
+                case 'Medium': return 'text-yellow-600 bg-yellow-100';
+                case 'Low': return 'text-green-600 bg-green-100';
+                default: return 'text-gray-500 bg-gray-100';
+            }
+        }
+        
+        function getPriorityBorderClass(priority) {
+            switch (priority) {
+                case 'High': return 'issue-priority-high';
+                case 'Medium': return 'issue-priority-medium';
+                case 'Low': return 'issue-priority-low';
+                default: return '';
+            }
+        }
+        
+        // --- ENHANCED ADMIN ACTIONS ---
+        function handleAdminAssignment(issueId, newAssignee) {
+            alert(`ACTION: Admin assigned Issue #${issueId} to ${newAssignee}. (Updates DB via API)`);
+            // In a real app, this would trigger an API PUT request and UI refresh.
+        }
+
+        function handleAdminQuickAction(issueId, action) {
+             alert(`ACTION: Admin performed quick action '${action}' on Issue #${issueId}. (Updates DB via API)`);
+        }
+        
+        function openIssueDetail(issueId, status) {
+            const issues = sampleIssues[status] || [];
+            const issue = issues.find(item => item.id === issueId);
+            
+            if (!issue) return;
+            
+            const priorityColor = getPriorityColor(issue.priority);
+            
+            modalContent.innerHTML = `
+                <div class="border-b pb-4 mb-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold text-gray-800">${issue.title}</h3>
+                        <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">${issue.priority}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+                        <div><i class="fas fa-user mr-1"></i> ${issue.postedBy}</div>
+                        <div><i class="fas fa-map-marker-alt mr-1"></i> ${issue.location}</div>
+                        <div><i class="fas fa-calendar mr-1"></i> ${issue.date}</div>
+                        <div><i class="fas fa-thumbs-up mr-1"></i> ${issue.votes} votes</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-2">Description</h4>
+                    <p class="text-gray-600">${issue.description}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Assignment</h4>
+                        <select class="w-full p-2 border rounded-md text-sm bg-gray-50">
+                            ${ALL_STAFF.map(staff => 
+                                `<option value="${staff}" ${issue.assignedTo === staff ? 'selected' : ''}>${staff}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Status</h4>
+                        <select class="w-full p-2 border rounded-md text-sm bg-gray-50">
+                            <option ${status === 'New (Triage)' ? 'selected' : ''}>New (Triage)</option>
+                            <option ${status === 'Assigned' ? 'selected' : ''}>Assigned</option>
+                            <option ${status === 'In-Progress' ? 'selected' : ''}>In-Progress</option>
+                            <option ${status === 'On Hold' ? 'selected' : ''}>On Hold</option>
+                            <option ${status === 'Resolved (Audit)' ? 'selected' : ''}>Resolved (Audit)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button class="px-3 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-comment mr-1"></i> View Comments (${issue.comments})
+                    </button>
+                    <button class="px-3 py-2 bg-gray-500 text-white rounded-md text-sm hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-paperclip mr-1"></i> Attachments (${issue.attachments})
+                    </button>
+                    <button class="px-3 py-2 bg-green-500 text-white rounded-md text-sm hover:bg-green-600 transition-colors">
+                        <i class="fas fa-check mr-1"></i> Mark Resolved
+                    </button>
+                    <button class="px-3 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors">
+                        <i class="fas fa-times mr-1"></i> Close Issue
+                    </button>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <h4 class="font-semibold text-gray-800 mb-2">Internal Notes</h4>
+                    <textarea class="w-full p-2 border rounded-md text-sm" rows="3" placeholder="Add internal notes here..."></textarea>
+                    <button class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors">Save Note</button>
+                </div>
+            `;
+            
+            issueModal.style.display = 'flex';
+        }
+        // --- END ENHANCED ADMIN ACTIONS ---
+
+        function moveHighlight(tab) {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            currentActiveTab = tab.textContent.trim();
+            loadIssues(currentActiveTab); 
+        }
+
+        function displayIssues(issues) {
+            issuesContainer.innerHTML = '';
+
+            if (issues.length === 0) {
+                issuesContainer.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                        <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Issues Found</h3>
+                        <p class="text-gray-500">There are no issues in this category at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            issues.forEach(issue => {
+                const priorityColor = getPriorityColor(issue.priority);
+                const priorityBorderClass = getPriorityBorderClass(issue.priority);
+                
+                const commIndicator = issue.unreadChat ? 
+                    `<span class="text-xs font-semibold text-red-600 flex items-center mt-1"><i class="fas fa-exclamation-circle mr-1"></i> NEW CHAT</span>` :
+                    `<span class="text-xs text-gray-400 flex items-center mt-1"><i class="fas fa-comment-dots mr-1"></i> Cleared</span>`;
+
+                const assigneeOptions = ALL_STAFF.map(staff => 
+                    `<option value="${staff}" ${issue.assignedTo === staff ? 'selected' : ''}>${staff}</option>`
+                ).join('');
+
+                const quickActionButtons = `
+                    <button onclick="handleAdminQuickAction(${issue.id}, 'On Hold')" class="text-xs text-gray-500 hover:text-orange-500 mr-3"><i class="fas fa-pause-circle mr-1"></i> Hold</button>
+                    <button onclick="handleAdminQuickAction(${issue.id}, 'Close')" class="text-xs text-gray-500 hover:text-red-600"><i class="fas fa-times-circle mr-1"></i> Close</button>
+                `;
+
+                const issueCard = `
+                    <div class="bg-white rounded-xl shadow-md p-4 issue-card-admin flex flex-col md:flex-row gap-4 cursor-pointer border-l-4 ${priorityBorderClass}">
+                        
+                        <div class="flex-grow" onclick="openIssueDetail(${issue.id}, '${currentActiveTab}')">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-lg text-gray-800">${issue.title}</h3>
+                                <div class="text-right">
+                                    <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">${issue.priority}</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2 line-clamp-2">${issue.description}</p>
+                            
+                            <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
+                                <div><i class="fas fa-user mr-1"></i> ${issue.postedBy}</div>
+                                <div><i class="fas fa-map-marker-alt mr-1"></i> ${issue.location}</div>
+                                <div><i class="fas fa-calendar mr-1"></i> ${issue.date}</div>
+                                <div><i class="fas fa-thumbs-up mr-1"></i> ${issue.votes} votes</div>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full md:w-64 flex-shrink-0 md:border-l md:pl-4 space-y-2">
+                             <div class="flex items-center text-xs text-gray-500 justify-between">
+                                <span>ID: ${issue.id}</span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-paperclip mr-1"></i> ${issue.attachments || 0}
+                                    <i class="fas fa-comment ml-2 mr-1"></i> ${issue.comments || 0}
+                                </span>
+                             </div>
+                             
+                             <div class="mb-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Assign/Reassign:</label>
+                                <select onchange="handleAdminAssignment(${issue.id}, this.value)" class="w-full p-1 border rounded-md text-sm bg-gray-50">
+                                    ${assigneeOptions}
+                                </select>
+                            </div>
+
+                             <div class="flex justify-between items-center border-t pt-2">
+                                ${quickActionButtons}
+                                ${commIndicator}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                issuesContainer.innerHTML += issueCard;
+            });
+        }
+
+        function loadIssues(status) {
+            const issues = sampleIssues[status] || [];
+            displayIssues(issues);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            moveHighlight(document.getElementById('newTab'));
+            
+            // Modal close event
+            closeModal.addEventListener('click', () => {
+                issueModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            issueModal.addEventListener('click', (e) => {
+                if (e.target === issueModal) {
+                    issueModal.style.display = 'none';
+                }
+            });
+            
+            // Floating action button
+            floatingAdminActionBtn.addEventListener('click', () => {
+                alert('Admin Action Panel - Would open a modal with bulk actions');
+            });
+            
+            // View toggle buttons
+            listViewBtn.addEventListener('click', () => {
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                currentView = 'list';
+                loadIssues(currentActiveTab);
+            });
+            
+            gridViewBtn.addEventListener('click', () => {
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                currentView = 'grid';
+                // In a real implementation, we would change the display style
+                alert('Grid view would be implemented here');
+            });
+            
+            // Notification button
+            notificationBtn.addEventListener('click', () => {
+                alert('Notifications panel would open here');
+            });
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                moveHighlight(tab);
+            });
+        });
+    </script>
+</body>
+</html>

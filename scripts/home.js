@@ -820,7 +820,9 @@ function updateAuthUI() {
     if (currentUser && welcomeElement) {
         welcomeElement.textContent = `Welcome, ${currentUser.name}!`;
     }
-    
+    else if(welcomeElement){
+        welcomeElement.textContent='Welcome, Guest!';
+    }
     if (logoutBtn) {
         if (currentUser) {
             logoutBtn.style.display = 'block';
@@ -859,7 +861,7 @@ async function logout() {
         accessToken = null;
         currentUser = null;
         updateAuthUI();
-        window.location.reload();
+        window.location.href='index.html';
     }
 }
 

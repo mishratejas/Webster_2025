@@ -524,3 +524,18 @@ adminSubmitBtn.addEventListener("click", (e) => {
         true
     );
 });
+
+function checkLoginAndRedirect() {
+    const accessToken = localStorage.getItem('accessToken');
+    const userData = localStorage.getItem('user');
+    
+    // Check if both token and user data exist
+    if (accessToken && userData) {
+        console.log("User already logged in. Redirecting to home.html...");
+        window.location.href = 'home.html'; 
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    checkLoginAndRedirect(); 
+});

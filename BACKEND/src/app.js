@@ -7,11 +7,21 @@ import adminRoutes from "./routes/admin.routes.js";
 import user_issue from "./routes/user_issue.routes.js";
 
 const app=express();
-app.use(cors());
-// {
-//     origin:process.env.CORS_ORIGIN,
-//     credentials:true
-// }
+const allowedOrigins=[
+    'http://127.0.0.1:5500',
+    'http://localhost:5500'
+];
+app.use(cors({
+    origin:function(origin,callback){
+        if(!origin) return callback(null,true);
+        if(allowedOrigins.indexOf(origin)===-1){
+            const msg=`The CORS policy for this site does not allow access from the specified Origin.`;
+            return callback(new Error(msg),false);
+        }
+        return callback(null,true);
+    },
+    credentials:true
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +32,7 @@ app.use("/api/staff",staffRoutes);
 //app.use("/api/admin",adminRoutes);
 
 //(auth req)
-app.use("/api/user_issue", user_issue);
+app.use("/api/user_issues", user_issue);
 
 app.use(express.static("public"));
 

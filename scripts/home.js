@@ -649,7 +649,7 @@ function moveHighlight(tab) {
 async function loadComplaints(status = 'Open') {
     try {
         showLoading();
-        const response = await fetch(`${BASE_URL}/api/user_issue?status=${status}`);
+        const response = await fetch(`${BASE_URL}/api/user_issues?status=${status}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch complaints');
@@ -741,7 +741,7 @@ function displayComplaints(complaints, status) {
 // Handle voting
 async function handleVote(complaintId) {
     try {
-        const response = await fetch(`${BASE_URL}/api/user_issue/${complaintId}/vote`, {
+        const response = await fetch(`${BASE_URL}/api/user_issues/${complaintId}/vote`, {
             method: 'PUT'
         });
 
@@ -785,8 +785,9 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
     submitBtn.textContent = 'Submitting...';
 
     try {
-        const response = await authFetch(`${BASE_URL}/api/user_issue`, {
+        const response = await authFetch(`${BASE_URL}/api/user_issues`, {
             method: 'POST',
+            headers:{'Content-Type':'application/json'},
             body: JSON.stringify(complaintData)
         });
 

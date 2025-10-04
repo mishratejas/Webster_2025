@@ -242,7 +242,7 @@
 // function checkAuth() {
 //     const token = localStorage.getItem('token');
 //     const user = localStorage.getItem('user');
-    
+
 //     // For public page, auth is optional - only needed for submitting complaints
 //     if (user) {
 //         return JSON.parse(user);
@@ -264,7 +264,7 @@
 
 //     tabs.forEach(t => t.classList.remove('active'));
 //     tab.classList.add('active');
-    
+
 //     loadComplaints(tab.textContent.trim());
 // }
 
@@ -279,7 +279,7 @@
 //     try {
 //         showLoading();
 //         const response = await fetch(`${BASE_URL}/api/issues?status=${status}`); // No auth header needed
-        
+
 //         if (!response.ok) {
 //             throw new Error('Failed to fetch complaints');
 //         }
@@ -315,7 +315,7 @@
 //         const priorityColor = getPriorityColor(complaint.priority);
 //         const categoryIcon = getCategoryIcon(complaint.category);
 //         const voteCount = complaint.voteCount || 0;
-        
+
 //         const complaintCard = `
 //             <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4">
 //                 <!-- Voting & Priority -->
@@ -327,20 +327,20 @@
 //                         <span class="font-bold text-gray-800 text-sm">${voteCount}</span>
 //                         <span class="text-xs text-gray-500">Votes</span>
 //                     </button>
-                    
+
 //                     <div class="flex flex-col items-center">
 //                         <div class="w-3 h-3 rounded-full ${priorityColor} mb-1"></div>
 //                         <span class="text-xs text-gray-500">Priority</span>
 //                     </div>
 //                 </div>
-                
+
 //                 <!-- Category Icon -->
 //                 <div class="flex flex-col items-center justify-center">
 //                     <div class="text-2xl ${getCategoryColor(complaint.category)}">
 //                         ${categoryIcon}
 //                     </div>
 //                 </div>
-                
+
 //                 <!-- Main Content -->
 //                 <div class="flex-grow">
 //                     <div class="flex justify-between items-start mb-2">
@@ -349,9 +349,9 @@
 //                             ${mapStatusToFrontend(complaint.status)}
 //                         </span>
 //                     </div>
-                    
+
 //                     <p class="text-gray-600 text-sm mb-3">${complaint.description}</p>
-                    
+
 //                     <!-- Complaint Details -->
 //                     <div class="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-3">
 //                         <div class="flex items-center">
@@ -363,7 +363,7 @@
 //                             <span class="capitalize">${complaint.category}</span>
 //                         </div>
 //                     </div>
-                    
+
 //                     <!-- Footer -->
 //                     <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
 //                         <div class="flex items-center">
@@ -390,7 +390,7 @@
 //                     </div>
 //                     ` : ''}
 //                 </div>
-                
+
 //                 <!-- Image Preview -->
 //                 <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
 //                     ${complaint.images && complaint.images.length > 0 ? 
@@ -416,11 +416,11 @@
 //         }
 
 //         const result = await response.json();
-        
+
 //         // Reload current tab to reflect vote changes
 //         const activeTab = document.querySelector('.tab.active');
 //         loadComplaints(activeTab.textContent.trim());
-        
+
 //     } catch (error) {
 //         console.error('Error voting:', error);
 //         alert('Error voting on complaint. Please try again.');
@@ -458,7 +458,7 @@
 // // Handle complaint submission (requires auth)
 // document.getElementById('reportIssueForm').addEventListener('submit', async function(e) {
 //     e.preventDefault();
-    
+
 //     const user = checkAuth();
 //     if (!user) {
 //         alert('Please login to submit a complaint');
@@ -501,7 +501,7 @@
 //         reportModal.classList.add('hidden');
 //         this.reset();
 //         loadComplaints('Open'); // Reload to show new complaint
-        
+
 //     } catch (error) {
 //         console.error('Error submitting complaint:', error);
 //         alert(`Error: ${error.message}`);
@@ -555,7 +555,7 @@
 
 
 // DEFINE THE BASE URL FOR YOUR BACKEND HERE
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://127.0.0.1:3000";
 
 // Token management
 let accessToken = localStorage.getItem('accessToken');
@@ -576,7 +576,7 @@ async function refreshAccessToken() {
             method: 'POST',
             credentials: 'include' // Important for cookies
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             accessToken = data.accessToken;
@@ -595,53 +595,75 @@ async function refreshAccessToken() {
 
 // Authenticated fetch function
 async function authFetch(url, options = {}) {
-    // Add authorization header if we have a token
     const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
+        ...(options.headers || {})
     };
-    
+
+    // Only set JSON content-type if body is NOT FormData
+    if (options.body && !(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    let response = await fetch(url, {
-        ...options,
-        headers: headers,
-        credentials: 'include'
+    console.log('🌐 authFetch called:', {
+        url,
+        method: options.method,
+        hasBody: !!options.body,
+        isFormData: options.body instanceof FormData,
+        headers: headers
     });
 
-    // If token expired, try to refresh
-    if (response.status === 401) {
-        const refreshed = await refreshAccessToken();
-        if (refreshed && accessToken) {
-            // Retry the request with new token
-            headers['Authorization'] = `Bearer ${accessToken}`;
-            response = await fetch(url, {
-                ...options,
-                headers: headers,
-                credentials: 'include'
-            });
-        } else {
-            // Refresh failed, logout user
-            logout();
-            throw new Error('Session expired. Please login again.');
-        }
-    }
+    try {
+        let response = await fetch(url, {
+            ...options,
+            headers: headers,
+            credentials: 'include'
+        });
 
-    return response;
+        console.log('📡 Response received:', response.status, response.statusText);
+
+        // If token expired, try to refresh
+        if (response.status === 401) {
+            console.log('🔄 Token expired, refreshing...');
+            const refreshed = await refreshAccessToken();
+            if (refreshed && accessToken) {
+                headers['Authorization'] = `Bearer ${accessToken}`;
+                response = await fetch(url, {
+                    ...options,
+                    headers: headers,
+                    credentials: 'include'
+                });
+            } else {
+                logout();
+                throw new Error('Session expired. Please login again.');
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error('🚨 authFetch error:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        });
+        throw error;
+    }
 }
+
 
 // Move highlight and switch tabs
 function moveHighlight(tab) {
     if (!highlight) return;
-    
+
     highlight.style.width = `${tab.offsetWidth}px`;
     highlight.style.left = `${tab.offsetLeft}px`;
 
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    
+
     loadComplaints(tab.textContent.trim());
 }
 
@@ -650,19 +672,19 @@ async function loadComplaints(status = 'Open') {
     try {
         showLoading();
         const response = await fetch(`${BASE_URL}/api/user_issues?status=${status}`);
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch complaints');
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             displayComplaints(result.data, status);
         } else {
             throw new Error(result.message);
         }
-        
+
     } catch (error) {
         console.error('Error loading complaints:', error);
         displaySampleComplaints(status);
@@ -675,7 +697,7 @@ async function loadComplaints(status = 'Open') {
 function displayComplaints(complaints, status) {
     const container = document.getElementById('issuesContainer');
     if (!container) return;
-    
+
     container.innerHTML = '';
 
     if (!complaints || complaints.length === 0) {
@@ -693,7 +715,7 @@ function displayComplaints(complaints, status) {
         const statusColor = getStatusColor(complaint.status);
         const priorityColor = getPriorityColor(complaint.priority);
         const voteCount = complaint.voteCount || 0;
-        
+
         const complaintCard = `
             <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4">
                 <!-- Voting -->
@@ -727,10 +749,10 @@ function displayComplaints(complaints, status) {
                 
                 <!-- Image Preview -->
                 <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                    ${complaint.images && complaint.images.length > 0 ? 
-                        `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` : 
-                        `<i class="fas fa-camera text-gray-400 text-xl"></i>`
-                    }
+                    ${complaint.images && complaint.images.length > 0 ?
+                `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
+                `<i class="fas fa-camera text-gray-400 text-xl"></i>`
+            }
                 </div>
             </div>
         `;
@@ -746,7 +768,7 @@ async function handleVote(complaintId) {
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
             // Reload complaints to show updated vote count
             const activeTab = document.querySelector('.tab.active');
@@ -754,7 +776,7 @@ async function handleVote(complaintId) {
         } else {
             alert('Error: ' + result.message);
         }
-        
+
     } catch (error) {
         console.error('Error voting:', error);
         alert('Error voting on complaint');
@@ -762,20 +784,24 @@ async function handleVote(complaintId) {
 }
 
 // Handle complaint submission (WITH AUTH)
-document.getElementById('reportIssueForm').addEventListener('submit', async function(e) {
+// Handle complaint submission (WITH AUTH)
+document.getElementById('reportIssueForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     if (!currentUser) {
         alert('Please login to submit a complaint');
         return;
     }
 
     const formData = new FormData(this);
+
+    // Extract text fields
     const complaintData = {
         title: formData.get('title'),
         description: formData.get('description'),
         location: formData.get('location'),
-        category: formData.get('category')
+        category: formData.get('category'),
+        images: [] // will be filled after upload
     };
 
     // Show loading state
@@ -785,14 +811,64 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
     submitBtn.textContent = 'Submitting...';
 
     try {
+        // Step 1: Upload image if present
+        const file = formData.get('image');
+        console.log('🔍 File details:', {
+            name: file?.name,
+            size: file?.size,
+            type: file?.type
+        });
+
+        if (file && file.size > 0) {
+            console.log('📤 Starting upload to:', `${BASE_URL}/api/upload`);
+
+            const uploadForm = new FormData();
+            uploadForm.append('image', file);
+
+            console.log('📦 FormData created, calling authFetch...');
+
+            const uploadRes = await authFetch(`${BASE_URL}/api/upload`, {
+                method: 'POST',
+                body: uploadForm
+            });
+
+            console.log('✅ Upload response received:', uploadRes.status);
+
+            if (!uploadRes.ok) {
+                const errorText = await uploadRes.text();
+                console.error('❌ Upload failed:', errorText);
+                throw new Error(`Upload failed: ${uploadRes.status} - ${errorText}`);
+            }
+
+            const uploadResult = await uploadRes.json();
+            console.log('📝 Upload result:', uploadResult);
+
+            if (!uploadResult.success) {
+                throw new Error(uploadResult.message || 'Image upload failed');
+            }
+
+            complaintData.images = uploadResult.urls;
+        }
+
+        // Step 2: Send complaint as JSON
+        console.log('📨 Sending complaint data:', complaintData);
+
         const response = await authFetch(`${BASE_URL}/api/user_issues`, {
             method: 'POST',
-            headers:{'Content-Type':'application/json'},
             body: JSON.stringify(complaintData)
         });
 
+        console.log('✅ Complaint response received:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Complaint submission failed:', errorText);
+            throw new Error(`Request failed: ${response.status} - ${errorText}`);
+        }
+
         const result = await response.json();
-        
+        console.log('📝 Final result:', result);
+
         if (result.success) {
             alert('Complaint submitted successfully!');
             reportModal.classList.add('hidden');
@@ -801,9 +877,9 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
         } else {
             alert('Error: ' + result.message);
         }
-        
+
     } catch (error) {
-        console.error('Error submitting complaint:', error);
+        console.error('💥 Error submitting complaint:', error);
         alert('Error: ' + error.message);
     } finally {
         submitBtn.disabled = false;
@@ -811,17 +887,18 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
     }
 });
 
+
 // Update UI based on auth status
 function updateAuthUI() {
     const welcomeElement = document.getElementById('userWelcome');
     const logoutBtn = document.getElementById('logoutBtn');
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-    
+
     if (currentUser && welcomeElement) {
         welcomeElement.textContent = `Welcome, ${currentUser.name}!`;
     }
-    else if(welcomeElement){
-        welcomeElement.textContent='Welcome, Guest!';
+    else if (welcomeElement) {
+        welcomeElement.textContent = 'Welcome, Guest!';
     }
     if (logoutBtn) {
         if (currentUser) {
@@ -833,7 +910,7 @@ function updateAuthUI() {
             logoutBtn.onclick = () => window.location.href = 'index.html';
         }
     }
-    
+
     if (mobileLogoutBtn) {
         if (currentUser) {
             mobileLogoutBtn.style.display = 'block';
@@ -861,7 +938,7 @@ async function logout() {
         accessToken = null;
         currentUser = null;
         updateAuthUI();
-        window.location.href='index.html';
+        window.location.href = 'index.html';
     }
 }
 
@@ -879,7 +956,7 @@ function getStatusColor(status) {
 function getPriorityColor(priority) {
     const colors = {
         'high': 'bg-red-500',
-        'medium': 'bg-yellow-500', 
+        'medium': 'bg-yellow-500',
         'low': 'bg-green-500'
     };
     return colors[priority] || 'bg-gray-500';
@@ -1012,17 +1089,17 @@ function setupLogoutButtons() {
     if (logoutBtn && currentUser) {
         logoutBtn.onclick = logout;
     }
-    
+
     if (mobileLogoutBtn && currentUser) {
         mobileLogoutBtn.onclick = logout;
     }
 }
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     updateAuthUI();
     setupLogoutButtons();
-    
+
     // Load initial complaints if we have tabs
     if (tabs.length > 0) {
         moveHighlight(tabs[0]);

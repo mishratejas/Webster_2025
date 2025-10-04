@@ -42,7 +42,7 @@ export const handleAllIssueFetch = async (req, res) => {
 // POST create issue - PROTECTED (uses your JWT auth)
 export const handleIssueGeneration = async (req, res) => {
     try {
-        const { title, description, location, category } = req.body;
+        const { title, description, location, category, images } = req.body;
         const userId = req.user._id; // From your auth middleware
 
         // Validation
@@ -59,6 +59,7 @@ export const handleIssueGeneration = async (req, res) => {
             location: {
                 address: location
             },
+            images,
             category: mapCategoryToBackend(category),
             user: userId, // Link to logged-in user from your JWT
             status: 'pending',

@@ -228,10 +228,15 @@ async function handleFormSubmission(
             password: data.password,
         };
     }
-
+    if (!isSignUp && !isStaff && payload.adminId) {
+    // It's an admin login
+    localStorage.setItem("adminToken", result.token);
+    alert(message);
+    window.location.href = "admin.html";
+}
     const finalUrl = BASE_URL + endpoint;
 
-    console.log("🚀 SENDING REQUEST:");
+    console.log("SENDING REQUEST:");
     console.log("URL:", finalUrl);
     console.log("Method: POST");
     console.log("Payload:", payload);
@@ -247,7 +252,7 @@ async function handleFormSubmission(
             body: JSON.stringify(payload),
         });
 
-        console.log("📨 RESPONSE RECEIVED:");
+        console.log("RESPONSE RECEIVED:");
         console.log("Status:", response.status);
         console.log("Status Text:", response.statusText);
         console.log("OK:", response.ok);
@@ -259,7 +264,7 @@ async function handleFormSubmission(
 
         // Check if the server responded but with an error status
         if (!response.ok) {
-            console.log("❌ SERVER RETURNED ERROR STATUS");
+            console.log("SERVER RETURNED ERROR STATUS");
             
             // Try to parse as JSON, but if it fails, use the raw text
             let errorMessage = `Server returned status ${response.status}`;
@@ -279,12 +284,13 @@ async function handleFormSubmission(
         }
 
         // If we got here, response is OK (200-299)
-        console.log("✅ SERVER RETURNED SUCCESS STATUS");
+        console.log("SERVER RETURNED SUCCESS STATUS");
         
         let result;
         if (responseText) {
             try {
                 result = JSON.parse(responseText);
+                console.log("ADMIN LOGIN RESPONSE:", result);
                 console.log("Parsed JSON Result:", result);
             } catch (e) {
                 console.error("Failed to parse JSON:", e);
@@ -295,59 +301,109 @@ async function handleFormSubmission(
             result = { message: "Empty response from server" };
         }
 
-        // 🚨 UPDATED SUCCESS PATH - STORE TOKENS AND REDIRECT
-        console.log("🎉 SUCCESS - Processing result:", result);
+        // UPDATED SUCCESS PATH - STORE TOKENS AND REDIRECT
+        // UPDATED SUCCESS PATH - STORE TOKENS AND REDIRECT
+console.log("SUCCESS - Processing result:", result);
 
-        // Store token and user data for homepage
-        if (result.accessToken && result.user) {
-            console.log("📦 Storing token and user data");
-            localStorage.setItem('accessToken', result.accessToken);
-            localStorage.setItem('user', JSON.stringify(result.user));
-            
-            formElement.reset();
-            authModal.classList.add("hidden");
-            
-            // Redirect to homepage after successful login/signup
-            setTimeout(() => {
-                console.log("🔄 Redirecting to homepage...");
-                window.location.href = 'home.html';
-            }, 1000);
-            
-        } else if (isSignUp && result.message && result.message.toLowerCase().includes("success")) {
-            // For signup without auto-login, show success and switch to login
-            console.log("📝 Signup successful, switching to login");
-            formElement.reset();
-            authModal.classList.add("hidden");
-            setTimeout(() => {
-                alert('Registration successful! Please login with your credentials.');
-                openAuthModal("user", "signin");
-            }, 500);
-            
-        } else if (result.message) {
-            // Generic success case
-            console.log("✅ Operation completed successfully");
-            formElement.reset();
-            authModal.classList.add("hidden");
-            
-            if (result.message.toLowerCase().includes("login")) {
-                // If it's a login but no token, something went wrong
-                console.warn("Login successful but no token received");
-                alert("Login successful but technical issue occurred. Please try again.");
-            } else {
-                alert(result.message);
-            }
-            
-        } else {
-            // Fallback for other cases
-            console.warn("No specific success handler, using fallback");
-            formElement.reset();
-            authModal.classList.add("hidden");
-            window.location.reload();
+// Check if this is an ADMIN login
+if (endpoint === "/api/admin/login" && result.accessToken) {
+    console.log("ADMIN LOGIN DETECTED - Storing admin token");
+    localStorage.setItem("adminToken", result.accessToken);
+    if (result.admin) {
+        localStorage.setItem("adminData", JSON.stringify(result.admin));
+    }
+    formElement.reset();
+    authModal.classList.add("hidden");
+    
+    // Redirect to admin dashboard
+    setTimeout(() => {
+        console.log("Redirecting to admin dashboard...");
+        window.location.href = "admin.html";
+    }, 500);
+}
+// Check if this is a USER login
+else if (result.accessToken && result.user) {
+    console.log("USER LOGIN DETECTED - Storing user token and data");
+    localStorage.setItem('accessToken', result.accessToken);
+    localStorage.setItem('user', JSON.stringify(result.user));
+    
+    formElement.reset();
+    authModal.classList.add("hidden");
+    
+    // Redirect to user homepage
+    setTimeout(() => {
+        console.log("Redirecting to user homepage...");
+        window.location.href = 'home.html';
+    }, 500);
+}
+// Check if this is a STAFF login  
+// Check if this is a STAFF login  
+else if (endpoint === "/api/staff/login") {
+    console.log("STAFF LOGIN DETECTED - Checking conditions:");
+    console.log("Has accessToken:", !!result.accessToken);
+    console.log("Has token:", !!result.token);
+    console.log("Success status:", result.success);
+    console.log("Full result:", result);
+    
+    const staffToken = result.accessToken || result.token;
+    
+    if (staffToken) {
+        console.log("STAFF LOGIN SUCCESS - Storing staff token");
+        localStorage.setItem("staffToken", staffToken);
+        if (result.staff) {
+            localStorage.setItem("staffData", JSON.stringify(result.staff));
         }
+        formElement.reset();
+        authModal.classList.add("hidden");
+        
+        // Redirect to staff dashboard
+        setTimeout(() => {
+            console.log("Redirecting to staff dashboard...");
+            window.location.href = "staff.html";
+        }, 500);
+    } else {
+        console.warn("Staff login successful but no token found in response");
+        alert("Login successful but technical issue occurred. Please contact support.");
+    }
+}
+// Handle successful signups
+else if (isSignUp && result.message && result.message.toLowerCase().includes("success")) {
+    console.log("SIGNUP SUCCESSFUL");
+    formElement.reset();
+    authModal.classList.add("hidden");
+    setTimeout(() => {
+        alert('Registration successful! Please login with your credentials.');
+        // Reopen modal for login
+        if (isStaff) {
+            openAuthModal("staff", "signin");
+        } else {
+            openAuthModal("user", "signin");
+        }
+    }, 500);
+}
+// Generic success case
+else if (result.message) {
+    console.log("OPERATION COMPLETED SUCCESSFULLY");
+    formElement.reset();
+    authModal.classList.add("hidden");
+    alert(result.message);
+    
+    // For logins without proper token response
+    if (result.message.toLowerCase().includes("login")) {
+        console.warn("Login successful but no token received - this might be a backend issue");
+    }
+}
+// Fallback
+else {
+    console.warn("No specific success handler matched");
+    formElement.reset();
+    authModal.classList.add("hidden");
+    alert("Operation completed successfully");
+}
 
     } catch (error) {
         // NETWORK OR GENERAL JS ERROR PATH
-        console.error("💥 SUBMISSION FAILED:");
+        console.error("SUBMISSION FAILED:");
         console.error("Error name:", error.name);
         console.error("Error message:", error.message);
         console.error("Full error:", error);
@@ -368,7 +424,7 @@ async function handleFormSubmission(
     } finally {
         submitBtnElement.disabled = false;
         submitBtnElement.textContent = originalText;
-        console.log("🏁 Form submission process completed");
+        console.log("Form submission process completed");
     }
 }
 
@@ -521,7 +577,7 @@ adminSubmitBtn.addEventListener("click", (e) => {
         endpoint,
         message,
         false,
-        true
+        false
     );
 });
 
@@ -539,3 +595,4 @@ function checkLoginAndRedirect() {
 document.addEventListener('DOMContentLoaded', function() {
     checkLoginAndRedirect(); 
 });
+

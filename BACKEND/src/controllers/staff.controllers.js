@@ -57,11 +57,18 @@ export const staffLogin=async(req,res)=>{
         res.status(200).json({ 
             message:"Staff Login Successful", 
             accessToken,
-            staff:{id:staff._id,name:staff.name,role:staff.role }
+            staff:{id:staff._id,
+                name:staff.name,
+                role:staff.role,
+                staffId: staff.staffId,
+                email: staff.email
+            }
         });
     }
     catch(err){
         console.error("Staff Login Error:",err);
-        res.status(500).json({ message:"Server Error during staff login." });
+        res.status(500).json({ 
+            success:false,
+            message:"Server Error during staff login." });
     }
 };

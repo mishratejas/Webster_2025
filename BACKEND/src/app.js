@@ -6,6 +6,8 @@ import staffRoutes from "./routes/staf.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import user_issue from "./routes/user_issue.routes.js";
 import uploadRouter from "./routes/upload.routes.js"
+import adminIssueRoutes from "./routes/admin_issue.routes.js";
+import staffIssueRoutes from "./routes/staff_issue.routes.js";
 
 const app = express();
 const allowedOrigins = [
@@ -31,7 +33,7 @@ app.use(cors({
 app.options(/.*/, cors());
 
 app.use((req, res, next) => {
-    console.log(`📥 ${req.method} ${req.url}`);
+    console.log(`${req.method} ${req.url}`);
     next();
 });
 
@@ -39,12 +41,25 @@ app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Add this before your routes in app.js
+app.get("/api/debug/routes", (req, res) => {
+    res.json({
+        message: "Server is running",
+        routes: [
+            "/api/admin/issues",
+            "/api/staff/issues", 
+            "/api/admin/issues/staff",
+            "/api/staff/issues/stats"
+        ]
+    });
+});
 //signin/signup (no auth)
 app.use("/api/upload", uploadRouter);
 app.use("/api/users", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/admin", adminRoutes);
-
+app.use("/api/admin/issues", adminIssueRoutes);
+app.use('/api/staff/issues',staffIssueRoutes);
 //(auth req)
 app.use("/api/user_issues", user_issue);
 

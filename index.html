@@ -585,7 +585,7 @@
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            What Our Users Say
+            What Our Community Say
           </h2>
           <p class="text-gray-600 max-w-2xl mx-auto">
             Hear from communities that have transformed their issue resolution
@@ -786,7 +786,15 @@
         </div>
       </div>
     </footer>
-
+    <!-- Add this script to your index.html for debugging -->
+<script>
+console.log("TOKEN DEBUG INFO:");
+console.log("adminToken:", localStorage.getItem("adminToken"));
+console.log("accessToken:", localStorage.getItem("accessToken")); 
+console.log("staffToken:", localStorage.getItem("staffToken"));
+console.log("user:", localStorage.getItem("user"));
+console.log("adminData:", localStorage.getItem("adminData"));
+</script>
   <script src="./scripts/index.js"></script>  
   </body>
 </html>

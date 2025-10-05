@@ -1,13 +1,14 @@
 import Admin from "../models/Admin.models.js"; 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename=fileURLToPath(import.meta.url);
+const __dirname=path.dirname(__filename);
 
 export const adminLogin=async(req,res) =>{
     try{
-        // Frontend sends: adminId, password. We assume 'adminId' maps to 'email' for this model.
-        // NOTE: If you want a specific 'adminId' field, we will add it to the Admin model.
-        // For now, we will use 'email' to match the schema's unique field.
         const{ adminId,password } = req.body;
         
         // Find admin by email or phone (using adminId for the combined identifier, like the User login)
@@ -31,19 +32,16 @@ export const adminLogin=async(req,res) =>{
             sameSite:"strict",
             maxAge: 7*24*60*60*1000, 
         });
-        res.status(200).json({ 
-            message:"Admin Login Successful", 
-            accessToken,
-            admin:{ 
-                id:admin._id, 
-                name:admin.name, 
-                email:admin.email,
-                role:admin.role,
-                permissions:admin.permissions 
-            }
-        });
-    } catch(err){
-        console.error("Admin Login Error:",err);
-        res.status(500).json({ message:"Server Error during admin login." });
+        const adminPagePath=path.join(__dirname,"..","..","..","admin.html");
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            accessToken
+});
+
+    }
+    catch(err){
+        console.error("Admin Login Error",err);
+        res.status(50).send("Server Error during admin login")
     }
 };

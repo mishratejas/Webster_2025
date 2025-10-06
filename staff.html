@@ -111,6 +111,32 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        /* Dynamic border colors */
+        .border-l-red-500 { border-left-color: #ef4444; }
+        .border-l-yellow-500 { border-left-color: #f59e0b; }
+        .border-l-green-500 { border-left-color: #10b981; }
+        .border-l-gray-500 { border-left-color: #6b7280; }
+        
+        /* Chat message styles */
+        .chat-message-admin { 
+            background: #1a1f71; 
+            color: white; 
+            margin-left: auto; 
+            max-width: 80%; 
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .chat-message-staff { 
+            background: #00897b; 
+            color: white; 
+            margin-right: auto; 
+            max-width: 80%; 
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -133,20 +159,20 @@
                 <div class="relative">
                     <button id="notificationBtn" class="text-gray-600 hover:text-blue-600 transition-colors relative">
                         <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </button>
                 </div>
-                <span class="text-gray-600 font-semibold">Welcome, Tech A!</span>
+                <span id="staffWelcome" class="text-gray-600 font-semibold">Welcome, Staff Member!</span>
                 <div class="relative group">
                     <button class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
-                        <div class="w-8 h-8 rounded-full staff-btn-gradient flex items-center justify-center text-white font-bold">A</div>
+                        <div id="staffInitial" class="w-8 h-8 rounded-full staff-btn-gradient flex items-center justify-center text-white font-bold">S</div>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i>Profile</a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i>Settings</a>
                         <div class="border-t my-1"></div>
-                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 logout-btn"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
                     </div>
                 </div>
             </div>
@@ -165,8 +191,8 @@
                 <a href="#" class="text-gray-600 font-medium">SOPs</a>
                 <a href="#" class="text-gray-600 font-medium">Reports</a>
                 <div class="pt-4 border-t flex items-center justify-between">
-                    <span class="text-gray-600 font-medium">Tech A</span>
-                    <button class="text-red-600 font-medium">
+                    <span id="mobileStaffName" class="text-gray-600 font-medium">Staff Member</span>
+                    <button class="text-red-600 font-medium logout-btn">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
@@ -190,36 +216,36 @@
         </div>
         
         <section class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-gray-600 hover:shadow-lg transition-shadow">
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-b-4 border-gray-600 hover:shadow-lg transition-shadow">
                 <p class="text-sm text-gray-500">MY OPEN TASKS</p>
-                <div class="text-4xl font-black text-gray-800">18</div>
+                <div class="text-4xl font-black text-gray-800">0</div>
                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                     <span class="w-2 h-2 bg-gray-600 rounded-full mr-2"></span>
-                    <span>2 new since yesterday</span>
+                    <span>Loading...</span>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-red-600 hover:shadow-lg transition-shadow">
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-b-4 border-red-600 hover:shadow-lg transition-shadow">
                 <p class="text-sm text-gray-500">SLA RISK</p>
-                <div class="text-4xl font-black text-red-600">1 URGENT</div>
+                <div class="text-4xl font-black text-red-600">0 URGENT</div>
                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                     <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
-                    <span>Due in 2 hours</span>
+                    <span>Loading...</span>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-blue-600 hover:shadow-lg transition-shadow">
-                <p class="text-sm text-gray-500">AVG TIME TO RESOLVE</p>
-                <div class="text-4xl font-black text-blue-600">1.8 DAYS</div>
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-b-4 border-blue-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">AVG RESOLUTION TIME</p>
+                <div class="text-4xl font-black text-blue-600">N/A</div>
                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                     <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
-                    <span>Below target of 2.1 days</span>
+                    <span>Loading...</span>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-md border-b-4 border-orange-600 hover:shadow-lg transition-shadow">
-                <p class="text-sm text-gray-500">NEW MESSAGES</p>
-                <div class="text-4xl font-black text-orange-600">2 CHATS</div>
+            <div class="stat-card bg-white p-5 rounded-xl shadow-md border-b-4 border-orange-600 hover:shadow-lg transition-shadow">
+                <p class="text-sm text-gray-500">UNREAD MESSAGES</p>
+                <div class="text-4xl font-black text-orange-600">0 CHATS</div>
                 <div class="mt-2 text-xs text-gray-500 flex items-center">
                     <span class="w-2 h-2 bg-orange-600 rounded-full mr-2"></span>
-                    <span>1 requires attention</span>
+                    <span>Loading...</span>
                 </div>
             </div>
         </section>
@@ -260,28 +286,28 @@
                     <div>
                         <div class="flex justify-between text-sm mb-1">
                             <span>High Priority</span>
-                            <span>5</span>
+                            <span>0</span>
                         </div>
                         <div class="progress-bar bg-gray-200">
-                            <div class="bg-red-500 h-full" style="width: 28%"></div>
+                            <div class="bg-red-500 h-full" style="width: 0%"></div>
                         </div>
                     </div>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
                             <span>Medium Priority</span>
-                            <span>8</span>
+                            <span>0</span>
                         </div>
                         <div class="progress-bar bg-gray-200">
-                            <div class="bg-yellow-500 h-full" style="width: 44%"></div>
+                            <div class="bg-yellow-500 h-full" style="width: 0%"></div>
                         </div>
                     </div>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
                             <span>Low Priority</span>
-                            <span>5</span>
+                            <span>0</span>
                         </div>
                         <div class="progress-bar bg-gray-200">
-                            <div class="bg-green-500 h-full" style="width: 28%"></div>
+                            <div class="bg-green-500 h-full" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
@@ -310,6 +336,11 @@
                 </div>
                 
                 <div class="h-[60vh] scrollable-list overflow-y-auto pr-2 space-y-4" id="issuesContainer">
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-500 mb-2">Loading Tasks...</h3>
+                        <p class="text-gray-400">Please wait while we load your assigned tasks.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -328,27 +359,10 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="max-h-96 overflow-y-auto">
-            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
-                <div class="flex justify-between">
-                    <span class="font-semibold text-sm">New Task Assigned</span>
-                    <span class="text-xs text-gray-500">10 min ago</span>
-                </div>
-                <p class="text-sm text-gray-600 mt-1">You've been assigned "Broken Traffic Light"</p>
-            </div>
-            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
-                <div class="flex justify-between">
-                    <span class="font-semibold text-sm">SLA Warning</span>
-                    <span class="text-xs text-gray-500">1 hour ago</span>
-                </div>
-                <p class="text-sm text-gray-600 mt-1">"Large Pothole" is due in 2 hours</p>
-            </div>
-            <div class="p-4 border-b hover:bg-gray-50 cursor-pointer">
-                <div class="flex justify-between">
-                    <span class="font-semibold text-sm">New Message</span>
-                    <span class="text-xs text-gray-500">2 hours ago</span>
-                </div>
-                <p class="text-sm text-gray-600 mt-1">You have a new message from Jane Doe</p>
+        <div id="notificationList" class="max-h-96 overflow-y-auto">
+            <div class="p-4 text-center text-gray-500">
+                <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                <p>No new notifications</p>
             </div>
         </div>
         <div class="p-4 text-center">
@@ -356,411 +370,21 @@
         </div>
     </div>
     
-    <!-- Create Task Modal -->
-    <div id="createTaskModal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
-            <div class="p-6 border-b">
-                <h3 class="text-xl font-bold text-gray-800">Create New Task</h3>
+    <!-- Task Detail Modal -->
+    <div id="taskDetailModal" class="fixed inset-0 flex items-center justify-center modal-overlay hidden z-50 p-4">
+        <div class="bg-white rounded-xl w-full max-w-4xl h-3/4 flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-bold">Task Details</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
-            <div class="p-6">
-                <form id="taskForm">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskTitle">Task Title</label>
-                        <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter task title">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskDescription">Description</label>
-                        <textarea id="taskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter task description"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskPriority">Priority</label>
-                        <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-medium mb-2" for="taskLocation">Location</label>
-                        <input type="text" id="taskLocation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter location">
-                    </div>
-                </form>
-            </div>
-            <div class="p-6 border-t flex justify-end space-x-4">
-                <button id="cancelTask" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                <button id="submitTask" class="px-4 py-2 staff-btn-gradient text-white rounded-lg hover:shadow-lg">Create Task</button>
+            <div id="modalContent" class="flex-1 overflow-hidden">
+                <!-- Dynamic content will be loaded here -->
             </div>
         </div>
     </div>
-    
-    <script>
-        // --- STAFF DASHBOARD JAVASCRIPT ---
-        
-        const sampleIssues = {
-            'Assigned': [
-                { 
-                    id: 1, 
-                    title: "Large Pothole on Main Street", 
-                    description: "A large and dangerous pothole has formed near the intersection of Main St and 1st Ave. Requires 2 tons of asphalt.", 
-                    date: "2025-09-28", 
-                    postedBy: "Jane Doe", 
-                    location: "Downtown", 
-                    assignedTo: "Tech A", 
-                    priority: "High", 
-                    votes: 128, 
-                    statusColor: 'border-red-500', 
-                    unreadChat: true,
-                    dueDate: "2025-10-05",
-                    new: true
-                },
-                { 
-                    id: 2, 
-                    title: "Malfunctioning Traffic Light", 
-                    description: "The traffic light at Oak and 5th is stuck on red in all directions, causing traffic congestion.", 
-                    date: "2025-09-29", 
-                    postedBy: "Robert Smith", 
-                    location: "Oak Street", 
-                    assignedTo: "Tech A", 
-                    priority: "High", 
-                    votes: 95, 
-                    statusColor: 'border-red-500', 
-                    unreadChat: false,
-                    dueDate: "2025-10-02",
-                    new: true
-                },
-                { 
-                    id: 3, 
-                    title: "Street Sign Replacement", 
-                    description: "Stop sign at the corner of Maple and Elm has been damaged and needs replacement.", 
-                    date: "2025-09-27", 
-                    postedBy: "City Planning Dept", 
-                    location: "Maple Street", 
-                    assignedTo: "Tech A", 
-                    priority: "Medium", 
-                    votes: 42, 
-                    statusColor: 'border-yellow-500', 
-                    unreadChat: true,
-                    dueDate: "2025-10-10",
-                    new: false
-                }
-            ],
-            'In-Progress': [
-                { 
-                    id: 4, 
-                    title: "Graffiti on Library Wall", 
-                    description: "A large amount of graffiti was painted on the back wall of the public library over the weekend.", 
-                    date: "2025-09-25", 
-                    postedBy: "Michael Brown", 
-                    location: "Public Library", 
-                    assignedTo: "Cleanup Crew", 
-                    priority: "Medium", 
-                    votes: 52, 
-                    statusColor: 'border-blue-500', 
-                    unreadChat: false,
-                    dueDate: "2025-10-01",
-                    new: false
-                },
-                { 
-                    id: 6, 
-                    title: "Park Bench Repair", 
-                    description: "Two park benches in Central Park have broken slats and need repair or replacement.", 
-                    date: "2025-09-26", 
-                    postedBy: "Parks Department", 
-                    location: "Central Park", 
-                    assignedTo: "Tech A", 
-                    priority: "Low", 
-                    votes: 31, 
-                    statusColor: 'border-green-500', 
-                    unreadChat: false,
-                    dueDate: "2025-10-15",
-                    new: false
-                }
-            ],
-            'On Hold': [
-                { 
-                    id: 5, 
-                    title: "Damaged Playground Equipment", 
-                    description: "The swing set at the community playground has broken chains and needs immediate repair.", 
-                    date: "2025-09-24", 
-                    postedBy: "Sarah Johnson", 
-                    location: "Community Park", 
-                    assignedTo: "Park Maintenance", 
-                    priority: "High", 
-                    votes: 43, 
-                    statusColor: 'border-orange-500', 
-                    unreadChat: false,
-                    dueDate: "2025-10-05",
-                    new: false
-                }
-            ],
-            'Resolved': [
-                { 
-                    id: 7, 
-                    title: "Water Leak on Maple Street", 
-                    description: "Constant water leakage from a broken pipe is causing pavement damage and water wastage. Resolved after pipe replacement.", 
-                    date: "2025-09-18", 
-                    postedBy: "Lisa Garcia", 
-                    location: "Maple Street", 
-                    assignedTo: "Plumbing Team", 
-                    priority: "Low", 
-                    votes: 67, 
-                    statusColor: 'border-green-500', 
-                    unreadChat: false,
-                    dueDate: "2025-09-25",
-                    new: false
-                },
-                { 
-                    id: 8, 
-                    title: "Fallen Tree Branch", 
-                    description: "Large tree branch fell on power lines during storm. Branch has been removed and power restored.", 
-                    date: "2025-09-20", 
-                    postedBy: "Emergency Services", 
-                    location: "Pine Street", 
-                    assignedTo: "Tech A", 
-                    priority: "High", 
-                    votes: 89, 
-                    statusColor: 'border-green-500', 
-                    unreadChat: false,
-                    dueDate: "2025-09-22",
-                    new: false
-                }
-            ]
-        };
 
-        const tabs = [
-            document.getElementById('assignedTab'),
-            document.getElementById('inProgressTab'),
-            document.getElementById('onHoldTab'),
-            document.getElementById('closedTab')
-        ];
-        const highlight = document.getElementById('highlight-staff'); 
-        const issuesContainer = document.getElementById('issuesContainer');
-        const taskCount = document.getElementById('taskCount');
-        let currentActiveTab = 'Assigned'; 
-        let isGridView = false;
-
-        function getPriorityColor(priority) {
-            switch (priority) {
-                case 'High': return 'text-red-500 bg-red-100';
-                case 'Medium': return 'text-yellow-600 bg-yellow-100';
-                case 'Low': return 'text-green-600 bg-green-100';
-                default: return 'text-gray-500 bg-gray-100';
-            }
-        }
-        
-        function getStatusBadge(status) {
-            switch (status) {
-                case 'Assigned': return 'bg-blue-100 text-blue-800';
-                case 'In-Progress': return 'bg-purple-100 text-purple-800';
-                case 'On Hold': return 'bg-orange-100 text-orange-800';
-                case 'Resolved': return 'bg-green-100 text-green-800';
-                default: return 'bg-gray-100 text-gray-800';
-            }
-        }
-        
-        // --- ENHANCED STAFF ACTIONS ---
-        function handleStaffQuickUpdate(issueId, newStatus) {
-            alert(`ACTION: Staff updated Issue #${issueId} status to '${newStatus}'. (Updates DB via API)`);
-            // In a real app, this would trigger an API PUT request and UI refresh.
-        }
-        
-        function openTaskDetails(issueId) {
-            alert(`Opening detailed view for task #${issueId}`);
-            // In a real app, this would open a modal or navigate to a detail page
-        }
-        // --- END ENHANCED STAFF ACTIONS ---
-
-        function moveHighlight(tab) {
-            highlight.style.width = `${tab.offsetWidth}px`;
-            highlight.style.left = `${tab.offsetLeft}px`;
-
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            currentActiveTab = tab.textContent.trim();
-            loadIssues(currentActiveTab); 
-        }
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                moveHighlight(tab);
-            });
-        });
-
-        function displayIssues(issues) {
-            issuesContainer.innerHTML = '';
-            taskCount.textContent = issues.length;
-
-            if (issues.length === 0) {
-                issuesContainer.innerHTML = `
-                    <div class="bg-white rounded-xl shadow-md p-8 text-center">
-                        <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-500 mb-2">No tasks found</h3>
-                        <p class="text-gray-400">There are no tasks in this category.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            issues.forEach(issue => {
-                const priorityColor = getPriorityColor(issue.priority);
-                const statusBadge = getStatusBadge(currentActiveTab);
-                const colorMap = { 'red': '#ef4444', 'yellow': '#f59e0b', 'blue': '#3b82f6', 'orange': '#f97316', 'green': '#10b981' };
-                const borderColorKey = issue.statusColor.split('-').pop();
-                const actualBorderColor = colorMap[borderColorKey] || '#00897b'; 
-                
-                const commIndicator = issue.unreadChat ? 
-                    `<span class="text-xs font-semibold text-red-600 flex items-center"><i class="fas fa-exclamation-circle mr-1"></i> New Chat</span>` :
-                    `<span class="text-xs text-gray-400 flex items-center"><i class="fas fa-comment-dots mr-1"></i> Cleared</span>`;
-                
-                const quickActionButton = currentActiveTab === 'Assigned' ? 
-                    `<button onclick="handleStaffQuickUpdate(${issue.id}, 'In-Progress')" class="bg-blue-500 text-white px-3 py-1 text-xs rounded-lg hover:bg-blue-600 transition-colors flex items-center"><i class="fas fa-play-circle mr-1"></i> Start Work</button>` :
-                    (currentActiveTab === 'In-Progress' ?
-                    `<button onclick="handleStaffQuickUpdate(${issue.id}, 'Resolved')" class="bg-green-500 text-white px-3 py-1 text-xs rounded-lg hover:bg-green-600 transition-colors flex items-center"><i class="fas fa-check-circle mr-1"></i> Resolve</button>` :
-                    '');
-                    
-                const newIndicator = issue.new ? `<span class="pulse-glow absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">NEW</span>` : '';
-                
-                const dueDate = new Date(issue.dueDate);
-                const today = new Date();
-                const timeDiff = dueDate.getTime() - today.getTime();
-                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                
-                let dueText = '';
-                let dueColor = 'text-gray-500';
-                
-                if (daysDiff < 0) {
-                    dueText = 'Overdue';
-                    dueColor = 'text-red-500';
-                } else if (daysDiff === 0) {
-                    dueText = 'Due today';
-                    dueColor = 'text-red-500';
-                } else if (daysDiff === 1) {
-                    dueText = 'Due tomorrow';
-                    dueColor = 'text-orange-500';
-                } else if (daysDiff <= 7) {
-                    dueText = `Due in ${daysDiff} days`;
-                    dueColor = 'text-orange-500';
-                } else {
-                    dueText = `Due ${dueDate.toLocaleDateString()}`;
-                }
-
-                const issueCard = `
-                    <div class="bg-white rounded-xl shadow-md p-4 issue-card-staff relative cursor-pointer ${isGridView ? 'md:w-80' : ''}" style="border-left-color: ${actualBorderColor};" onclick="openTaskDetails(${issue.id})">
-                        ${newIndicator}
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-lg text-gray-800 flex-1 pr-4">${issue.title}</h3>
-                            <div class="flex flex-col items-end space-y-1">
-                                <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">${issue.priority}</span>
-                                <span class="status-badge ${statusBadge}">${currentActiveTab}</span>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">${issue.description}</p>
-                        
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex items-center space-x-2 text-xs text-gray-500">
-                                <span><i class="fas fa-user mr-1"></i> ${issue.postedBy}</span>
-                                <span><i class="fas fa-calendar mr-1"></i> ${new Date(issue.date).toLocaleDateString()}</span>
-                            </div>
-                            <span class="text-xs ${dueColor} font-medium">${dueText}</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center border-t pt-3">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-xs text-gray-600 flex items-center"><i class="fas fa-map-marker-alt mr-1"></i> ${issue.location}</span>
-                                ${commIndicator}
-                            </div>
-                            ${quickActionButton}
-                        </div>
-                    </div>
-                `;
-                issuesContainer.innerHTML += issueCard;
-            });
-        }
-
-        function loadIssues(status) {
-            const issues = sampleIssues[status] || [];
-            displayIssues(issues);
-        }
-
-        // Mobile menu toggle
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Notification panel toggle
-        document.getElementById('notificationBtn').addEventListener('click', function() {
-            const notificationPanel = document.getElementById('notificationPanel');
-            notificationPanel.classList.toggle('hidden');
-        });
-
-        document.getElementById('closeNotifications').addEventListener('click', function() {
-            document.getElementById('notificationPanel').classList.add('hidden');
-        });
-
-        // Create task modal
-        document.getElementById('floatingCreateTaskBtn').addEventListener('click', function() {
-            document.getElementById('createTaskModal').classList.remove('hidden');
-        });
-
-        document.getElementById('cancelTask').addEventListener('click', function() {
-            document.getElementById('createTaskModal').classList.add('hidden');
-        });
-
-        document.getElementById('submitTask').addEventListener('click', function() {
-            const title = document.getElementById('taskTitle').value;
-            if (title) {
-                alert(`Task "${title}" created successfully!`);
-                document.getElementById('createTaskModal').classList.add('hidden');
-                document.getElementById('taskForm').reset();
-            } else {
-                alert('Please enter a task title');
-            }
-        });
-
-        // View toggle
-        document.getElementById('listViewBtn').addEventListener('click', function() {
-            isGridView = false;
-            document.getElementById('listViewBtn').classList.add('bg-blue-100', 'text-blue-600');
-            document.getElementById('gridViewBtn').classList.remove('bg-blue-100', 'text-blue-600');
-            document.getElementById('gridViewBtn').classList.add('text-gray-500', 'hover:bg-gray-100');
-            issuesContainer.classList.remove('md:grid', 'md:grid-cols-2', 'md:gap-4');
-            loadIssues(currentActiveTab);
-        });
-
-        document.getElementById('gridViewBtn').addEventListener('click', function() {
-            isGridView = true;
-            document.getElementById('gridViewBtn').classList.add('bg-blue-100', 'text-blue-600');
-            document.getElementById('listViewBtn').classList.remove('bg-blue-100', 'text-blue-600');
-            document.getElementById('listViewBtn').classList.add('text-gray-500', 'hover:bg-gray-100');
-            issuesContainer.classList.add('md:grid', 'md:grid-cols-2', 'md:gap-4');
-            loadIssues(currentActiveTab);
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            moveHighlight(tabs[0]);
-            // Set initial view to list
-            document.getElementById('listViewBtn').classList.add('bg-blue-100', 'text-blue-600');
-        });
-
-        // Close modals when clicking outside
-        document.addEventListener('click', function(event) {
-            const notificationPanel = document.getElementById('notificationPanel');
-            const notificationBtn = document.getElementById('notificationBtn');
-            
-            if (!notificationPanel.contains(event.target) && !notificationBtn.contains(event.target)) {
-                notificationPanel.classList.add('hidden');
-            }
-            
-            const createTaskModal = document.getElementById('createTaskModal');
-            const floatingCreateTaskBtn = document.getElementById('floatingCreateTaskBtn');
-            
-            if (createTaskModal && !createTaskModal.contains(event.target) && !floatingCreateTaskBtn.contains(event.target)) {
-                createTaskModal.classList.add('hidden');
-            }
-        });
-    </script>
     <script src="scripts/staff.js"></script>
 </body>
 </html>

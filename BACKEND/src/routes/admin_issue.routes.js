@@ -1,7 +1,7 @@
 import express from "express";
 import { 
-    handleFetchAllUserIssues, // NEW
-    handleFetchStaffList,      // NEW
+    handleFetchAllUserIssues, 
+    handleFetchStaffList,      
     handleUpdateIssue,
     handleGetComplaintDetails,
     handleBulkAssign
@@ -13,7 +13,7 @@ router.get("/", adminAuth, handleFetchAllUserIssues);
 
 router.get("/staff", adminAuth, handleFetchStaffList); 
 
-router.put("/:id", adminAuth, handleGetComplaintDetails);
+router.get("/:id", adminAuth, handleGetComplaintDetails);
 router.put("/:id",adminAuth,handleUpdateIssue);
 router.post("/bulk-assign",adminAuth,handleBulkAssign);
 export default router;

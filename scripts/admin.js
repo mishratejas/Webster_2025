@@ -15,21 +15,10 @@ function isTokenExpired(token) {
 
 // Function to handle token expiration
 function handleTokenExpiration() {
-  console.log("Token expired, redirecting to login...");
   localStorage.removeItem("adminToken");
   localStorage.removeItem("adminData");
   alert("Your session has expired. Please login again.");
   window.location.href = "index.html";
-}
-
-// Check token on load
-const adminToken = localStorage.getItem("adminToken");
-
-if (!adminToken || isTokenExpired(adminToken)) {
-  handleTokenExpiration();
-} else {
-  console.log("Admin Token: Valid");
-  // Continue with initialization
 }
 
 // Global variables
@@ -50,8 +39,6 @@ let chatMessages = {};
 
 // Initialize dashboard
 async function initializeAdminDashboard() {
-  console.log("Initializing admin dashboard...");
-
   try {
     updateAdminUI();
     await fetchStaffList();
@@ -63,10 +50,7 @@ async function initializeAdminDashboard() {
     if (initialTab) {
       moveHighlight(initialTab);
     }
-
-    console.log("Admin dashboard initialized successfully!");
   } catch (error) {
-    console.error("Failed to initialize admin dashboard:", error);
     if (error.message.includes("401") || error.message.includes("expired")) {
       handleTokenExpiration();
     } else {
@@ -116,18 +100,15 @@ function updateAdminUI() {
 async function fetchStaffList() {
   try {
     const response = await fetchWithAuth(`${BASE_URL}/api/admin/issues/staff`);
-
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const data = await response.json();
     if (data.success) {
       staffList = data.data || [];
-      console.log(`Staff list fetched: ${staffList.length} staff members`);
     } else {
       throw new Error(data.message || "Failed to fetch staff list");
     }
   } catch (error) {
-    console.error("Error fetching staff list:", error);
     if (!error.message.includes("Token expired")) {
       showError("Failed to load staff list");
     }
@@ -139,20 +120,17 @@ async function fetchStaffList() {
 async function fetchAllComplaints() {
   try {
     const response = await fetchWithAuth(`${BASE_URL}/api/admin/issues`);
-
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const data = await response.json();
     if (data.success) {
       allComplaints = data.data || [];
-      console.log(`Complaints fetched: ${allComplaints.length} complaints`);
     } else {
       throw new Error(data.message || "Failed to fetch complaints");
     }
   } catch (error) {
-    console.error("Error fetching complaints:", error);
     if (!error.message.includes("Token expired")) {
-      showError("Failed to load complaints: " + error.message);
+      showError("Failed to load complaints");
     }
     throw error;
   }
@@ -208,12 +186,12 @@ function displayComplaints(complaints) {
 
   if (complaints.length === 0) {
     issuesContainer.innerHTML = `
-            <div class="bg-white rounded-xl shadow-md p-8 text-center">
-                <div class="text-4xl text-gray-400 mb-4">📭</div>
-                <h3 class="text-xl font-semibold text-gray-600 mb-2">No Issues Found</h3>
-                <p class="text-gray-500">There are no issues in this category at the moment.</p>
-            </div>
-        `;
+      <div class="bg-white rounded-xl shadow-md p-8 text-center">
+        <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Issues Found</h3>
+        <p class="text-gray-500">There are no issues in this category at the moment.</p>
+      </div>
+    `;
     return;
   }
 
@@ -225,188 +203,188 @@ function displayComplaints(complaints) {
     const department = complaint.category || "other";
 
     const complaintCard = `
-            <div class="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 ${priorityBorderClass}">
-                <div class="flex justify-between items-start mb-3">
-                    <h3 class="font-bold text-lg text-gray-800 cursor-pointer hover:text-blue-600" 
-                        onclick="openIssueDetail('${complaint._id}')">
-                        ${complaint.title}
-                    </h3>
-                    <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">
-                        ${
-                          complaint.priority.charAt(0).toUpperCase() +
-                          complaint.priority.slice(1)
-                        }
-                    </span>
-                </div>
-                
-                <p class="text-gray-600 text-sm mb-3">${
-                  complaint.description
-                }</p>
-                
-                <!-- Images Preview -->
+      <div class="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 ${priorityBorderClass}">
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="font-bold text-lg text-gray-800 cursor-pointer hover:text-blue-600" 
+              onclick="openIssueDetail('${complaint._id}')">
+            ${complaint.title}
+          </h3>
+          <span class="px-3 py-1 rounded-full font-semibold text-xs ${priorityColor}">
+            ${complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1)}
+          </span>
+        </div>
+        
+        <p class="text-gray-600 text-sm mb-3">${complaint.description}</p>
+        
+        <!-- Images Preview -->
+        ${
+          complaint.images && complaint.images.length > 0
+            ? `
+            <div class="mb-3">
+              <div class="flex flex-wrap gap-2">
+                ${complaint.images
+                  .slice(0, 3)
+                  .map((img, index) => {
+                    let imageUrl = img;
+                    if (!img.startsWith('http')) {
+                      if (!img.startsWith('/')) {
+                        imageUrl = `${BASE_URL}/uploads/${img}`;
+                      } else {
+                        imageUrl = `${BASE_URL}${img}`;
+                      }
+                    }
+                    return `
+                      <img src="${imageUrl}" 
+                           alt="Issue image ${index + 1}" 
+                           class="w-16 h-16 object-cover rounded cursor-pointer border"
+                           onclick="openImageModal('${imageUrl}')"
+                           onerror="this.style.display='none'">
+                    `;
+                  })
+                  .join("")}
                 ${
-                  complaint.images && complaint.images.length > 0
+                  complaint.images.length > 3
                     ? `
-                    <div class="mb-3">
-                        <div class="flex flex-wrap gap-2">
-                            ${complaint.images
-                              .slice(0, 3)
-                              .map(
-                                (img, index) => `
-                                <img src="${BASE_URL}${img}" 
-                                     alt="Issue image ${index + 1}" 
-                                     class="w-16 h-16 object-cover rounded cursor-pointer border"
-                                     onclick="openImageModal('${BASE_URL}${img}')">
-                            `
-                              )
-                              .join("")}
-                            ${
-                              complaint.images.length > 3
-                                ? `
-                                <div class="w-16 h-16 bg-gray-200 flex items-center justify-center text-gray-600 text-xs rounded border">
-                                    +${complaint.images.length - 3}
-                                </div>
-                            `
-                                : ""
-                            }
-                        </div>
+                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center text-gray-600 text-xs rounded border">
+                      +${complaint.images.length - 3}
                     </div>
-                `
+                  `
                     : ""
                 }
-                
-                <div class="flex flex-wrap gap-4 text-xs text-gray-500 mb-3">
-                    <div><span class="font-semibold">User:</span> ${userName}</div>
-                    <div><span class="font-semibold">Date:</span> ${formatDate(
-                      complaint.createdAt
-                    )}</div>
-                    <div><span class="font-semibold">Votes:</span> ${
-                      complaint.voteCount || 0
-                    }</div>
-                    <div class="px-2 py-1 bg-blue-100 text-blue-800 rounded capitalize">${department}</div>
-                </div>
-                
-                <!-- Admin Controls -->
-                <div class="flex flex-wrap gap-2 items-center justify-between border-t pt-3">
-                    <div class="flex gap-2">
-                        <select onchange="updateComplaintField('${
-                          complaint._id
-                        }', 'status', this.value)" 
-                                class="text-xs p-1 border rounded bg-gray-50">
-                            <option value="pending" ${
-                              complaint.status === "pending" ? "selected" : ""
-                            }>Pending</option>
-                            <option value="in-progress" ${
-                              complaint.status === "in-progress"
-                                ? "selected"
-                                : ""
-                            }>In Progress</option>
-                            <option value="resolved" ${
-                              complaint.status === "resolved" ? "selected" : ""
-                            }>Resolved</option>
-                            <option value="rejected" ${
-                              complaint.status === "rejected" ? "selected" : ""
-                            }>Rejected</option>
-                        </select>
-                        
-                        <select onchange="assignToStaff('${
-                          complaint._id
-                        }', this.value)" 
-                                class="text-xs p-1 border rounded bg-gray-50">
-                            <option value="">Unassigned</option>
-                            ${staffList
-                              .map(
-                                (staff) =>
-                                  `<option value="${staff._id}" ${
-                                    complaint.assignedTo?._id === staff._id
-                                      ? "selected"
-                                      : ""
-                                  }>
-                                    ${staff.name} (${
-                                    staff.department || "General"
-                                  })
-                                </option>`
-                              )
-                              .join("")}
-                        </select>
-
-                        <select onchange="updateComplaintField('${
-                          complaint._id
-                        }', 'priority', this.value)" 
-                                class="text-xs p-1 border rounded bg-gray-50">
-                            <option value="low" ${
-                              complaint.priority === "low" ? "selected" : ""
-                            }>Low</option>
-                            <option value="medium" ${
-                              complaint.priority === "medium" ? "selected" : ""
-                            }>Medium</option>
-                            <option value="high" ${
-                              complaint.priority === "high" ? "selected" : ""
-                            }>High</option>
-                        </select>
-
-                        <select onchange="updateComplaintField('${
-                          complaint._id
-                        }', 'category', this.value)" 
-                                class="text-xs p-1 border rounded bg-gray-50">
-                            <option value="road" ${
-                              complaint.category === "road" ? "selected" : ""
-                            }>Road</option>
-                            <option value="water" ${
-                              complaint.category === "water" ? "selected" : ""
-                            }>Water</option>
-                            <option value="electricity" ${
-                              complaint.category === "electricity"
-                                ? "selected"
-                                : ""
-                            }>Electricity</option>
-                            <option value="sanitation" ${
-                              complaint.category === "sanitation"
-                                ? "selected"
-                                : ""
-                            }>Sanitation</option>
-                            <option value="other" ${
-                              complaint.category === "other" ? "selected" : ""
-                            }>Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <button onclick="openIssueDetail('${complaint._id}')" 
-                                class="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Open Chat
-                        </button>
-                        <button onclick="addAdminNotePrompt('${
-                          complaint._id
-                        }')" 
-                                class="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                            Add Note
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Admin Notes Preview -->
-                ${
-                  complaint.adminNotes
-                    ? `
-                    <div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                        <strong>Admin Note:</strong> ${complaint.adminNotes}
-                        ${
-                          complaint.lastUpdated
-                            ? `<br><em>Updated: ${formatDate(
-                                complaint.lastUpdated
-                              )}</em>`
-                            : ""
-                        }
-                    </div>
-                `
-                    : ""
-                }
+              </div>
             </div>
-        `;
+          `
+            : ""
+        }
+        
+        <div class="flex flex-wrap gap-4 text-xs text-gray-500 mb-3">
+          <div class="flex items-center">
+            <i class="fas fa-user mr-1 text-gray-400"></i>
+            <span>${userName}</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-calendar mr-1 text-gray-400"></i>
+            <span>${formatDate(complaint.createdAt)}</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-thumbs-up mr-1 text-gray-400"></i>
+            <span>${complaint.voteCount || 0} votes</span>
+          </div>
+          <div class="px-2 py-1 bg-blue-100 text-blue-800 rounded capitalize flex items-center">
+            <i class="fas fa-tag mr-1 text-xs"></i>
+            ${department}
+          </div>
+        </div>
+        
+        <!-- Admin Controls -->
+        <div class="flex flex-wrap gap-2 items-center justify-between border-t pt-3">
+          <div class="flex gap-2">
+            <select onchange="updateComplaintField('${complaint._id}', 'status', this.value)" 
+                    class="text-xs p-1 border rounded bg-gray-50">
+              <option value="pending" ${complaint.status === "pending" ? "selected" : ""}>Pending</option>
+              <option value="in-progress" ${complaint.status === "in-progress" ? "selected" : ""}>In Progress</option>
+              <option value="resolved" ${complaint.status === "resolved" ? "selected" : ""}>Resolved</option>
+              <option value="rejected" ${complaint.status === "rejected" ? "selected" : ""}>Rejected</option>
+            </select>
+            
+            <select onchange="assignToStaff('${complaint._id}', this.value)" 
+                    class="text-xs p-1 border rounded bg-gray-50">
+              <option value="">Unassigned</option>
+              ${staffList
+                .map(
+                  (staff) =>
+                    `<option value="${staff._id}" ${
+                      complaint.assignedTo?._id === staff._id ? "selected" : ""
+                    }>
+                      ${staff.name} (${staff.department || "General"})
+                    </option>`
+                )
+                .join("")}
+            </select>
+
+            <select onchange="updateComplaintField('${complaint._id}', 'priority', this.value)" 
+                    class="text-xs p-1 border rounded bg-gray-50">
+              <option value="low" ${complaint.priority === "low" ? "selected" : ""}>Low</option>
+              <option value="medium" ${complaint.priority === "medium" ? "selected" : ""}>Medium</option>
+              <option value="high" ${complaint.priority === "high" ? "selected" : ""}>High</option>
+            </select>
+
+            <select onchange="updateComplaintField('${complaint._id}', 'category', this.value)" 
+                    class="text-xs p-1 border rounded bg-gray-50">
+              <option value="road" ${complaint.category === "road" ? "selected" : ""}>Road</option>
+              <option value="water" ${complaint.category === "water" ? "selected" : ""}>Water</option>
+              <option value="electricity" ${complaint.category === "electricity" ? "selected" : ""}>Electricity</option>
+              <option value="sanitation" ${complaint.category === "sanitation" ? "selected" : ""}>Sanitation</option>
+              <option value="other" ${complaint.category === "other" ? "selected" : ""}>Other</option>
+            </select>
+          </div>
+          
+          <div class="flex gap-2">
+            <button onclick="openIssueDetail('${complaint._id}')" 
+                    class="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center">
+              <i class="fas fa-comments mr-1"></i> Chat
+            </button>
+            <button onclick="addAdminNotePrompt('${complaint._id}')" 
+                    class="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 flex items-center">
+              <i class="fas fa-sticky-note mr-1"></i> Note
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Notes Preview -->
+        ${
+          complaint.adminNotes
+            ? `
+            <div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+              <div class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mt-0.5 mr-2"></i>
+                <div>
+                  <strong class="text-yellow-800">Admin Note:</strong> 
+                  <p class="text-yellow-700 mt-1">${complaint.adminNotes}</p>
+                  ${
+                    complaint.lastUpdated
+                      ? `<p class="text-yellow-600 text-xs mt-1"><i class="fas fa-clock mr-1"></i>Updated: ${formatDate(complaint.lastUpdated)}</p>`
+                      : ""
+                  }
+                </div>
+              </div>
+            </div>
+          `
+            : ""
+        }
+      </div>
+    `;
     issuesContainer.innerHTML += complaintCard;
   });
 }
+
+// Image modal function
+window.openImageModal = function(imageUrl) {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+  modal.innerHTML = `
+    <div class="bg-white rounded-xl p-6 max-w-4xl w-full">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">Image Preview</h3>
+        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <img src="${imageUrl}" alt="Full size" class="w-full h-auto rounded-lg max-h-96 object-contain mb-4">
+      <div class="flex gap-2 justify-center">
+        <a href="${imageUrl}" download 
+           class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center">
+          <i class="fas fa-download mr-2"></i>Download
+        </a>
+        <button onclick="this.closest('.fixed').remove()" 
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 flex items-center">
+          <i class="fas fa-times mr-2"></i>Close
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+};
 
 // OPEN ISSUE DETAIL MODAL WITH CHAT
 async function openIssueDetail(complaintId) {
@@ -417,258 +395,195 @@ async function openIssueDetail(complaintId) {
   }
 
   currentSelectedComplaint = complaint;
-
-  // Load chat messages for this complaint
   await loadChatMessages(complaintId);
 
   const modal = document.getElementById("issueModal");
   const modalContent = document.getElementById("modalContent");
 
   modalContent.innerHTML = `
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column - Issue Details & Controls -->
-            <div class="lg:col-span-1 space-y-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="font-semibold mb-3 text-gray-800">Issue Details</h3>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            <input type="text" 
-                                   value="${complaint.title}" 
-                                   onchange="updateComplaintField('${
-                                     complaint._id
-                                   }', 'title', this.value)"
-                                   class="w-full p-2 border rounded text-sm">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                            <textarea onchange="updateComplaintField('${
-                              complaint._id
-                            }', 'description', this.value)"
-                                      class="w-full p-2 border rounded text-sm" rows="3">${
-                                        complaint.description
-                                      }</textarea>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                <select onchange="updateComplaintField('${
-                                  complaint._id
-                                }', 'status', this.value)" 
-                                        class="w-full p-2 border rounded text-sm">
-                                    <option value="pending" ${
-                                      complaint.status === "pending"
-                                        ? "selected"
-                                        : ""
-                                    }>Pending</option>
-                                    <option value="in-progress" ${
-                                      complaint.status === "in-progress"
-                                        ? "selected"
-                                        : ""
-                                    }>In Progress</option>
-                                    <option value="resolved" ${
-                                      complaint.status === "resolved"
-                                        ? "selected"
-                                        : ""
-                                    }>Resolved</option>
-                                    <option value="rejected" ${
-                                      complaint.status === "rejected"
-                                        ? "selected"
-                                        : ""
-                                    }>Rejected</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                                <select onchange="updateComplaintField('${
-                                  complaint._id
-                                }', 'priority', this.value)" 
-                                        class="w-full p-2 border rounded text-sm">
-                                    <option value="low" ${
-                                      complaint.priority === "low"
-                                        ? "selected"
-                                        : ""
-                                    }>Low</option>
-                                    <option value="medium" ${
-                                      complaint.priority === "medium"
-                                        ? "selected"
-                                        : ""
-                                    }>Medium</option>
-                                    <option value="high" ${
-                                      complaint.priority === "high"
-                                        ? "selected"
-                                        : ""
-                                    }>High</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                <select onchange="updateComplaintField('${
-                                  complaint._id
-                                }', 'category', this.value)" 
-                                        class="w-full p-2 border rounded text-sm">
-                                    <option value="road" ${
-                                      complaint.category === "road"
-                                        ? "selected"
-                                        : ""
-                                    }>Road</option>
-                                    <option value="water" ${
-                                      complaint.category === "water"
-                                        ? "selected"
-                                        : ""
-                                    }>Water</option>
-                                    <option value="electricity" ${
-                                      complaint.category === "electricity"
-                                        ? "selected"
-                                        : ""
-                                    }>Electricity</option>
-                                    <option value="sanitation" ${
-                                      complaint.category === "sanitation"
-                                        ? "selected"
-                                        : ""
-                                    }>Sanitation</option>
-                                    <option value="other" ${
-                                      complaint.category === "other"
-                                        ? "selected"
-                                        : ""
-                                    }>Other</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
-                                <select onchange="assignToStaff('${
-                                  complaint._id
-                                }', this.value)" 
-                                        class="w-full p-2 border rounded text-sm">
-                                    <option value="">Unassigned</option>
-                                    ${staffList
-                                      .map(
-                                        (staff) =>
-                                          `<option value="${staff._id}" ${
-                                            complaint.assignedTo?._id ===
-                                            staff._id
-                                              ? "selected"
-                                              : ""
-                                          }>
-                                            ${staff.name} (${
-                                            staff.department || "General"
-                                          })
-                                        </option>`
-                                      )
-                                      .join("")}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Admin Notes Section -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="font-semibold mb-3 text-gray-800">Admin Notes</h3>
-                    <textarea id="adminNoteInput" 
-                              placeholder="Add internal notes here..." 
-                              class="w-full p-2 border rounded text-sm mb-2" 
-                              rows="4">${complaint.adminNotes || ""}</textarea>
-                    <button onclick="addAdminNote('${complaint._id}')" 
-                            class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 text-sm">
-                        Save Notes
-                    </button>
-                </div>
-
-                <!-- Images Section -->
-                ${
-                  complaint.images && complaint.images.length > 0
-                    ? `
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="font-semibold mb-3 text-gray-800">Attached Images</h3>
-                        <div class="grid grid-cols-2 gap-2">
-                            ${complaint.images
-                              .map(
-                                (img, index) => `
-                                <img src="${BASE_URL}${img}" 
-                                     alt="Issue image ${index + 1}" 
-                                     class="w-full h-24 object-cover rounded cursor-pointer border"
-                                     onclick="openImageModal('${BASE_URL}${img}')">
-                            `
-                              )
-                              .join("")}
-                        </div>
-                    </div>
-                `
-                    : ""
-                }
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column - Issue Details & Controls -->
+      <div class="lg:col-span-1 space-y-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="font-semibold mb-3 text-gray-800 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-blue-500"></i>Issue Details
+          </h3>
+          
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input type="text" 
+                     value="${complaint.title}" 
+                     onchange="updateComplaintField('${complaint._id}', 'title', this.value)"
+                     class="w-full p-2 border rounded text-sm">
             </div>
             
-            <!-- Right Column - Chat -->
-            <div class="lg:col-span-2">
-                <div class="bg-gray-50 p-4 rounded-lg h-full">
-                    <h3 class="font-semibold mb-3 text-gray-800">Communication Chat</h3>
-                    
-                    <div class="chat-container bg-white rounded-lg p-4 mb-3" style="height: 400px; overflow-y: auto;">
-                        ${
-                          chatMessages[complaintId] &&
-                          chatMessages[complaintId].length > 0
-                            ? chatMessages[complaintId]
-                                .map(
-                                  (msg) => `
-                                <div class="chat-message ${
-                                  msg.sender === "admin" ? "admin" : "staff"
-                                } mb-3">
-                                    <div class="flex justify-between items-start mb-1">
-                                        <span class="font-semibold text-sm">
-                                            ${
-                                              msg.sender === "admin"
-                                                ? "Admin"
-                                                : msg.staffName || "Staff"
-                                            }
-                                        </span>
-                                        <span class="text-xs text-gray-500">${formatTime(
-                                          msg.timestamp
-                                        )}</span>
-                                    </div>
-                                    <div class="text-sm">${msg.message}</div>
-                                </div>
-                            `
-                                )
-                                .join("")
-                            : `
-                            <div class="text-center text-gray-500 py-8">
-                                <div class="text-3xl mb-2">💬</div>
-                                <p>No messages yet. Start the conversation!</p>
-                            </div>
-                        `
-                        }
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <input type="text" 
-                               id="chatMessageInput" 
-                               placeholder="Type your message..." 
-                               class="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               onkeypress="if(event.key === 'Enter') sendChatMessage('${
-                                 complaint._id
-                               }')">
-                        <button onclick="sendChatMessage('${complaint._id}')" 
-                                class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-semibold">
-                            Send
-                        </button>
-                    </div>
-                </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea onchange="updateComplaintField('${complaint._id}', 'description', this.value)"
+                        class="w-full p-2 border rounded text-sm" rows="3">${complaint.description}</textarea>
             </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select onchange="updateComplaintField('${complaint._id}', 'status', this.value)" 
+                        class="w-full p-2 border rounded text-sm">
+                  <option value="pending" ${complaint.status === "pending" ? "selected" : ""}>Pending</option>
+                  <option value="in-progress" ${complaint.status === "in-progress" ? "selected" : ""}>In Progress</option>
+                  <option value="resolved" ${complaint.status === "resolved" ? "selected" : ""}>Resolved</option>
+                  <option value="rejected" ${complaint.status === "rejected" ? "selected" : ""}>Rejected</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                <select onchange="updateComplaintField('${complaint._id}', 'priority', this.value)" 
+                        class="w-full p-2 border rounded text-sm">
+                  <option value="low" ${complaint.priority === "low" ? "selected" : ""}>Low</option>
+                  <option value="medium" ${complaint.priority === "medium" ? "selected" : ""}>Medium</option>
+                  <option value="high" ${complaint.priority === "high" ? "selected" : ""}>High</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select onchange="updateComplaintField('${complaint._id}', 'category', this.value)" 
+                        class="w-full p-2 border rounded text-sm">
+                  <option value="road" ${complaint.category === "road" ? "selected" : ""}>Road</option>
+                  <option value="water" ${complaint.category === "water" ? "selected" : ""}>Water</option>
+                  <option value="electricity" ${complaint.category === "electricity" ? "selected" : ""}>Electricity</option>
+                  <option value="sanitation" ${complaint.category === "sanitation" ? "selected" : ""}>Sanitation</option>
+                  <option value="other" ${complaint.category === "other" ? "selected" : ""}>Other</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
+                <select onchange="assignToStaff('${complaint._id}', this.value)" 
+                        class="w-full p-2 border rounded text-sm">
+                  <option value="">Unassigned</option>
+                  ${staffList
+                    .map(
+                      (staff) =>
+                        `<option value="${staff._id}" ${
+                          complaint.assignedTo?._id === staff._id ? "selected" : ""
+                        }>
+                          ${staff.name} (${staff.department || "General"})
+                        </option>`
+                    )
+                    .join("")}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-    `;
+
+        <!-- Admin Notes Section -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="font-semibold mb-3 text-gray-800 flex items-center">
+            <i class="fas fa-sticky-note mr-2 text-green-500"></i>Admin Notes
+          </h3>
+          <textarea id="adminNoteInput" 
+                    placeholder="Add internal notes here..." 
+                    class="w-full p-2 border rounded text-sm mb-2" 
+                    rows="4">${complaint.adminNotes || ""}</textarea>
+          <button onclick="addAdminNote('${complaint._id}')" 
+                  class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 text-sm flex items-center justify-center">
+            <i class="fas fa-save mr-2"></i>Save Notes
+          </button>
+        </div>
+
+        <!-- Images Section -->
+        ${
+          complaint.images && complaint.images.length > 0
+            ? `
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h3 class="font-semibold mb-3 text-gray-800 flex items-center">
+                <i class="fas fa-images mr-2 text-purple-500"></i>Attached Images
+              </h3>
+              <div class="grid grid-cols-2 gap-2">
+                ${complaint.images
+                  .map((img, index) => {
+                    let imageUrl = img;
+                    if (!img.startsWith('http')) {
+                      if (!img.startsWith('/')) {
+                        imageUrl = `${BASE_URL}/uploads/${img}`;
+                      } else {
+                        imageUrl = `${BASE_URL}${img}`;
+                      }
+                    }
+                    return `
+                      <img src="${imageUrl}" 
+                           alt="Issue image ${index + 1}" 
+                           class="w-full h-24 object-cover rounded cursor-pointer border"
+                           onclick="openImageModal('${imageUrl}')"
+                           onerror="this.style.display='none'">
+                    `;
+                  })
+                  .join("")}
+              </div>
+            </div>
+          `
+            : ""
+        }
+      </div>
+      
+      <!-- Right Column - Chat -->
+      <div class="lg:col-span-2">
+        <div class="bg-gray-50 p-4 rounded-lg h-full">
+          <h3 class="font-semibold mb-3 text-gray-800 flex items-center">
+            <i class="fas fa-comments mr-2 text-blue-500"></i>Communication Chat
+          </h3>
+          
+          <div class="chat-container bg-white rounded-lg p-4 mb-3" style="height: 400px; overflow-y: auto;">
+            ${
+              chatMessages[complaintId] && chatMessages[complaintId].length > 0
+                ? chatMessages[complaintId]
+                    .map(
+                      (msg) => `
+                      <div class="chat-message ${msg.sender === "admin" ? "admin" : "staff"} mb-3">
+                        <div class="flex justify-between items-start mb-1">
+                          <span class="font-semibold text-sm flex items-center">
+                            <i class="fas ${msg.sender === "admin" ? "fa-user-shield" : "fa-user"} mr-1"></i>
+                            ${msg.sender === "admin" ? "Admin" : msg.staffName || "Staff"}
+                          </span>
+                          <span class="text-xs text-gray-500">${formatTime(msg.timestamp)}</span>
+                        </div>
+                        <div class="text-sm">${msg.message}</div>
+                      </div>
+                    `
+                    )
+                    .join("")
+                : `
+                <div class="text-center text-gray-500 py-8">
+                  <i class="fas fa-comments text-3xl mb-2 text-gray-300"></i>
+                  <p>No messages yet. Start the conversation!</p>
+                </div>
+              `
+            }
+          </div>
+          
+          <div class="flex gap-2">
+            <input type="text" 
+                   id="chatMessageInput" 
+                   placeholder="Type your message..." 
+                   class="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   onkeypress="if(event.key === 'Enter') sendChatMessage('${complaint._id}')">
+            <button onclick="sendChatMessage('${complaint._id}')" 
+                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-semibold flex items-center">
+              <i class="fas fa-paper-plane mr-2"></i>Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 
   modal.style.display = "flex";
 
-  // Scroll chat to bottom
   setTimeout(() => {
     const chatContainer = modalContent.querySelector(".chat-container");
     if (chatContainer) {
@@ -683,7 +598,6 @@ async function loadChatMessages(complaintId) {
     const response = await fetchWithAuth(
       `${BASE_URL}/api/admin/issues/${complaintId}/chat`
     );
-
     if (response.ok) {
       const data = await response.json();
       chatMessages[complaintId] = data.data || [];
@@ -691,7 +605,6 @@ async function loadChatMessages(complaintId) {
       chatMessages[complaintId] = [];
     }
   } catch (error) {
-    console.error("Error loading chat messages:", error);
     chatMessages[complaintId] = [];
   }
 }
@@ -723,24 +636,20 @@ async function sendChatMessage(complaintId) {
       throw new Error("Failed to send message");
     }
   } catch (error) {
-    console.error("Error sending message:", error);
     showError("Failed to send message");
   }
 }
 
-// DATABASE UPDATE FUNCTIONS - FIXED FOR BACKEND INTEGRATION
+// DATABASE UPDATE FUNCTIONS
 async function updateComplaintField(complaintId, field, value) {
   try {
-    console.log(`Updating ${field} to ${value} for complaint ${complaintId}`);
-
     const updateData = {
       [field]: value,
       updatedAt: new Date().toISOString(),
     };
 
-    // Special handling for different field types
     if (field === "comments" || field === "adminNotes") {
-      updateData.comments = value; // This matches your backend expectation
+      updateData.comments = value;
     }
 
     if (field === "status" && value === "rejected") {
@@ -758,20 +667,13 @@ async function updateComplaintField(complaintId, field, value) {
       }
     );
 
-    console.log("Update response status:", response.status);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Update failed:", errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Update response data:", data);
-
     if (data.success) {
       showSuccess(`${field} updated successfully!`);
-      // Refresh data from server to get updated complaint
       await fetchAllComplaints();
       updateStatistics();
       loadIssues(currentActiveTab);
@@ -779,17 +681,14 @@ async function updateComplaintField(complaintId, field, value) {
       throw new Error(data.message || "Failed to update complaint");
     }
   } catch (error) {
-    console.error("Error updating complaint:", error);
     if (!error.message.includes("Token expired")) {
-      showError(`Failed to update ${field}: ${error.message}`);
+      showError(`Failed to update ${field}`);
     }
   }
 }
 
 async function assignToStaff(complaintId, staffId) {
   try {
-    console.log(`Assigning complaint ${complaintId} to staff ${staffId}`);
-
     const updateData = {
       assignedTo: staffId,
       status: staffId ? "in-progress" : "pending",
@@ -804,17 +703,11 @@ async function assignToStaff(complaintId, staffId) {
       }
     );
 
-    console.log("Assignment response status:", response.status);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Assignment failed:", errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Assignment response data:", data);
-
     if (data.success) {
       const staff = staffList.find((s) => s._id === staffId);
       showSuccess(staff ? `Assigned to ${staff.name}` : "Unassigned");
@@ -825,9 +718,8 @@ async function assignToStaff(complaintId, staffId) {
       throw new Error(data.message || "Failed to assign staff");
     }
   } catch (error) {
-    console.error("Error assigning staff:", error);
     if (!error.message.includes("Token expired")) {
-      showError("Failed to assign staff: " + error.message);
+      showError("Failed to assign staff");
     }
   }
 }
@@ -843,8 +735,6 @@ async function addAdminNote(complaintId) {
         updatedAt: new Date().toISOString(),
       };
 
-      console.log("Adding admin note:", updateData);
-
       const response = await fetchWithAuth(
         `${BASE_URL}/api/admin/issues/${complaintId}`,
         {
@@ -853,17 +743,11 @@ async function addAdminNote(complaintId) {
         }
       );
 
-      console.log("Note response status:", response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Note failed:", errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        throw new Error(`HTTP ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Note response data:", data);
-
       if (data.success) {
         showSuccess("Admin note saved!");
         await fetchAllComplaints();
@@ -876,9 +760,8 @@ async function addAdminNote(complaintId) {
         throw new Error(data.message || "Failed to save note");
       }
     } catch (error) {
-      console.error("Error saving admin note:", error);
       if (!error.message.includes("Token expired")) {
-        showError("Failed to save note: " + error.message);
+        showError("Failed to save note");
       }
     }
   }
@@ -890,9 +773,7 @@ function addAdminNotePrompt(complaintId) {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = `<textarea id="adminNoteInput">${note}</textarea>`;
     document.body.appendChild(tempDiv);
-
     addAdminNote(complaintId);
-
     setTimeout(() => {
       document.body.removeChild(tempDiv);
     }, 100);
@@ -919,7 +800,6 @@ function loadIssues(status) {
     filteredComplaints = allComplaints;
   }
 
-  // Apply department filter
   if (currentDepartmentFilter !== "all") {
     filteredComplaints = filteredComplaints.filter(
       (complaint) => complaint.category === currentDepartmentFilter
@@ -992,8 +872,8 @@ function formatTime(dateString) {
 function showSuccess(message) {
   const notification = document.createElement("div");
   notification.className =
-    "fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50";
-  notification.textContent = message;
+    "fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center";
+  notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
   document.body.appendChild(notification);
   setTimeout(() => notification.remove(), 3000);
 }
@@ -1001,33 +881,10 @@ function showSuccess(message) {
 function showError(message) {
   const notification = document.createElement("div");
   notification.className =
-    "fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50";
-  notification.textContent = message;
+    "fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center";
+  notification.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${message}`;
   document.body.appendChild(notification);
   setTimeout(() => notification.remove(), 5000);
-}
-
-function openImageModal(imageUrl) {
-  const modal = document.getElementById("issueModal");
-  const modalContent = document.getElementById("modalContent");
-
-  modalContent.innerHTML = `
-        <div class="text-center">
-            <img src="${imageUrl}" alt="Full size" class="max-w-full max-h-96 mx-auto rounded-lg mb-4">
-            <div class="flex gap-2 justify-center">
-                <a href="${imageUrl}" download 
-                   class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                    Download
-                </a>
-                <button onclick="closeModal()" 
-                        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                    Close
-                </button>
-            </div>
-        </div>
-    `;
-
-  modal.style.display = "flex";
 }
 
 function closeModal() {
@@ -1073,7 +930,6 @@ function setupEventListeners() {
     tab.addEventListener("click", () => moveHighlight(tab));
   });
 
-  // Close modal when clicking outside
   document.getElementById("issueModal").addEventListener("click", (e) => {
     if (e.target === document.getElementById("issueModal")) {
       closeModal();
@@ -1081,11 +937,11 @@ function setupEventListeners() {
   });
 
   // Add refresh button
-  // Add refresh button in a better position
   const refreshButton = document.createElement("button");
   refreshButton.textContent = "Refresh Data";
   refreshButton.className =
-    "fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 hover:bg-blue-600 transition-colors";
+    "fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 hover:bg-blue-600 transition-colors flex items-center";
+  refreshButton.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Data';
   refreshButton.onclick = refreshData;
   document.body.appendChild(refreshButton);
 }
@@ -1106,7 +962,6 @@ window.logout = logout;
 
 // Start when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM Content Loaded - Starting admin dashboard");
   const adminToken = localStorage.getItem("adminToken");
   if (adminToken && !isTokenExpired(adminToken)) {
     initializeAdminDashboard();

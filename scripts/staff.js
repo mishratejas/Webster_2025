@@ -28,12 +28,6 @@ function initializeDOMElements() {
     issuesContainer = document.getElementById('issuesContainer');
     taskCount = document.getElementById('taskCount');
     
-    console.log("🏠 DOM Elements initialized:", {
-        tabs: tabs.filter(t => t !== null).length,
-        highlight: !!highlight,
-        issuesContainer: !!issuesContainer,
-        taskCount: !!taskCount
-    });
 }
 
 // ========== GLOBAL FUNCTION DEFINITIONS ==========
@@ -323,7 +317,6 @@ function initializeStaffId() {
         if (staffToken) {
             const payload = JSON.parse(atob(staffToken.split('.')[1]));
             currentStaffId = payload.id || payload.userId || payload.staffId;
-            console.log("👤 Staff ID initialized:", currentStaffId);
         }
     } catch (error) {
         console.error("Error initializing staff ID:", error);
@@ -375,12 +368,10 @@ async function fetchWithAuth(url, options = {}) {
 
 // Initialize staff dashboard
 async function initializeStaffDashboard() {
-    console.log("🔐 Checking authentication...");
     
     const staffToken = localStorage.getItem("staffToken");
     
     if (!staffToken) {
-        console.log("❌ NO STAFF TOKEN - Redirecting to login");
         alert("Please login as staff first");
         window.location.href = "staff-login.html";
         return;
@@ -406,18 +397,14 @@ async function initializeStaffDashboard() {
         if (tabs[0]) {
             moveHighlight(tabs[0]);
         } else {
-            console.error("❌ No tabs found!");
             // Load issues anyway
             loadIssues(currentActiveTab);
         }
         
         // Start auto-refresh
         startAutoRefresh();
-        
-        console.log("✅ Staff dashboard initialized successfully!");
-        
+                
     } catch (error) {
-        console.error("❌ Failed to initialize staff dashboard:", error);
         showError('Failed to initialize dashboard: ' + error.message);
     }
 }
@@ -466,8 +453,6 @@ function updateStaffUI() {
         if (staffWelcome) staffWelcome.textContent = `Welcome, ${staffData.name}!`;
         if (mobileStaffName) mobileStaffName.textContent = staffData.name;
         if (staffInitial) staffInitial.textContent = staffData.name.charAt(0).toUpperCase();
-        
-        console.log("✅ UI updated with staff name:", staffData.name);
     } else {
         console.warn("⚠️ No staff name found in storage, using default");
         const staffWelcome = document.getElementById('staffWelcome');
@@ -478,7 +463,6 @@ function updateStaffUI() {
 // Fetch complaints assigned to this staff member
 async function fetchStaffComplaints() {
     try {
-        console.log("📡 Fetching staff complaints...");
         
         const response = await fetchWithAuth(`${BASE_URL}/api/staff/issues`);
         
@@ -487,12 +471,9 @@ async function fetchStaffComplaints() {
         }
         
         const data = await response.json();
-        console.log("📡 API Response:", data);
         
         if (data.success) {
             staffComplaints = data.data || [];
-            console.log(`✅ Staff complaints fetched: ${staffComplaints.length} complaints`);
-            console.log("📋 Complaints data:", staffComplaints);
             
             // Sort by priority (High -> Medium -> Low) and then by creation date
             staffComplaints.sort((a, b) => {
@@ -514,7 +495,6 @@ async function fetchStaffComplaints() {
             throw new Error(data.message || 'Failed to fetch complaints');
         }
     } catch (error) {
-        console.error("❌ Error fetching staff complaints:", error);
         if (!error.message.includes('Token expired')) {
             showError('Failed to load complaints: ' + error.message);
             
@@ -539,7 +519,6 @@ async function fetchStaffComplaints() {
 // Update statistics
 function updateStatistics() {
     try {
-        console.log("📊 Updating statistics...");
         
         const myOpenTasks = staffComplaints.filter(c => 
             c.status === 'pending' || c.status === 'in-progress'
@@ -556,12 +535,6 @@ function updateStatistics() {
         
         const unreadMessages = staffComplaints.filter(c => hasUnreadMessages(c)).length;
         
-        console.log("📊 Stats calculated:", {
-            myOpenTasks,
-            slaRiskTasks,
-            avgResolutionTime,
-            unreadMessages
-        });
         
         updateStatCard(0, myOpenTasks, 'MY OPEN TASKS', 'gray', `${myOpenTasks > 0 ? 'Active tasks' : 'No tasks'}`);
         updateStatCard(1, slaRiskTasks, 'SLA RISK', 'red', slaRiskTasks > 0 ? 'Due soon' : 'No urgent tasks');
@@ -572,7 +545,7 @@ function updateStatistics() {
         updateProgressBars();
         
     } catch (error) {
-        console.error('❌ Error updating statistics:', error);
+        console.error('Error updating statistics:', error);
     }
 }
 
@@ -690,12 +663,11 @@ function moveHighlight(tab) {
     tab.classList.add('active', 'text-blue-600', 'font-semibold');
     
     currentActiveTab = tab.textContent.trim();
-    console.log(`📁 Switching to tab: ${currentActiveTab}`);
     loadIssues(currentActiveTab);
 }
 
 function loadIssues(status) {
-    console.log(`📂 Loading issues for status: ${status}`);
+    console.log(`Loading issues for status: ${status}`);
     
     let filteredComplaints = [];
     
@@ -728,11 +700,11 @@ function loadIssues(status) {
             filteredComplaints = staffComplaints.filter(c => isAssignedToCurrentStaff(c));
     }
     
-    console.log(`📂 Filtered complaints: ${filteredComplaints.length} for status ${status}`);
+    console.log(`Filtered complaints: ${filteredComplaints.length} for status ${status}`);
     
     // If no complaints found, show all complaints for debugging
     if (filteredComplaints.length === 0 && staffComplaints.length > 0) {
-        console.log("⚠️ No filtered complaints, showing all for debugging");
+        console.log("No filtered complaints, showing all for debugging");
         filteredComplaints = staffComplaints;
     }
     
@@ -742,17 +714,17 @@ function loadIssues(status) {
 // Helper function to check if complaint is assigned to current staff
 // Helper function to check if complaint is assigned to current staff
 function isAssignedToCurrentStaff(complaint) {
-    console.log("🔍 Checking assignment for complaint:", complaint._id);
+    console.log("Checking assignment for complaint:", complaint._id);
     console.log("Current staff ID:", currentStaffId);
     console.log("AssignedTo data:", complaint.assignedTo);
     
     if (!currentStaffId) {
-        console.log("⚠️ No current staff ID, returning true");
+        console.log("No current staff ID, returning true");
         return true;
     }
     
     if (!complaint.assignedTo) {
-        console.log("⚠️ No assignedTo data, returning true");
+        console.log("No assignedTo data, returning true");
         return true;
     }
     
@@ -761,34 +733,32 @@ function isAssignedToCurrentStaff(complaint) {
     
     if (typeof complaint.assignedTo === 'string') {
         assignedStaffId = complaint.assignedTo;
-        console.log("📝 AssignedTo is string:", assignedStaffId);
+        console.log("AssignedTo is string:", assignedStaffId);
     } else if (complaint.assignedTo._id) {
         assignedStaffId = complaint.assignedTo._id;
-        console.log("📝 AssignedTo has _id:", assignedStaffId);
+        console.log("AssignedTo has _id:", assignedStaffId);
     } else if (complaint.assignedTo.id) {
         assignedStaffId = complaint.assignedTo.id;
-        console.log("📝 AssignedTo has id:", assignedStaffId);
+        console.log("AssignedTo has id:", assignedStaffId);
     } else if (complaint.assignedTo.userId) {
         assignedStaffId = complaint.assignedTo.userId;
-        console.log("📝 AssignedTo has userId:", assignedStaffId);
+        console.log("AssignedTo has userId:", assignedStaffId);
     }
     
-    const isAssigned = assignedStaffId === currentStaffId;
-    console.log("✅ Is assigned to current staff:", isAssigned);
-    
+    const isAssigned = assignedStaffId === currentStaffId;    
     return isAssigned;
 }
 
 // Display issues
 function displayIssues(issues) {
-    console.log("🔄 Displaying issues:", issues.length, issues);
+    console.log("Displaying issues:", issues.length, issues);
     
     if (!issuesContainer) {
-        console.error("❌ Issues container not found!");
+        console.error("Issues container not found!");
         // Try to reinitialize
         issuesContainer = document.getElementById('issuesContainer');
         if (!issuesContainer) {
-            console.error("❌ Still no issues container!");
+            console.error("Still no issues container!");
             return;
         }
     }
@@ -995,7 +965,7 @@ async function loadChatMessages(complaintId) {
 
 // Setup event listeners
 function setupEventListeners() {
-    console.log("🔧 Setting up event listeners...");
+    console.log("Setting up event listeners...");
     
     tabs.forEach(tab => {
         if (tab) {
@@ -1095,8 +1065,6 @@ function setupEventListeners() {
             taskDetailModal.classList.add('hidden');
         }
     });
-
-    console.log("✅ Event listeners setup complete");
 }
 
 // Auto-refresh data every 30 seconds
@@ -1114,7 +1082,6 @@ function startAutoRefresh() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("🏠 DOM Content Loaded - Starting staff dashboard");
     
     // Initialize DOM elements
     initializeDOMElements();
@@ -1144,10 +1111,6 @@ style.textContent = `
 document.head.appendChild(style);
 // Add this debug function
 function debugComplaints() {
-    console.log("🐛 DEBUG COMPLAINTS:");
-    console.log("Current Staff ID:", currentStaffId);
-    console.log("All complaints:", staffComplaints);
-    
     staffComplaints.forEach((complaint, index) => {
         console.log(`Complaint ${index}:`, {
             id: complaint._id,

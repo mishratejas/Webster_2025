@@ -560,6 +560,7 @@ const BASE_URL = "http://127.0.0.1:3000";
 // Token management
 let accessToken = localStorage.getItem('accessToken');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+let currentComplaints = [];// for sorting
 
 // Tab functionality
 const tabs = [
@@ -680,17 +681,44 @@ async function loadComplaints(status = 'Open') {
         const result = await response.json();
 
         if (result.success) {
-            displayComplaints(result.data, status);
+            currentComplaints = result.data; // Store the fetched complaints
+            sortAndDisplayComplaints();      // Call the new sorting function instead of displayComplaints directly
         } else {
             throw new Error(result.message);
         }
 
     } catch (error) {
         console.error('Error loading complaints:', error);
+        currentComplaints = []; // Clear data on error
         displaySampleComplaints(status);
     } finally {
         hideLoading();
     }
+}
+
+// Function to sort and display complaints
+function sortAndDisplayComplaints() {
+    const sortValue = document.getElementById('sortOptions').value;
+    const sortedComplaints = [...currentComplaints]; // Create a copy to sort
+
+    sortedComplaints.sort((a, b) => {
+        switch (sortValue) {
+            case 'date-asc':
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            case 'votes-desc':
+                return (b.voteCount || 0) - (a.voteCount || 0);
+            case 'votes-asc':
+                return (a.voteCount || 0) - (b.voteCount || 0);
+            case 'date-desc': // This is the default case
+            default:
+                return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+    });
+
+    const activeTab = document.querySelector('.tab.active');
+    const status = activeTab ? activeTab.textContent.trim() : 'Open';
+
+    displayComplaints(sortedComplaints, status);
 }
 
 // Display complaints in the grid
@@ -1099,6 +1127,12 @@ function setupLogoutButtons() {
 document.addEventListener('DOMContentLoaded', function () {
     updateAuthUI();
     setupLogoutButtons();
+
+    // Add event listener for the sort dropdown
+    const sortOptions = document.getElementById('sortOptions');
+    if (sortOptions) {
+        sortOptions.addEventListener('change', sortAndDisplayComplaints);
+    }
 
     // Load initial complaints if we have tabs
     if (tabs.length > 0) {

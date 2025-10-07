@@ -21,7 +21,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.3",
+    "mongoose": "^8.19.1",
     "multer": "^2.0.2",
     "path": "^0.12.7",
     "prettier": "^3.6.2"

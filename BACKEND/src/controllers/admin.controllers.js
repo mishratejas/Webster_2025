@@ -10,7 +10,7 @@ const __dirname=path.dirname(__filename);
 export const adminLogin=async(req,res) =>{
     try{
         const{ adminId,password } = req.body;
-        
+        console.log("Received Admin Login Data:", req.body);
         // Find admin by email or phone (using adminId for the combined identifier, like the User login)
         const admin=await Admin.findOne({
             $or:[{ email:adminId },{phone:adminId }],
@@ -42,6 +42,6 @@ export const adminLogin=async(req,res) =>{
     }
     catch(err){
         console.error("Admin Login Error",err);
-        res.status(50).send("Server Error during admin login")
+        res.status(500).send("Server Error during admin login")
     }
 };

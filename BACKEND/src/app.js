@@ -8,6 +8,9 @@ import user_issue from "./routes/user_issue.routes.js";
 import uploadRouter from "./routes/upload.routes.js"
 import adminIssueRoutes from "./routes/admin_issue.routes.js";
 import staffIssueRoutes from "./routes/staff_issue.routes.js";
+import otpRoutes from "./routes/otp.routes.js";
+import notificationRoutes from './routes/notification.routes.js';
+import chatRoutes from "./routes/chat.routes.js";
 
 const app = express();
 const allowedOrigins = [
@@ -60,6 +63,9 @@ app.use("/api/staff", staffRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/issues", adminIssueRoutes);
 app.use('/api/staff/issues',staffIssueRoutes);
+app.use("/api/otp", otpRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/chat", chatRoutes);
 //(auth req)
 app.use("/api/user_issues", user_issue);
 

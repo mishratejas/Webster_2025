@@ -61,7 +61,7 @@ const sendOTPSMS = async (phone, otp, purpose) => {
 
 // Request OTP for Signup/Login
 export const requestOTP = asyncHandler(async (req, res) => {
-    const { identifier, type = 'email', purpose = 'login', userType = 'user' } = req.body;
+    const { identifier, type = 'email', purpose, userType } = req.body;
 
     if (!identifier) {
         throw new ApiError(400, "Email or phone number is required");

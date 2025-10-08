@@ -9,12 +9,12 @@ import {
     searchMessages,
     getUnreadCount
 } from "../controllers/chat.controllers.js";
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // All chat routes require authentication
-router.use(authMiddleware);
+router.use(auth);
 
 // Send a message
 router.post("/send", sendMessage);

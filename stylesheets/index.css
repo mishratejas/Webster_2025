@@ -16,8 +16,27 @@ body {
             rgba(0, 137, 123, 0.05));
 }
 
+.logo{
+    color: white;
+}
+
+.logo-scorlled{
+    color: black;
+}
 .logo-x {
     color: var(--primary-teal);
+}
+
+.nav-top a {
+    color: white;
+}
+
+.lbtn{
+    color: white;
+}
+
+.lbtn-scrolled{
+    color: black;
 }
 
 .nav-scrolled {

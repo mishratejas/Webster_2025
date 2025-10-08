@@ -6,10 +6,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Navbar scroll effect
     window.addEventListener("scroll", function () {
         const navbar = document.getElementById("navbar");
+        const logo = document.getElementById("logo");
+        const lbtn = document.getElementById("navLoginBtn")
         if (window.scrollY > 50) {
-            navbar.classList.add("nav-scrolled");
+            navbar.classList.replace("nav-top", "nav-scrolled");
+            logo.classList.replace("logo", "logo-scorlled");
+            lbtn.classList.replace("lbtn", "lbtn-scrolled")
+            
         } else {
-            navbar.classList.remove("nav-scrolled");
+            navbar.classList.replace("nav-scrolled", "nav-top");
+            logo.classList.replace("logo-scorlled", "logo");
+            lbtn.classList.replace("lbtn-scrolled", "lbtn")
         }
     });
 

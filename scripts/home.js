@@ -785,12 +785,77 @@ function displayComplaints(complaints, status) {
                     ${complaint.images && complaint.images.length > 0 ?
                 `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
                 `<i class="fas fa-camera text-gray-400 text-xl"></i>`
-            }
+                    }
                 </div>
             </div>
         `;
         container.innerHTML += complaintCard;
     });
+}
+
+// NEW: Function to display reports inside the "My Reports" modal
+function displayMyReports(reports) {
+    const container = document.getElementById('myReportsContainer');
+    if (!container) return;
+
+    container.innerHTML = ''; // Clear previous reports
+
+    if (!reports || reports.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600">No Reports Found</h3>
+                <p class="text-gray-500">You haven't reported any issues yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    reports.forEach(complaint => {
+        const statusColor = getStatusColor(complaint.status);
+        const voteCount = complaint.voteCount || 0;
+        // This card structure is reused from the displayComplaints function
+        const reportCard = `
+            <div class="bg-white rounded-xl shadow-md p-4 issue-card flex gap-4 border">
+                <div class="flex flex-col items-center space-y-1 pt-2">
+                    <span class="font-bold text-lg text-gray-800">${voteCount}</span>
+                    <span class="text-xs text-gray-500">Votes</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
+                            ${complaint.status}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">${complaint.description}</p>
+                    <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                        <span><i class="fas fa-calendar mr-1"></i>${new Date(complaint.createdAt).toLocaleDateString()}</span>
+                        <span><i class="fas fa-map-marker-alt mr-1"></i>${complaint.location?.address || 'No location'}</span>
+                    </div>
+                </div>
+                <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                    ${complaint.images && complaint.images.length > 0 ?
+                `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
+                `<i class="fas fa-camera text-gray-400 text-xl"></i>`
+                    }
+                </div>
+            </div>
+        `;
+        container.innerHTML += reportCard;
+    });
+}
+
+// NEW: Shows a loading spinner inside the "My Reports" modal
+function showMyReportsLoading() {
+    const container = document.getElementById('myReportsContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        `;
+    }
 }
 
 // Handle voting
@@ -1169,6 +1234,9 @@ const reportModal = document.getElementById("reportModal");
 const closeReportModal = document.getElementById("closeReportModal");
 const reportIssueBtn = document.getElementById("reportIssueBtn");
 const floatingReportBtn = document.getElementById("floatingReportBtn");
+const myReportsModal = document.getElementById('myReportsModal');
+const viewMyReportsBtn = document.getElementById('viewMyReportsBtn');
+const closeMyReportsModal = document.getElementById('closeMyReportsModal');
 
 // Setup event listeners for modals
 if (reportIssueBtn) {
@@ -1207,6 +1275,66 @@ if (closeReportModal && reportModal) {
     reportModal.addEventListener("click", (e) => {
         if (e.target === reportModal) {
             reportModal.classList.add("hidden");
+        }
+    });
+}
+
+// NEW: Event Listeners for "My Reports" Modal
+if (viewMyReportsBtn) {
+    viewMyReportsBtn.addEventListener('click', async () => { // Make the function async
+        if (!currentUser) {
+            alert('Please login to view your reports.');
+            return;
+        }
+
+        if (myReportsModal) {
+            myReportsModal.classList.remove('hidden');
+        }
+
+        // --- START OF CHANGES ---
+
+        try {
+            // 1. Show a loading spinner immediately
+            showMyReportsLoading();
+
+            // 2. Call your new backend endpoint using authFetch
+            const response = await authFetch(`${BASE_URL}/api/user_issues/my-issues`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch your reports.');
+            }
+
+            const result = await response.json();
+
+            // 3. Display the reports returned from the API
+            if (result.success) {
+                displayMyReports(result.data);
+            } else {
+                throw new Error(result.message || 'Could not fetch reports.');
+            }
+
+        } catch (error) {
+            console.error("Error in handleViewMyReportsClick:", error);
+            // Display an error message inside the modal
+            const container = document.getElementById('myReportsContainer');
+            if(container) {
+                container.innerHTML = `<div class="text-center py-12 text-red-500">${error.message}</div>`;
+            }
+        }
+        
+        // --- END OF CHANGES ---
+    });
+}
+
+if (closeMyReportsModal && myReportsModal) {
+    closeMyReportsModal.addEventListener("click", () => {
+        myReportsModal.classList.add("hidden");
+    });
+
+    myReportsModal.addEventListener("click", (e) => {
+        // Close if the outer background is clicked
+        if (e.target === myReportsModal) {
+            myReportsModal.classList.add("hidden");
         }
     });
 }

@@ -39,6 +39,23 @@ export const handleAllIssueFetch = async (req, res) => {
     }
 };
 
+export const handleSingleUserIssueFetch = async (req, res)=>{
+    try {
+        // Find all issues where the 'user' field matches the logged-in user's ID
+        const userIssues = await UserComplaint.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: userIssues.length,
+            data: userIssues
+        });
+    } 
+    catch (error) {
+        console.error('Error fetching user issues:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+}
+
 // POST create issue - PROTECTED (uses your JWT auth)
 export const handleIssueGeneration = async (req, res) => {
     try {

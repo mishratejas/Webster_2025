@@ -57,7 +57,7 @@
                     <button id="reportIssueBtn" class="btn-gradient text-white font-bold text-lg py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300">
                         Report New Issue
                     </button>
-                    <button class="bg-white text-[#1a1f71] font-bold text-lg py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transform transition-all duration-300">
+                    <button id="viewMyReportsBtn" class="bg-white text-[#1a1f71] font-bold text-lg py-4 px-8 rounded-xl shadow-lg hover:bg-gray-100 transform transition-all duration-300">
                         View My Reports
                     </button>
                 </div>
@@ -195,6 +195,26 @@
             </div>
         </div>
     </div>
+
+    </div>
+
+    <div id="myReportsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        My Reported Issues
+                    </h2>
+                    <button id="closeMyReportsModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="myReportsContainer" class="p-6 space-y-4 overflow-y-auto">
+                </div>
+        </div>
+    </div>
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAx8vO_qcVsJ7EuXxDdP9jiSRH0You1pCg&libraries=marker,geocoding&async"></script>//add the api key
     <script src="./scripts/home.js"></script>
 </body>

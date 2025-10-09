@@ -245,6 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 staffId: data.staffId,
                 phone: data.phone,
                 password: data.password,
+                otp: data.otp,
             };
         } else if (isStaff && !isSignUp) {
             // Staff Sign In
@@ -547,13 +548,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Staff authentication tab switching
     if (staffSignUpTab) {
-        staffSignUpTab.addEventListener("click", () => {
-            staffSignUpTab.classList.add("active");
-            if (staffSignInTab) staffSignInTab.classList.remove("active");
-            if (staffSignUpForm) staffSignUpForm.classList.remove("hidden");
-            if (staffSignInForm) staffSignInForm.classList.add("hidden");
-            if (staffSubmitBtn) staffSubmitBtn.textContent = "REGISTER AS STAFF";
-        });
+    staffSignUpTab.addEventListener("click", () => {
+        staffSignUpTab.classList.add("active");
+        if (staffSignInTab) staffSignInTab.classList.remove("active");
+        if (staffSignUpForm) staffSignUpForm.classList.remove("hidden");
+        if (staffSignInForm) staffSignInForm.classList.add("hidden");
+
+        // Reset OTP state when switching to this tab
+        const staffOtpSection = document.getElementById("staffOtpSection");
+        if (staffOtpSection) staffOtpSection.classList.add("hidden");
+        staffSignUpForm.querySelectorAll('input').forEach(input => input.disabled = false);
+        
+        if (staffSubmitBtn) staffSubmitBtn.textContent = "SEND OTP";
+    });
     }
 
     if (staffSignInTab) {
@@ -653,18 +660,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Staff Submission
     if (staffSubmitBtn) {
-        staffSubmitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const isSignUp = staffSignUpForm && !staffSignUpForm.classList.contains("hidden");
-            const formElement = isSignUp ? staffSignUpForm : staffSignInForm;
-            const endpoint = isSignUp ? "/api/staff/register" : "/api/staff/login";
-            const message = isSignUp ? "Staff Registration Successful" : "Staff Login Successful";
+    staffSubmitBtn.addEventListener("click", async (e) => { // Make the function async
+        e.preventDefault();
+        
+        const isSignUp = staffSignUpForm && !staffSignUpForm.classList.contains("hidden");
+        
+        // Handle Sign-In as before
+        if (!isSignUp) {
+            handleFormSubmission(staffSignInForm, staffSubmitBtn, "/api/staff/login", "Staff Login Successful", false, true);
+            return;
+        }
 
-            if (formElement) {
-                handleFormSubmission(formElement, staffSubmitBtn, endpoint, message, isSignUp, true);
+        // --- Handle Staff Registration OTP Flow ---
+        const staffOtpSection = document.getElementById("staffOtpSection");
+
+        // Phase 1: User clicks "SEND OTP"
+        if (staffOtpSection.classList.contains("hidden")) {
+            if (!staffSignUpForm.checkValidity()) {
+                staffSignUpForm.reportValidity();
+                return;
             }
-        });
-    }
+            if (staffSignUpForm.password.value !== staffSignUpForm.confirmPassword.value) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            const email = staffSignUpForm.workEmail.value;
+            const staffId = staffSignUpForm.staffId.value;
+            const originalBtnText = staffSubmitBtn.textContent;
+            staffSubmitBtn.disabled = true;
+            staffSubmitBtn.textContent = "Sending OTP...";
+
+            try {
+                // Call your backend to send the OTP
+                const response = await fetch(`${BASE_URL}/api/otp/request`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    // Send both email and staffId as your backend might need it
+                    body: JSON.stringify({ identifier: email, purpose: "signup", userType: "staff" }) 
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Failed to send OTP.');
+
+                alert(result.message); // Show success message from backend
+
+                // Transition to Phase 2
+                staffOtpSection.classList.remove("hidden");
+                staffSubmitBtn.textContent = "REGISTER AS STAFF";
+                // Disable other fields
+                staffSignUpForm.querySelectorAll('input:not([name="otp"])').forEach(input => {
+                    if (input.type !== 'checkbox') input.disabled = true;
+                });
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                staffSubmitBtn.textContent = originalBtnText; // Restore button text on error
+            } finally {
+                staffSubmitBtn.disabled = false;
+            }
+        }
+        // Phase 2: User clicks "REGISTER AS STAFF"
+        else {
+            if (!document.getElementById("staffOtpInput").value) {
+                alert("Please enter the OTP.");
+                return;
+            }
+
+            // Re-enable all fields so FormData can capture them
+            staffSignUpForm.querySelectorAll('input').forEach(input => input.disabled = false);
+            
+            // Call the main submission handler for final registration
+            handleFormSubmission(staffSignUpForm, staffSubmitBtn, "/api/staff/register", "Staff Registration Successful", true, true);
+        }
+    });
+}
 
     // Admin Submission
     if (adminSubmitBtn) {

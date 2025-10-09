@@ -93,12 +93,12 @@
         <!-- Filter and List -->
         <div class="flex gap-6">
             <!-- Filter Icon -->
-            <div class="hidden md:flex flex-col items-center">
+            <!-- <div class="hidden md:flex flex-col items-center">
                  <svg class="w-8 h-8 text-gray-600 cursor-pointer hover:text-[#1a1f71] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18"></path>
                      <path d="M4 6h16M6 10h12M8 14h8m-6 4h4"></path>
                  </svg>
-            </div>
+            </div> -->
 
             <!-- Scrollable Issues List -->
             <div class="flex-grow h-[60vh] scrollable-list overflow-y-auto pr-2 space-y-4" id="issuesContainer">
@@ -144,31 +144,49 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Location</label>
-                            <input type="text" placeholder="Street, Area" 
-                                   class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                                   name="location" required>
+                            <label class="block text-gray-700 font-medium mb-2">Upload Image</label>
+                            <input type="file" 
+                            class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                            name="image" accept="image/*" id="image"  >
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Category</label>
                             <select class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                                    name="category" required>
-                                <option value="">Select Category</option>
-                                <option value="infrastructure">Infrastructure</option>
-                                <option value="safety">Public Safety</option>
-                                <option value="environment">Environment</option>
-                                <option value="other">Other</option>
-                            </select>
+                            name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="infrastructure">Infrastructure</option>
+                            <option value="safety">Public Safety</option>
+                            <option value="environment">Environment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                     <label class="block text-gray-700 font-medium mb-2">Location</label>
+                    <div id="map" class="h-64 mb-6 rounded-lg z-0"></div>
+                    <div class="mb-4">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Selected
+                                Address</label>
+                            <input type="text" id="address" name="address"
+                                class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                                readonly>
                         </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Upload Image</label>
-                        <input type="file" 
-                               class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                               name="image" accept="image/*" id="image"  >
-                    </div>
-                    <div id="result"></div>
+                        <div>
+                            <label>Location Description</label>
+                        </div>
+                        <input type="text" placeholder="Street, Area"
+                            class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                            name="location" required>
+                        <input type="hidden" id="lat" name="latitude">
+                        <input type="hidden" id="lng" name="longitude">
+                </div>
+                <!-- <div>
+                    <label class="block text-gray-700 font-medium mb-2">Location</label>
+                    <input type="text" placeholder="Street, Area" 
+                           class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                           name="location" required>
+                </div> -->
+                <div id="result"></div>
                     <button type="submit" 
                             class="w-full btn-gradient text-white font-bold text-lg py-3 px-12 rounded-xl mt-4">
                         Submit Issue
@@ -177,7 +195,7 @@
             </div>
         </div>
     </div>
-
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAx8vO_qcVsJ7EuXxDdP9jiSRH0You1pCg&libraries=marker,geocoding&async"></script>//add the api key
     <script src="./scripts/home.js"></script>
 </body>
 </html>

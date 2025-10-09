@@ -557,6 +557,11 @@
 // DEFINE THE BASE URL FOR YOUR BACKEND HERE
 const BASE_URL = "http://127.0.0.1:3000";
 
+//map
+let map;
+let marker;
+let geocoder;
+
 // Token management
 let accessToken = localStorage.getItem('accessToken');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
@@ -811,6 +816,102 @@ async function handleVote(complaintId) {
     }
 }
 
+// Function to update the location input fields in your form
+function updateLocationFields(lat, lng, address) {
+    if (document.getElementById('lat')) {
+        document.getElementById('lat').value = lat.toFixed(6);
+    }
+    if (document.getElementById('lng')) {
+        document.getElementById('lng').value = lng.toFixed(6);
+    }
+    if (document.getElementById('address')) {
+        document.getElementById('address').value = address;
+    }
+    // Also update the manual input field for consistency
+    const manualLocationInput = document.querySelector('input[name="location"]');
+    if (manualLocationInput) {
+        manualLocationInput.value = address;
+    }
+}
+
+// Function to get address from coordinates using Google's Geocoder
+function reverseGeocode(position) {
+    // Ensure geocoder is initialized
+    if (!geocoder) {
+        geocoder = new google.maps.Geocoder();
+    }
+    
+    geocoder.geocode({ location: position }, (results, status) => {
+        if (status === 'OK') {
+            if (results[0]) {
+                updateLocationFields(position.lat, position.lng, results[0].formatted_address);
+            } else {
+                updateLocationFields(position.lat, position.lng, "No address found");
+            }
+        } else {
+            console.error("Geocoder failed due to: " + status);
+            updateLocationFields(position.lat, position.lng, "Could not fetch address");
+        }
+    });
+}
+
+// Function to initialize the Google Map when the modal opens
+async function initializeMap() {
+    // Only initialize the map once
+    if (map) return;
+
+    // Default coordinates (Prayagraj, India)
+    const defaultPosition = { lat: 25.4358, lng: 81.8463 };
+
+    // Request the necessary Google Maps libraries
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    map = new Map(document.getElementById("map"), {
+        zoom: 13,
+        center: defaultPosition,
+        mapId: "RESOLVEX_MAP_ID" // A unique ID for your map style
+    });
+
+    marker = new AdvancedMarkerElement({
+        map: map,
+        position: defaultPosition,
+        gmpDraggable: true,
+    });
+    
+    // Add a listener for when the user stops dragging the marker
+    marker.addListener('dragend', () => {
+        const position = marker.position;
+        reverseGeocode(position);
+    });
+
+    // Try to get the user's current location from their browser
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                map.setCenter(userPosition);
+                map.setZoom(16);
+                marker.position = userPosition;
+                reverseGeocode(userPosition);
+            },
+            () => {
+                // This runs if the user denies location permission
+                console.log("Geolocation permission denied. Using default location.");
+                reverseGeocode(defaultPosition);
+            }
+        );
+    } else {
+        // This runs if the browser doesn't support geolocation
+        console.log("Browser doesn't support Geolocation. Using default location.");
+        reverseGeocode(defaultPosition);
+    }
+}
+
+
 // Handle complaint submission (WITH AUTH)
 // Handle complaint submission (WITH AUTH)
 document.getElementById('reportIssueForm').addEventListener('submit', async function (e) {
@@ -827,8 +928,12 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
     const complaintData = {
         title: formData.get('title'),
         description: formData.get('description'),
-        location: formData.get('location'),
         category: formData.get('category'),
+        location: {
+            address: formData.get('location'),
+            latitude: parseFloat(formData.get('latitude')) || null,
+            longitude: parseFloat(formData.get('longitude')) || null,
+        },
         images: [] // will be filled after upload
     };
 
@@ -1073,7 +1178,10 @@ if (reportIssueBtn) {
             window.location.href = 'index.html';
             return;
         }
-        if (reportModal) reportModal.classList.remove("hidden");
+        if (reportModal){ 
+            reportModal.classList.remove("hidden");
+            setTimeout(() => initializeMap(), 100)
+        }        
     });
 }
 
@@ -1084,7 +1192,10 @@ if (floatingReportBtn) {
             window.location.href = 'index.html';
             return;
         }
-        if (reportModal) reportModal.classList.remove("hidden");
+        if (reportModal) {
+            reportModal.classList.remove("hidden");
+            setTimeout(() => initializeMap(), 100);
+        }
     });
 }
 

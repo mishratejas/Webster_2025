@@ -57,7 +57,9 @@ export const handleIssueGeneration = async (req, res) => {
             title,
             description,
             location: {
-                address: location
+                address: location.address,
+                latitude: location.latitude,
+                longitude: location.longitude,
             },
             images,
             category: mapCategoryToBackend(category),

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdminX - Analytics Panel</title>
+    <link rel="stylesheet" href="./stylesheets/analytics.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-chart-line"></i> AdminX</h1>
+                <p class="sidebar-subtitle">Analytics Panel</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>NAVIGATION</h3>
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link active">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Triage Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-group">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                Analytics
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <ul class="nav-submenu">
+                                <li><a href="#"><i class="fas fa-users"></i> Staff Management</a></li>
+                                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="quick-stats-card">
+                    <h4>Quick Stats</h4>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Issues:</span>
+                        <span class="stat-value" id="quickActive">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Resolved Today:</span>
+                        <span class="stat-value" id="quickResolved">3</span>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="admin-profile">
+                    <div class="admin-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="admin-info">
+                        <span class="admin-name">Administrator</span>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-left">
+                    <h2>Analytics Dashboard</h2>
+                    <p class="header-subtitle">Real-time complaint analytics and insights</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="dateRange" class="filter-select">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                            <option value="365">Last Year</option>
+                        </select>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" id="exportPdfBtn">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="btn btn-secondary" id="exportCsvBtn">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon total-complaints">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="totalComplaints">0</h3>
+                        <p>Total Complaints</p>
+                        <span class="metric-trend" id="complaintsTrend"></span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon resolution-rate">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="resolutionRate">0%</h3>
+                        <p>Resolution Rate</p>
+                        <span class="metric-trend" id="resolutionTrend"></span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon resolution-time">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="avgResolutionTime">0 days</h3>
+                        <p>Avg. Resolution Time</p>
+                        <span class="metric-trend" id="resolutionTimeTrend"></span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon satisfaction">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="satisfactionScore">0%</h3>
+                        <p>Satisfaction Score</p>
+                        <span class="metric-trend" id="satisfactionTrend"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Complaints Timeline</h3>
+                        <p>Daily created vs resolved complaints</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>By Department</h3>
+                        <p>Complaint distribution</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>By Status</h3>
+                        <p>Current status overview</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>By Priority</h3>
+                        <p>Priority level distribution</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Monthly Trends</h3>
+                        <p>Long-term patterns</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmap Section -->
+            <div class="additional-grid">
+                <div class="additional-card full-width">
+                    <div class="chart-header">
+                        <h3>Geographic Heatmap</h3>
+                        <div class="heatmap-controls">
+                            <select id="heatmapDepartment" class="filter-select">
+                                <option value="all">All Departments</option>
+                                <option value="technical">Technical</option>
+                                <option value="billing">Billing</option>
+                                <option value="support">Support</option>
+                                <option value="infrastructure">Infrastructure</option>
+                                <option value="sanitation">Sanitation</option>
+                            </select>
+                            <button class="btn btn-sm" id="refreshHeatmapBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-sm" id="testHeatmapBtn">
+                                <i class="fas fa-bolt"></i> Test Data
+                            </button>
+                            <button class="btn btn-sm" id="clearHeatmapBtn">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="heatmap-container" id="heatmapContainer">
+                        <!-- Heatmap will render here -->
+                    </div>
+                    <div class="heatmap-stats" id="heatmapStats">
+                        <span id="pointsCount">0</span> clusters • 
+                        <span id="complaintsCount">0</span> total complaints • 
+                        <span id="highPriorityCount">0</span> high priority
+                    </div>
+                </div>
+
+                <div class="additional-card">
+                    <div class="chart-header">
+                        <h3>Staff Performance</h3>
+                        <p>Top performers</p>
+                    </div>
+                    <div class="staff-container" id="staffPerformance">
+                        <!-- Staff performance will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heatmap Tooltip -->
+    <div id="heatmapTooltip" class="heatmap-tooltip">
+        <div id="tooltipContent"></div>
+    </div>
+
+    <!-- Heatmap Modal -->
+    <div id="heatmapModal" class="heatmap-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Cluster Details</h3>
+                <button id="closeModal" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/charts.js"></script>
+    <script src="./scripts/heatmap.js"></script>
+    <script src="./scripts/exports.js"></script>
+    <script src="./scripts/analytics.js"></script>
+</body>
+</html>

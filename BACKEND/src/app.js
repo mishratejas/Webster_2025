@@ -11,7 +11,7 @@ import staffIssueRoutes from "./routes/staff_issue.routes.js";
 import otpRoutes from "./routes/otp.routes.js";
 import notificationRoutes from './routes/notification.routes.js';
 import chatRoutes from "./routes/chat.routes.js";
-
+import analyticsRoutes from "./routes/analytics.routes.js";
 const app = express();
 const allowedOrigins = [
     'http://127.0.0.1:5500',
@@ -36,7 +36,6 @@ app.use(cors({
 app.options(/.*/, cors());
 
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
     next();
 });
 
@@ -66,6 +65,7 @@ app.use('/api/staff/issues',staffIssueRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/admin/analytics", analyticsRoutes);
 //(auth req)
 app.use("/api/user_issues", user_issue);
 

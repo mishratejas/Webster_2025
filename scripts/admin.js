@@ -967,3 +967,45 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeAdminDashboard();
   }
 });
+// Add this function to handle navigation
+function navigateToPage(page) {
+    console.log('Navigating to:', page);
+    window.location.href = page;
+}
+
+// Update all navigation links
+function setupNavigation() {
+    // Update analytics link
+    const analyticsLinks = document.querySelectorAll('a');
+    analyticsLinks.forEach(link => {
+        if (link.innerHTML.includes('fa-chart-pie')) {
+            link.onclick = () => navigateToPage('analytics.html');
+        }
+        if (link.innerHTML.includes('fa-chart-line') && link.parentElement.parentElement.querySelector('.fa-chart-pie')) {
+            link.onclick = () => navigateToPage('admin.html');
+        }
+    });
+}
+
+// Call this in your initialize function
+async function initializeAdminDashboard() {
+    try {
+        updateAdminUI();
+        await fetchStaffList();
+        await fetchAllComplaints();
+        updateStatistics();
+        setupEventListeners();
+        setupNavigation(); // ADD THIS LINE
+
+        const initialTab = document.getElementById("newTab");
+        if (initialTab) {
+            moveHighlight(initialTab);
+        }
+    } catch (error) {
+        if (error.message.includes("401") || error.message.includes("expired")) {
+            handleTokenExpiration();
+        } else {
+            showError("Failed to initialize dashboard: " + error.message);
+        }
+    }
+}

@@ -1,45 +1,79 @@
 import User from "../models/User.models.js";
+import OTP from "../models/otp.model.js"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 //signup ke liye
 export const userSignup = async (req, res) => {
     try {
-        const { name, email, password, phone, street, city, state, pincode } = req.body;
+        // 1. Get all data from the request body (from new controller)
+        const { name, email, password, phone, street, city, state, pincode, otp } = req.body;
 
-        if (!name || !email || !password || !phone) {
-            return res.status(400).json({ message: "Please fill all required fields: name, email, password, phone." });
+        // 2. Validate all required fields are present (from new controller)
+        if (!name || !email || !password || !phone || !otp) {
+            return res.status(400).json({ message: "Please fill all required fields, including OTP." });
         }
 
-        //Check if user already exists
-        const existingUser = await User.findOne({ email });
+        // 3. Find the OTP record for verification (from new controller)
+        const otpRecord = await OTP.findOne({
+            identifier: email,
+            purpose: 'signup',
+            expiresAt: { $gt: new Date() } // Check if not expired
+        });
+
+        if (!otpRecord) {
+            return res.status(400).json({ message: "Invalid request. Please verify OTP first or your OTP has expired." });
+        }
+
+        // 4. Check OTP attempt limit (from new controller)
+        if (otpRecord.attempts >= 5) {
+            await OTP.deleteOne({ _id: otpRecord._id });
+            return res.status(429).json({ message: "Too many failed attempts. Please request a new OTP." });
+        }
+
+        // 5. Compare the submitted OTP with the stored hash (from new controller)
+        const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
+        if (!isValidOTP) {
+            otpRecord.attempts += 1;
+            await otpRecord.save();
+            return res.status(400).json({ message: `Invalid OTP. ${5 - otpRecord.attempts} attempts remaining.` });
+        }
+
+        // 6. Check if user already exists (using the better $or query from new controller)
+        const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
         if (existingUser) {
-            return res.status(400).json({ message: "Email already registered" });
+            return res.status(400).json({ message: "Email or phone already registered" });
         }
 
-        //Hash Password
+        // 7. Hash password (from old controller)
         const hashedPassword = await bcrypt.hash(password, 10);
-        //create newUser
+
+        // 8. Create the new user using the structure from the old controller
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
             phone,
-            address: {
+            address: { // This ensures the nested address object is created correctly
                 street,
                 city,
                 state,
                 pincode,
             },
+            isVerified: true // You can add this from your new schema if it exists
         });
 
         await newUser.save();
-        // Generate tokens after signup
+
+        // 9. IMPORTANT: Delete the OTP record after successful user creation (from new controller)
+        await OTP.deleteOne({ _id: otpRecord._id });
+
+        // 10. Generate tokens (from old controller)
         const payload = { id: newUser._id, role: newUser.role || "user" };
         const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-        // Send refresh token as cookie
+        // 11. Send refresh token as a cookie (from old controller)
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -47,10 +81,11 @@ export const userSignup = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
+        // 12. Send the final JSON response in the format the frontend expects (from old controller)
         res.status(201).json({
             message: "User registered successfully",
-            accessToken, // ← ADD THIS
-            user: { // ← ADD THIS
+            accessToken,
+            user: {
                 id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
@@ -59,15 +94,79 @@ export const userSignup = async (req, res) => {
                 role: newUser.role,
             }
         });
-    }
-    catch (err) {
+
+    } catch (err) {
         console.error("User Signup Error: ", err);
-        if (err.name === 'ValidationError') {
-            return res.status(400).json({ message: err.message || "Validation failed for one or more fields." });
-        }
         res.status(500).json({ message: "Server Error" });
     }
 };
+// export const userSignup = async (req, res) => {
+//     try {
+//         const { name, email, password, phone, street, city, state, pincode } = req.body;
+
+//         if (!name || !email || !password || !phone) {
+//             return res.status(400).json({ message: "Please fill all required fields: name, email, password, phone." });
+//         }
+
+//         //Check if user already exists
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({ message: "Email already registered" });
+//         }
+
+//         //Hash Password
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         //create newUser
+//         const newUser = new User({
+//             name,
+//             email,
+//             password: hashedPassword,
+//             phone,
+//             address: {
+//                 street,
+//                 city,
+//                 state,
+//                 pincode,
+//             },
+//         });
+
+//         await newUser.save();
+//         // Generate tokens after signup
+//         const payload = { id: newUser._id, role: newUser.role || "user" };
+//         const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+//         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+
+//         // Send refresh token as cookie
+//         res.cookie("refreshToken", refreshToken, {
+//             httpOnly: true,
+//             secure: process.env.NODE_ENV === "production",
+//             sameSite: "strict",
+//             maxAge: 7 * 24 * 60 * 60 * 1000,
+//         });
+
+//         res.status(201).json({
+//             message: "User registered successfully",
+//             accessToken, // ← ADD THIS
+//             user: { // ← ADD THIS
+//                 id: newUser._id,
+//                 name: newUser.name,
+//                 email: newUser.email,
+//                 phone: newUser.phone,
+//                 address: newUser.address,
+//                 role: newUser.role,
+//             }
+//         });
+//     }
+//     catch (err) {
+//         console.error("User Signup Error: ", err);
+//         if (err.name === 'ValidationError') {
+//             return res.status(400).json({ message: err.message || "Validation failed for one or more fields." });
+//         }
+//         res.status(500).json({ message: "Server Error" });
+//     }
+// };
+
+
 
 //Login controller
 

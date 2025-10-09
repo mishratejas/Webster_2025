@@ -15,6 +15,7 @@ import {
 const router = express.Router();
 
 // Request OTP (for login/signup)
+// api/otp/request
 router.post("/request", requestOTP);
 
 // Verify OTP

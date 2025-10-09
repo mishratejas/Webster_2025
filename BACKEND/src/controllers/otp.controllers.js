@@ -139,7 +139,7 @@ export const requestOTP = asyncHandler(async (req, res) => {
 
 // Verify OTP
 export const verifyOTP = asyncHandler(async (req, res) => {
-    const { identifier, otp, purpose = 'login' } = req.body;
+    const { identifier, otp } = req.body;
 
     if (!identifier || !otp) {
         throw new ApiError(400, "Identifier and OTP are required");

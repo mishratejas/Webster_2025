@@ -229,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 city: data.city,
                 state: data.state,
                 pincode: data.pincode,
+                otp: data.otp, 
             };
         } else if (!isSignUp && !isStaff) {
             // User Sign In
@@ -519,14 +520,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // User authentication tab switching
     if (userSignUpTab) {
-        userSignUpTab.addEventListener("click", () => {
-            userSignUpTab.classList.add("active");
-            if (userSignInTab) userSignInTab.classList.remove("active");
-            if (userSignUpForm) userSignUpForm.classList.remove("hidden");
-            if (userSignInForm) userSignInForm.classList.add("hidden");
-            if (userSubmitBtn) userSubmitBtn.textContent = "SIGN UP";
-        });
-    }
+    userSignUpTab.addEventListener("click", () => {
+        userSignUpTab.classList.add("active");
+        if (userSignInTab) userSignInTab.classList.remove("active");
+        if (userSignUpForm) userSignUpForm.classList.remove("hidden");
+        if (userSignInForm) userSignInForm.classList.add("hidden");
+        
+        // Reset OTP state when switching to this tab
+        const userOtpSection = document.getElementById("userOtpSection");
+        if (userOtpSection) userOtpSection.classList.add("hidden");
+        userSignUpForm.querySelectorAll('input').forEach(input => input.disabled = false);
+
+        if (userSubmitBtn) userSubmitBtn.textContent = "SEND OTP";
+    });
+}
 
     if (userSignInTab) {
         userSignInTab.addEventListener("click", () => {
@@ -563,18 +570,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // User Submission
     if (userSubmitBtn) {
-        userSubmitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const isSignUp = userSignUpForm && !userSignUpForm.classList.contains("hidden");
-            const formElement = isSignUp ? userSignUpForm : userSignInForm;
-            const endpoint = isSignUp ? "/api/users/signup" : "/api/users/login";
-            const message = isSignUp ? "User Registration Successful" : "User Login Successful";
+    // Make the event listener async to handle the fetch call for OTP
+    userSubmitBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        
+        // If it's a Sign In, use the old logic
+        const isSignIn = userSignInTab && userSignInTab.classList.contains("active");
+        if (isSignIn) {
+            handleFormSubmission(userSignInForm, userSubmitBtn, "/api/users/login", "User Login Successful", false, false);
+            return;
+        }
 
-            if (formElement) {
-                handleFormSubmission(formElement, userSubmitBtn, endpoint, message, isSignUp, false);
+        // --- Handle Sign Up Flow ---
+        const userOtpSection = document.getElementById("userOtpSection");
+        
+        // Phase 1: User fills details and clicks "SEND OTP"
+        if (userOtpSection.classList.contains("hidden")) {
+            // Basic validation
+            if (!userSignUpForm.checkValidity()) {
+                userSignUpForm.reportValidity();
+                return;
             }
-        });
-    }
+            if (userSignUpForm.password.value !== userSignUpForm.confirmPassword.value) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            const email = userSignUpForm.email.value;
+            const originalBtnText = userSubmitBtn.textContent;
+            userSubmitBtn.disabled = true;
+            userSubmitBtn.textContent = "Sending...";
+
+            try {
+                // Assume your backend has an endpoint to send OTP
+                const response = await fetch(`${BASE_URL}/api/otp/request`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        identifier: email,
+                        purpose: "signup",
+                        userType: "user",
+                    })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Failed to send OTP.');
+
+                alert(result.message); // e.g., "OTP sent successfully!"
+
+                // Transition to Phase 2: Show OTP field
+                userOtpSection.classList.remove("hidden");
+                userSubmitBtn.textContent = "SIGN UP";
+                
+                // Disable other fields to prevent changes
+                userSignUpForm.querySelectorAll('input:not([name="otp"])').forEach(input => {
+                    if (input.type !== 'checkbox') input.disabled = true;
+                });
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                userSubmitBtn.textContent = originalBtnText;
+            } finally {
+                userSubmitBtn.disabled = false;
+            }
+        } 
+        // Phase 2: User has entered OTP and clicks "SIGN UP"
+        else {
+            const otpValue = document.getElementById("userOtpInput").value;
+            if (!otpValue) {
+                alert("Please enter the OTP.");
+                return;
+            }
+
+            // Re-enable all fields so FormData can collect their values
+            userSignUpForm.querySelectorAll('input').forEach(input => input.disabled = false);
+
+            // Call the main submission function
+            handleFormSubmission(userSignUpForm, userSubmitBtn, "/api/users/signup", "User Registration Successful", true, false);
+        }
+    });
+}
 
     // Staff Submission
     if (staffSubmitBtn) {

@@ -211,10 +211,21 @@
                 </div>
             </div>
             <div id="myReportsContainer" class="p-6 space-y-4 overflow-y-auto">
-                </div>
+            </div>
         </div>
     </div>
-
+    <div id="issueDetailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">Issue Details</h2>
+            <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div id="detailModalBody" class="p-8 space-y-4 overflow-y-auto">
+            </div>
+    </div>
+</div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAx8vO_qcVsJ7EuXxDdP9jiSRH0You1pCg&libraries=marker,geocoding&async"></script>//add the api key
     <script src="./scripts/home.js"></script>
 </body>

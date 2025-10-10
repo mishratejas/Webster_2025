@@ -567,6 +567,10 @@ let accessToken = localStorage.getItem('accessToken');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let currentComplaints = [];// for sorting
 
+const issueDetailModal = document.getElementById('issueDetailModal');
+const closeDetailModal = document.getElementById('closeDetailModal');
+const detailModalBody = document.getElementById('detailModalBody');
+
 // Tab functionality
 const tabs = [
     document.getElementById('openTab'),
@@ -746,14 +750,13 @@ function displayComplaints(complaints, status) {
 
     complaints.forEach(complaint => {
         const statusColor = getStatusColor(complaint.status);
-        const priorityColor = getPriorityColor(complaint.priority);
         const voteCount = complaint.voteCount || 0;
 
         const complaintCard = `
-            <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4">
-                <!-- Voting -->
+            <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4 cursor-pointer hover:shadow-xl transition-shadow" onclick="openDetailModal('${complaint._id}')">
+                
                 <div class="flex flex-col items-center space-y-1">
-                    <button class="vote-btn" onclick="handleVote('${complaint._id}')">
+                    <button class="vote-btn" onclick="handleVoteClick(event, '${complaint._id}')">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                         </svg>
@@ -762,7 +765,6 @@ function displayComplaints(complaints, status) {
                     <span class="text-xs text-gray-500">Votes</span>
                 </div>
                 
-                <!-- Main Content -->
                 <div class="flex-grow">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
@@ -780,12 +782,11 @@ function displayComplaints(complaints, status) {
                     </div>
                 </div>
                 
-                <!-- Image Preview -->
                 <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
                     ${complaint.images && complaint.images.length > 0 ?
-                `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
-                `<i class="fas fa-camera text-gray-400 text-xl"></i>`
-                    }
+            `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
+            `<i class="fas fa-camera text-gray-400 text-xl"></i>`
+        }
                 </div>
             </div>
         `;
@@ -858,15 +859,16 @@ function showMyReportsLoading() {
     }
 }
 
+
 // Handle voting
 async function handleVote(complaintId) {
     try {
         const response = await fetch(`${BASE_URL}/api/user_issues/${complaintId}/vote`, {
             method: 'PUT'
         });
-
+        
         const result = await response.json();
-
+        
         if (result.success) {
             // Reload complaints to show updated vote count
             const activeTab = document.querySelector('.tab.active');
@@ -874,10 +876,47 @@ async function handleVote(complaintId) {
         } else {
             alert('Error: ' + result.message);
         }
-
+        
     } catch (error) {
         console.error('Error voting:', error);
         alert('Error voting on complaint');
+    }
+}
+
+// NEW: Function to open and populate the detail modal
+function openDetailModal(complaintId) {
+    const complaint = currentComplaints.find(c => c._id === complaintId);
+    if (!complaint) {
+        console.error("Complaint not found!");
+        return;
+    }
+
+    // Populate the modal body with complaint details
+    detailModalBody.innerHTML = `
+        ${complaint.images && complaint.images.length > 0 ?
+            `<img src="${complaint.images[0]}" class="w-full h-64 object-contain rounded-lg mb-4 shadow-md" alt="Complaint image">` :
+            ''
+        }
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}">${complaint.status}</span>
+            <span><i class="fas fa-user mr-2"></i><strong>Posted by:</strong> ${complaint.user?.name || 'Anonymous'}</span>
+            <span><i class="fas fa-calendar mr-2"></i><strong>On:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</span>
+            <span><i class="fas fa-thumbs-up mr-2"></i><strong>Votes:</strong> ${complaint.voteCount || 0}</span>
+        </div>
+        <h3 class="text-3xl font-bold text-gray-900 mb-3">${complaint.title}</h3>
+        <p class="text-gray-700 text-base mb-6 whitespace-pre-wrap">${complaint.description}</p>
+        <div class="border-t pt-4">
+            <h4 class="font-semibold text-lg mb-2 text-gray-800">Location</h4>
+            <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>${complaint.location?.address || 'No location provided'}</p>
+        </div>
+        <div>
+            <a href="${complaint.location?.latitude ? `https://maps.google.com/?q=${complaint.location?.latitude},${complaint.location?.longitude}`:``}" class="text-blue-600 hover:underline" target="_blank"><h5>Visit the Location</h5></a>
+        </div>
+    `;
+
+    // Show the modal
+    if (issueDetailModal) {
+        issueDetailModal.classList.remove('hidden');
     }
 }
 
@@ -1121,6 +1160,11 @@ function updateAuthUI() {
     }
 }
 
+//wrapper function to click vote 
+function handleVoteClick(event, complaintId) {
+    event.stopPropagation(); // Prevents the card's click event from firing
+    handleVote(complaintId); // Calls your existing vote function
+}
 // Logout function
 async function logout() {
     try {
@@ -1371,6 +1415,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const sortOptions = document.getElementById('sortOptions');
     if (sortOptions) {
         sortOptions.addEventListener('change', sortAndDisplayComplaints);
+    }
+
+    // Setup for the new Issue Detail Modal
+    if (closeDetailModal && issueDetailModal) {
+        // Handle closing with the 'X' button
+        closeDetailModal.addEventListener("click", () => {
+            issueDetailModal.classList.add("hidden");
+        });
+
+        // Handle closing by clicking the background overlay
+        issueDetailModal.addEventListener("click", (e) => {
+            if (e.target === issueDetailModal) {
+                issueDetailModal.classList.add("hidden");
+            }
+        });
     }
 
     // Load initial complaints if we have tabs

@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import cookieParser from 'cookie-parser';
+
 import userRoutes from "./routes/user.routes.js";
 import staffRoutes from "./routes/staf.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -13,6 +16,25 @@ import notificationRoutes from './routes/notification.routes.js';
 import chatRoutes from "./routes/chat.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 const app = express();
+const server = createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: [
+            'http://127.0.0.1:5500',
+            'http://localhost:5500',
+            'http://127.0.0.1:3000',
+            'http://localhost:3000'
+        ],
+        methods: ['GET', 'POST'],
+        credentials: true
+    },
+    transports: ['websocket', 'polling']
+});
+
+// Make io available globally
+global.io = io;
+
 const allowedOrigins = [
     'http://127.0.0.1:5500',
     'http://localhost:5500',
@@ -77,6 +99,27 @@ app.get("/health", (req, res) => {
     res.json(`Server is runnig healthy`)
 })
 
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+    console.log('✅ User connected:', socket.id);
+    
+    // Join user to their room
+    socket.on('join', (userId) => {
+        socket.join(userId.toString());
+        console.log(`User ${userId} joined room`);
+    });
+    
+    // Handle disconnect
+    socket.on('disconnect', () => {
+        console.log('❌ User disconnected:', socket.id);
+    });
+    
+    // Handle errors
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
+    });
+});
+
 // 🔹 Global error handler (important for multer 413 errors)
 app.use((err, req, res, next) => {
     console.error("Error:", err.message);
@@ -94,8 +137,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log("Server running at http://localhost:3000");
-});
 
-export { app }
+
+export { app, server ,io};

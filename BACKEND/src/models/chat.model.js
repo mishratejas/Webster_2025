@@ -26,6 +26,11 @@ const chatMessageSchema = new mongoose.Schema({
         required: true,
         enum: ['Admin', 'Staff']
     },
+    complaintId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserComplaint", // or "AdminComplaint" if chat is on admin complaint
+      default: null,
+    },
     message: {
         type: String,
         required: true,
@@ -46,8 +51,14 @@ const chatMessageSchema = new mongoose.Schema({
         default: false
     },
     deletedBy: [{
-        type: mongoose.Schema.Types.ObjectId
-    }]
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'deletedByModel'
+    }],
+
+     deletedByModel: {
+      type: String,
+      enum: ["Admin", "Staff"],
+    },
 }, { timestamps: true });
 
 // Index for efficient queries

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 import connectDB from "./db/index.js"
-import { app } from "./app.js";
+import { app,server } from "./app.js";
 
 dotenv.config({
     path:'./.env'
@@ -9,8 +9,9 @@ dotenv.config({
 const PORT=process.env.PORT || 3000;
 connectDB()
 .then(()=>{
-    app.listen(process.env.PORT || 3000,()=>{
+    server.listen(process.env.PORT || 3000,()=>{
         console.log(`Server is running at port: ${process.env.PORT}`);
+        console.log(`✅ Socket.IO server is running on the same port`);
     })
 })
 .catch((err)=>{

@@ -9,12 +9,12 @@ import {
     searchMessages,
     getUnreadCount
 } from "../controllers/chat.controllers.js";
-import { auth } from "../middleware/auth.js";
+import { chatAuth } from "../middleware/chatAuth.js";
 
 const router = express.Router();
 
 // All chat routes require authentication
-router.use(auth);
+router.use(chatAuth);
 
 // Send a message
 router.post("/send", sendMessage);
@@ -29,15 +29,15 @@ router.get("/conversation/:otherUserId", getConversation);
 router.patch("/conversation/:conversationId/read", markMessagesAsRead);
 
 // Edit a message
-router.patch("/message/:messageId", editMessage);
+router.patch("/message/:messageId/edit", editMessage);
 
 // Delete a message
-router.delete("/message/:messageId", deleteMessage);
+router.delete("/message/:messageId/delete", deleteMessage);
 
 // Search messages
 router.get("/search", searchMessages);
 
 // Get unread message count
-router.get("/unread/count", getUnreadCount);
+router.get("/unread-count", getUnreadCount);
 
 export default router;

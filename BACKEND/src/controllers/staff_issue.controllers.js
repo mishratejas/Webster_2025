@@ -1,5 +1,6 @@
 import UserComplaint from "../models/UserComplaint.models.js";
-
+import { asyncHandler } from "../utils/asyncHandler.js";
+import Admin from "../models/Admin.models.js";
 export const handleGetStaffComplaints=async(req ,res)=>{
     try{
         const staffId=req.staff._id;
@@ -159,3 +160,45 @@ export const handleGetStaffStats = async (req, res) => {
         });
     }
 };
+
+// Add this simple function to staff_issue.controller.js
+export const getAdminsIdForStaff = asyncHandler(async (req, res) => {
+    try {
+        console.log("🔍 Fetching admin information...");
+        
+        // Check if User model is working
+        const adminCount = await Admin.countDocuments({ role: 'admin' });
+        console.log(`📊 Total admin users: ${adminCount}`);
+
+        const admin = await Admin.findOne({ role: 'admin' })
+            .select('_id name email role');
+
+        if (!admin) {
+            console.log("❌ No admin user found with role 'admin'");
+            return res.status(404).json({
+                success: false,
+                message: 'No admin user found in system'
+            });
+        }
+
+        console.log("✅ Admin found:", admin);
+        
+        res.status(200).json({
+            success: true,
+            data: {
+                adminId: admin._id.toString(),
+                name: admin.name,
+                email: admin.email,
+                role: admin.role
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ SERVER ERROR in getAdminIdForStaff:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error: ' + error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});

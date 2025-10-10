@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
         :root {
             --staff-primary: #00897b; /* Teal */
@@ -136,6 +137,16 @@
             border-radius: 12px;
             padding: 8px 12px;
             margin-bottom: 8px;
+        }
+        /* Prevent background scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Ensure modal content scrolls properly */
+        #taskDetailModal .modal-content {
+            max-height: calc(100% - 60px);
+            overflow-y: auto;
         }
     </style>
 </head>

@@ -408,8 +408,8 @@ class AnalyticsApp {
                             <p class="staff-department">${staff.department}</p>
                         </div>
                         <div class="text-right">
+                            <span class="text-xs text-gray-600">Resolution Rate</span>
                             <span class="font-bold text-blue-600">${staff.resolutionRate}%</span>
-                            <p class="text-xs text-gray-600">Resolution Rate</p>
                         </div>
                     </div>
                     

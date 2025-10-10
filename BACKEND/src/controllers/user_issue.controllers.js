@@ -128,6 +128,52 @@ export const handleSingleIssueFetch = async (req, res) => {
     }
 };
 
+export const handleComplaintLocations = async (req, res) => {
+    try {
+        const complaints = await UserComplaint.find(
+            {
+                "location.latitude": { $exists: true, $ne: null },
+                "location.longitude": { $exists: true, $ne: null }
+            },
+            {
+                title: 1,
+                category: 1,
+                priority: 1,
+                status: 1,
+                "location.latitude": 1,
+                "location.longitude": 1,
+                "location.address": 1,
+                createdAt: 1
+            }
+        );
+
+        const formatted = complaints.map(c => ({
+            title: c.title,
+            category: c.category,
+            priority: c.priority,
+            status: c.status,
+            latitude: c.location?.latitude,
+            longitude: c.location?.longitude,
+            address: c.location?.address || "N/A",
+            date: c.createdAt
+        }));
+
+        res.json({
+            success: true,
+            count: formatted.length,
+            data: formatted
+        });
+    } catch (error) {
+        console.error("Error fetching complaint locations:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error fetching complaint locations"
+        });
+    }
+};
+
+
+
 // PUT vote on issue - PUBLIC
 export const handleVoteCount = async (req, res) => {
     try {

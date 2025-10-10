@@ -6,7 +6,8 @@ import {
     handleSingleUserIssueFetch,
     handleIssueGeneration, 
     handleSingleIssueFetch, 
-    handleVoteCount 
+    handleVoteCount,
+    handleComplaintLocations
 } from "../controllers/user_issue.controllers.js";
 
 import { auth } from "../middleware/auth.js";
@@ -22,11 +23,14 @@ router.post('/',auth, handleIssueGeneration);
 //GET /api/user_issues/my-issues - Get all the complaints of a specific user
 router.get("/my-issues", auth, handleSingleUserIssueFetch)
 
+router.get('/locations', handleComplaintLocations);
+
 // GET /api/user_issues/:id - Get single complaint details (public)
 router.get('/:id', handleSingleIssueFetch);
 
 // PUT /api/user_issues/:id/vote - Add voting system for public engagement
 router.put('/:id/vote', handleVoteCount);
+
 
 
 

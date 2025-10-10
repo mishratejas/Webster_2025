@@ -1129,33 +1129,40 @@ document.getElementById('reportIssueForm').addEventListener('submit', async func
 function updateAuthUI() {
     const welcomeElement = document.getElementById('userWelcome');
     const logoutBtn = document.getElementById('logoutBtn');
-    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const profileNavBtn = document.getElementById('profileNavBtn'); // ADDED: Get the profile button
 
-    if (currentUser && welcomeElement) {
-        welcomeElement.textContent = `Welcome, ${currentUser.name}!`;
-    }
-    else if (welcomeElement) {
-        welcomeElement.textContent = 'Welcome, Guest!';
-    }
-    if (logoutBtn) {
-        if (currentUser) {
-            logoutBtn.style.display = 'block';
+    if (currentUser) {
+        // --- USER IS LOGGED IN ---
+        if (welcomeElement) {
+            welcomeElement.textContent = `Welcome, ${currentUser.name}!`;
+        }
+        if (logoutBtn) {
             logoutBtn.textContent = 'Logout';
-        } else {
-            logoutBtn.style.display = 'block';
+            logoutBtn.onclick = logout; // Make sure it calls the logout function
+        }
+        if (profileNavBtn) {
+            // ADDED: Set the link to go to the user's profile
+            profileNavBtn.href = 'user_profile.html';
+            profileNavBtn.onclick = null; // Clear any guest click event
+        }
+
+    } else {
+        // --- USER IS A GUEST ---
+        if (welcomeElement) {
+            welcomeElement.textContent = 'Welcome, Guest!';
+        }
+        if (logoutBtn) {
             logoutBtn.textContent = 'Login';
             logoutBtn.onclick = () => window.location.href = 'index.html';
         }
-    }
-
-    if (mobileLogoutBtn) {
-        if (currentUser) {
-            mobileLogoutBtn.style.display = 'block';
-            mobileLogoutBtn.textContent = 'Logout';
-        } else {
-            mobileLogoutBtn.style.display = 'block';
-            mobileLogoutBtn.textContent = 'Login';
-            mobileLogoutBtn.onclick = () => window.location.href = 'index.html';
+        if (profileNavBtn) {
+            // ADDED: Make the profile button prompt for login
+            profileNavBtn.href = '#'; // Prevent navigation
+            profileNavBtn.onclick = (e) => {
+                e.preventDefault(); // Stop the '#' from jumping the page
+                alert('Please log in to view your profile.');
+                window.location.href = 'index.html';
+            };
         }
     }
 }

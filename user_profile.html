@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - ResolveX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./stylesheets/user_profile.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-r from-[#1a1f71] to-[#00897b] rounded-lg shadow-lg mr-3"></div>
+                <span class="text-xl font-bold text-gray-800">
+                    Resolve<span class="logo-x">X</span>
+                </span>
+            </div>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="home.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Home</a>
+                <!-- <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Issues</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Report Issue</a> -->
+                <a href="#" id="profileNavBtn" class="text-blue-600 font-medium transition-colors border-b-2 border-blue-600">Profile</a>
+            </nav>
+
+            <div class="hidden md:flex items-center space-x-4">
+                <span id="userWelcome" class="text-gray-600">Welcome, Guest!</span>
+                <button id="logoutBtn" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                    Login
+                </button>
+            </div>
+
+            <button class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section class="gradient-bg text-white rounded-2xl p-8 flex items-center gap-6 mb-8 shadow-lg">
+    <div class="w-24 h-24 md:w-32 md:h-32 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/50">
+        <span id="userInitials" class="text-4xl md:text-5xl font-bold"></span>
+    </div>
+    <div class="space-y-2">
+    <h1 id="userName" class="text-3xl md:text-4xl font-bold tracking-tight"></h1>
+    <p id="userEmail" class="text-lg text-white/80 mt-1"></p>
+    <p id="userJoinDate" class="text-sm text-white/60 mt-2"></p>
+</div>
+    <div class="ml-auto">
+         <button class="bg-white text-[#1a1f71] font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-100 transition">
+             Edit Profile
+         </button>
+    </div>
+</section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
+        <i class="fas fa-file-alt text-3xl text-[#1a1f71]"></i>
+        <div>
+            <p class="text-3xl font-bold text-gray-800" id="totalReports">
+                <span class="inline-block h-8 w-16 bg-gray-200 rounded-md animate-pulse"></span>
+            </p>
+            <p class="text-gray-500">Total Reports Filed</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
+        <i class="fas fa-check-circle text-3xl text-[#00897b]"></i>
+        <div>
+            <p class="text-3xl font-bold text-gray-800" id="resolvedReports">
+                 <span class="inline-block h-8 w-12 bg-gray-200 rounded-md animate-pulse"></span>
+            </p>
+            <p class="text-gray-500">Reports Resolved</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4">
+        <i class="fas fa-arrow-up text-3xl text-yellow-500"></i>
+        <div>
+            <p class="text-3xl font-bold text-gray-800" id="totalVotes">
+                 <span class="inline-block h-8 w-20 bg-gray-200 rounded-md animate-pulse"></span>
+            </p>
+            <p class="text-gray-500">Total Upvotes Received</p>
+        </div>
+    </div>
+</section>
+
+        <section class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">My Submitted Reports</h2>
+            <div class="flex justify-center mb-6">
+                <div class="tab-container flex items-center bg-gray-100 rounded-full p-1">
+                    <div id="profileHighlight"></div> 
+                    <div id="profileOpenTab" class="tab active">Open</div>
+                    <div id="profileInProgressTab" class="tab">In-Progress</div>
+                    <div id="profileResolvedTab" class="tab">Resolved</div>
+                </div>
+            </div>
+            <div id="profileReportsContainer" class="space-y-4">
+    <div class="bg-white rounded-lg p-4 border animate-pulse">
+        <div class="flex-grow">
+            <div class="flex justify-between items-center mb-4">
+                <div class="h-5 bg-gray-300 rounded w-3/5"></div> <div class="h-5 bg-gray-200 rounded-full w-20"></div>   </div>
+            <div class="space-y-2">
+                <div class="h-4 bg-gray-200 rounded w-full"></div>      <div class="h-4 bg-gray-300 rounded w-5/6"></div>      </div>
+            <div class="flex justify-between items-center border-t mt-4 pt-2">
+                <div class="h-4 bg-gray-200 rounded w-1/3"></div>     <div class="h-4 bg-gray-200 rounded w-1/4"></div>     </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-lg p-4 border animate-pulse">
+        <div class="flex-grow">
+            <div class="flex justify-between items-center mb-4">
+                <div class="h-5 bg-gray-300 rounded w-4/6"></div>
+                <div class="h-5 bg-gray-200 rounded-full w-24"></div>
+            </div>
+            <div class="space-y-2">
+                <div class="h-4 bg-gray-200 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+            </div>
+            <div class="flex justify-between items-center border-t mt-4 pt-2">
+                <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+        </section>
+
+    </main>
+    <div id="issueDetailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">Issue Details</h2>
+                <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="detailModalBody" class="p-8 space-y-4 overflow-y-auto">
+                </div>
+        </div>
+    </div>
+    <div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Edit Your Profile</h2>
+                    <button id="closeEditModal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
+                </div>
+
+                <form id="editProfileForm" class="space-y-6">
+                    <!-- Profile Image Upload -->
+                    <div class="flex items-center gap-4">
+                        <img id="profileImagePreview" src="https://via.placeholder.com/150" alt="Profile preview" class="w-24 h-24 rounded-full object-cover border-2 border-gray-200">
+                        <div>
+                            <label for="profileImageInput" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg text-sm">
+                                Change Photo
+                            </label>
+                            <input type="file" id="profileImageInput" name="profileImage" class="hidden" accept="image/*">
+                            <p class="text-xs text-gray-500 mt-2">PNG, JPG, GIF up to 5MB.</p>
+                        </div>
+                    </div>
+
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                        <input type="text" name="name" class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                        <input type="tel" name="phone" class="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors" required>
+                    </div>
+
+                    <!-- Address Fields -->
+                    <div class="border-t pt-6 space-y-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Address</h3>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Street</label>
+                            <input type="text" name="street" class="w-full p-3 rounded-lg border border-gray-300">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">City</label>
+                                <input type="text" name="city" class="w-full p-3 rounded-lg border border-gray-300">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">State</label>
+                                <input type="text" name="state" class="w-full p-3 rounded-lg border border-gray-300">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Pincode</label>
+                                <input type="text" name="pincode" class="w-full p-3 rounded-lg border border-gray-300">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="editProfileError" class="text-red-500 text-sm hidden"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end gap-4 pt-4">
+                        <button type="button" id="cancelEditBtn" class="bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="btn-gradient text-white font-bold py-3 px-6 rounded-lg">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="./scripts/user_profile.js"></script>
+</body>
+</html>

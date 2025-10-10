@@ -288,3 +288,77 @@ export const logout = (req, res) => {
         message: "Logged out successfully"
     });
 };
+
+//controller for user_profile
+export const getUserProfile = async (req, res) => {
+    try {
+        // The 'auth' middleware has already found the user and attached it to req.user.
+        // We just need to send it back. The password has already been removed by the middleware.
+        const user = req.user;
+
+        res.status(200).json({
+            success: true,
+            message: "Profile data fetched successfully",
+            data: user
+        });
+
+    } catch (error) {
+        console.error("Get User Profile Error: ", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
+
+//for editing the user's details
+export const updateUserProfile = async (req, res) => {
+    try {
+        // The user's ID is attached to the request by your auth middleware
+        const userId = req.user.id; 
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Get the fields from the request body
+        const { name, phone, address, profileImage } = req.body;
+
+        // Update only the fields that were provided in the request
+        user.name = name || user.name;
+        user.phone = phone || user.phone;
+
+        // The profileImage will be a URL string from Cloudinary, sent by the frontend
+        if (profileImage) {
+            user.profileImage = profileImage;
+        }
+
+        // Update address fields if an address object is provided
+        if (address) {
+            user.address.street = address.street || user.address.street;
+            user.address.city = address.city || user.address.city;
+            user.address.state = address.state || user.address.state;
+            user.address.pincode = address.pincode || user.address.pincode;
+        }
+
+        const updatedUser = await user.save();
+
+        // Send back the updated user data (excluding the password)
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            data: {
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                address: updatedUser.address,
+                profileImage: updatedUser.profileImage,
+                createdAt: updatedUser.createdAt
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ success: false, message: "Server error while updating profile" });
+    }
+};

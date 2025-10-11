@@ -753,43 +753,38 @@ function displayComplaints(complaints, status) {
         const voteCount = complaint.voteCount || 0;
 
         const complaintCard = `
-            <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4 cursor-pointer hover:shadow-xl transition-shadow" onclick="openDetailModal('${complaint._id}')">
-                
-                <div class="flex flex-col items-center space-y-1">
-                    <button class="vote-btn" onclick="handleVoteClick(event, '${complaint._id}')">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                        </svg>
-                    </button>
-                    <span class="font-bold text-gray-800">${voteCount}</span>
-                    <span class="text-xs text-gray-500">Votes</span>
-                </div>
-                
-                <div class="flex-grow">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
-                            ${complaint.status}
-                        </span>
-                    </div>
-                    
-                    <p class="text-gray-600 text-sm mb-3">${complaint.description}</p>
-                    
-                    <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
-                        <span><i class="fas fa-calendar mr-1"></i>${new Date(complaint.createdAt).toLocaleDateString()}</span>
-                        <span><i class="fas fa-user mr-1"></i>${complaint.user?.name || 'Anonymous'}</span>
-                        <span><i class="fas fa-map-marker-alt mr-1"></i>${complaint.location?.address || 'No location'}</span>
-                    </div>
-                </div>
-                
-                <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                    ${complaint.images && complaint.images.length > 0 ?
-            `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
-            `<i class="fas fa-camera text-gray-400 text-xl"></i>`
-        }
-                </div>
+    <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4 cursor-pointer hover:shadow-xl transition-shadow" onclick="openDetailModal('${complaint._id}')">
+        
+        <div class="flex flex-col items-center space-y-1">
+            <button class="vote-btn" onclick="handleVoteClick(event, '${complaint._id}')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+            </button>
+            <span class="font-bold text-gray-800">${voteCount}</span>
+            <span class="text-xs text-gray-500">Votes</span>
+        </div>
+        
+        <div class="flex-grow min-w-0"> <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor} flex-shrink-0"> ${complaint.status}
+                </span>
             </div>
-        `;
+            
+            <p class="text-gray-600 text-sm mb-3 break-words">${complaint.description}</p> <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                <span><i class="fas fa-calendar mr-1"></i>${new Date(complaint.createdAt).toLocaleDateString()}</span>
+                <span><i class="fas fa-user mr-1"></i>${complaint.user?.name || 'Anonymous'}</span>
+                <span><i class="fas fa-map-marker-alt mr-1"></i>${complaint.location?.address || 'No location'}</span>
+            </div>
+        </div>
+        
+        <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"> ${complaint.images && complaint.images.length > 0 ?
+    `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
+    `<i class="fas fa-camera text-gray-400 text-xl"></i>`
+}
+        </div>
+    </div>
+`;
         container.innerHTML += complaintCard;
     });
 }
@@ -817,32 +812,31 @@ function displayMyReports(reports) {
         const voteCount = complaint.voteCount || 0;
         // This card structure is reused from the displayComplaints function
         const reportCard = `
-            <div class="bg-white rounded-xl shadow-md p-4 issue-card flex gap-4 border">
-                <div class="flex flex-col items-center space-y-1 pt-2">
-                    <span class="font-bold text-lg text-gray-800">${voteCount}</span>
-                    <span class="text-xs text-gray-500">Votes</span>
-                </div>
-                <div class="flex-grow">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
-                            ${complaint.status}
-                        </span>
-                    </div>
-                    <p class="text-gray-600 text-sm mb-3">${complaint.description}</p>
-                    <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
-                        <span><i class="fas fa-calendar mr-1"></i>${new Date(complaint.createdAt).toLocaleDateString()}</span>
-                        <span><i class="fas fa-map-marker-alt mr-1"></i>${complaint.location?.address || 'No location'}</span>
-                    </div>
-                </div>
-                <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                    ${complaint.images && complaint.images.length > 0 ?
-                `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
-                `<i class="fas fa-camera text-gray-400 text-xl"></i>`
-                    }
-                </div>
+    <div class="bg-white rounded-xl shadow-md p-4 issue-card flex gap-4 border">
+        <div class="flex flex-col items-center space-y-1 pt-2 flex-shrink-0">
+            <span class="font-bold text-lg text-gray-800">${voteCount}</span>
+            <span class="text-xs text-gray-500">Votes</span>
+        </div>
+        <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-lg text-gray-800">${complaint.title}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor} flex-shrink-0">
+                    ${complaint.status}
+                </span>
             </div>
-        `;
+            <p class="text-gray-600 text-sm mb-3 break-words">${complaint.description}</p> <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                <span><i class="fas fa-calendar mr-1"></i>${new Date(complaint.createdAt).toLocaleDateString()}</span>
+                <span><i class="fas fa-map-marker-alt mr-1"></i>${complaint.location?.address || 'No location'}</span>
+            </div>
+        </div>
+        <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+            ${complaint.images && complaint.images.length > 0 ?
+      `<img src="${complaint.images[0]}" class="w-full h-full object-cover" alt="Complaint image">` :
+      `<i class="fas fa-camera text-gray-400 text-xl"></i>`
+            }
+        </div>
+    </div>
+`;
         container.innerHTML += reportCard;
     });
 }
@@ -893,26 +887,25 @@ function openDetailModal(complaintId) {
 
     // Populate the modal body with complaint details
     detailModalBody.innerHTML = `
-        ${complaint.images && complaint.images.length > 0 ?
-            `<img src="${complaint.images[0]}" class="w-full h-64 object-contain rounded-lg mb-4 shadow-md" alt="Complaint image">` :
-            ''
-        }
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}">${complaint.status}</span>
-            <span><i class="fas fa-user mr-2"></i><strong>Posted by:</strong> ${complaint.user?.name || 'Anonymous'}</span>
-            <span><i class="fas fa-calendar mr-2"></i><strong>On:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</span>
-            <span><i class="fas fa-thumbs-up mr-2"></i><strong>Votes:</strong> ${complaint.voteCount || 0}</span>
-        </div>
-        <h3 class="text-3xl font-bold text-gray-900 mb-3">${complaint.title}</h3>
-        <p class="text-gray-700 text-base mb-6 whitespace-pre-wrap">${complaint.description}</p>
-        <div class="border-t pt-4">
-            <h4 class="font-semibold text-lg mb-2 text-gray-800">Location</h4>
-            <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>${complaint.location?.address || 'No location provided'}</p>
-        </div>
-        <div>
-            <a href="${complaint.location?.latitude ? `https://maps.google.com/?q=${complaint.location?.latitude},${complaint.location?.longitude}`:``}" class="text-blue-600 hover:underline" target="_blank"><h5>Visit the Location</h5></a>
-        </div>
-    `;
+    ${complaint.images && complaint.images.length > 0 ?
+        `<img src="${complaint.images[0]}" class="w-full h-64 object-contain rounded-lg mb-4 shadow-md" alt="Complaint image">` :
+        ''
+    }
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-4">
+        <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}">${complaint.status}</span>
+        <span><i class="fas fa-user mr-2"></i><strong>Posted by:</strong> ${complaint.user?.name || 'Anonymous'}</span>
+        <span><i class="fas fa-calendar mr-2"></i><strong>On:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</span>
+        <span><i class="fas fa-thumbs-up mr-2"></i><strong>Votes:</strong> ${complaint.voteCount || 0}</span>
+    </div>
+    <h3 class="text-3xl font-bold text-gray-900 mb-3">${complaint.title}</h3>
+    <p class="text-gray-700 text-base mb-6 whitespace-pre-wrap break-words">${complaint.description}</p> <div class="border-t pt-4">
+        <h4 class="font-semibold text-lg mb-2 text-gray-800">Location</h4>
+        <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>${complaint.location?.address || 'No location provided'}</p>
+    </div>
+    <div>
+        <a href="${complaint.location?.latitude ? `https://maps.google.com/?q=${complaint.location?.latitude},${complaint.location?.longitude}`:``}" class="text-blue-600 hover:underline" target="_blank"><h5>Visit the Location</h5></a>
+    </div>
+`;
 
     // Show the modal
     if (issueDetailModal) {

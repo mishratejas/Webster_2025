@@ -365,27 +365,26 @@ function openDetailModal(complaintId) {
     const issueDetailModal = document.getElementById('issueDetailModal');
     if (!detailModalBody || !issueDetailModal) return;
 
-    detailModalBody.innerHTML = `
-        ${complaint.images && complaint.images.length > 0 ?
-            `<img src="${complaint.images[0]}" class="w-full h-64 object-contain rounded-lg mb-4 shadow-md" alt="Complaint image">` :
-            ''
-        }
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-4">
-            <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}">${complaint.status}</span>
-            <span><i class="fas fa-user mr-2"></i><strong>Posted by:</strong> ${complaint.user?.name || 'Anonymous'}</span>
-            <span><i class="fas fa-calendar mr-2"></i><strong>On:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</span>
-            <span><i class="fas fa-thumbs-up mr-2"></i><strong>Votes:</strong> ${complaint.voteCount || 0}</span>
-        </div>
-        <h3 class="text-3xl font-bold text-gray-900 mb-3">${complaint.title}</h3>
-        <p class="text-gray-700 text-base mb-6 whitespace-pre-wrap">${complaint.description}</p>
-        <div class="border-t pt-4">
-            <h4 class="font-semibold text-lg mb-2 text-gray-800">Location</h4>
-            <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>${complaint.location?.address || 'No location provided'}</p>
-        </div>
-        <div>
-            <a href="${complaint.location?.latitude ? `https://maps.google.com/?q=${complaint.location?.latitude},${complaint.location?.longitude}`:``}" class="text-blue-600 hover:underline" target="_blank"><h5>Visit the Location</h5></a>
-        </div>
-    `;
+   detailModalBody.innerHTML = `
+    ${complaint.images && complaint.images.length > 0 ?
+        `<img src="${complaint.images[0]}" class="w-full h-64 object-contain rounded-lg mb-4 shadow-md" alt="Complaint image">` :
+        ''
+    }
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-4">
+        <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(complaint.status)}">${complaint.status}</span>
+        <span><i class="fas fa-user mr-2"></i><strong>Posted by:</strong> ${complaint.user?.name || 'Anonymous'}</span>
+        <span><i class="fas fa-calendar mr-2"></i><strong>On:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</span>
+        <span><i class="fas fa-thumbs-up mr-2"></i><strong>Votes:</strong> ${complaint.voteCount || 0}</span>
+    </div>
+    <h3 class="text-3xl font-bold text-gray-900 mb-3">${complaint.title}</h3>
+    <p class="text-gray-700 text-base mb-6 whitespace-pre-wrap break-words">${complaint.description}</p> <div class="border-t pt-4">
+        <h4 class="font-semibold text-lg mb-2 text-gray-800">Location</h4>
+        <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2 text-red-500"></i>${complaint.location?.address || 'No location provided'}</p>
+    </div>
+    <div>
+        <a href="${complaint.location?.latitude ? `https://maps.google.com/?q=${complaint.location?.latitude},${complaint.location?.longitude}`:``}" class="text-blue-600 hover:underline" target="_blank"><h5>Visit the Location</h5></a>
+    </div>
+`;
     issueDetailModal.classList.remove('hidden');
 }
 
@@ -407,13 +406,12 @@ function displayProfileReports(reportsToDisplay) {
         // This HTML is for the clickable card WITHOUT the vote section
         const reportCard = `
         <div class="bg-white rounded-xl shadow-lg p-4 issue-card flex gap-4 cursor-pointer hover:shadow-xl transition-shadow" onclick="openDetailModal('${report._id}')">
-            <div class="flex-grow">
+            <div class="flex-grow min-w-0">
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="font-bold text-lg text-gray-800">${report.title}</h3>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor}">${report.status}</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor} flex-shrink-0">${report.status}</span>
                 </div>
-                <p class="text-gray-600 text-sm mb-3">${report.description}</p>
-                <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                <p class="text-gray-600 text-sm mb-3 break-words">${report.description}</p> <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
                     <span><i class="fas fa-calendar mr-1"></i>${new Date(report.createdAt).toLocaleDateString()}</span>
                     <span><i class="fas fa-map-marker-alt mr-1"></i>${report.location?.address || 'No location'}</span>
                     <span><i class="fas fa-arrow-up mr-1"></i>${report.voteCount || 0} Votes</span>

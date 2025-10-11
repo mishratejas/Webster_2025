@@ -8,147 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <style>
-        :root {
-            --staff-primary: #00897b; /* Teal */
-            --staff-accent: #1a1f71; /* Navy */
-            --gradient: linear-gradient(135deg, var(--staff-accent) 0%, var(--staff-primary) 100%);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f0fdfa; /* Light mint/teal background */
-        }
-
-        .logo-x {
-            color: var(--staff-primary);
-        }
-
-        .staff-bg-primary {
-            background-color: var(--staff-primary);
-        }
-
-        .staff-btn-gradient {
-            background: var(--gradient);
-            transition: all 0.3s ease;
-        }
-
-        .issue-card-staff {
-            border-left: 6px solid var(--staff-primary); 
-            transition: all 0.3s ease;
-        }
-        .issue-card-staff:hover {
-            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        /* STAFF SPECIFIC TABS (Slider style) */
-        .tab-staff.active {
-            color: white;
-        }
-        #highlight-staff {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: var(--gradient);
-            border-radius: 9999px;
-            transition: all 0.3s ease-in-out;
-            z-index: 5;
-        }
-        .tab-container-staff {
-             border: 2px solid var(--staff-primary);
-             position: relative;
-        }
-        
-        /* Custom scrollbar */
-        .scrollable-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .scrollable-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .scrollable-list::-webkit-scrollbar-thumb {
-            background: var(--staff-primary);
-            border-radius: 10px;
-        }
-        
-        /* Animation for new tasks */
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 137, 123, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 137, 123, 0); }
-        }
-        .pulse-glow {
-            animation: pulse-glow 2s infinite;
-        }
-        
-        /* Status badges */
-        .status-badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 9999px;
-            font-weight: 600;
-        }
-        
-        /* Modal styles */
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-        }
-        
-        /* Progress bar */
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        /* Line clamp utility */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Dynamic border colors */
-        .border-l-red-500 { border-left-color: #ef4444; }
-        .border-l-yellow-500 { border-left-color: #f59e0b; }
-        .border-l-green-500 { border-left-color: #10b981; }
-        .border-l-gray-500 { border-left-color: #6b7280; }
-        
-        /* Chat message styles */
-        .chat-message-admin { 
-            background: #1a1f71; 
-            color: white; 
-            margin-left: auto; 
-            max-width: 80%; 
-            border-radius: 12px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-        }
-        .chat-message-staff { 
-            background: #00897b; 
-            color: white; 
-            margin-right: auto; 
-            max-width: 80%; 
-            border-radius: 12px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-        }
-        /* Prevent background scroll when modal is open */
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        /* Ensure modal content scrolls properly */
-        #taskDetailModal .modal-content {
-            max-height: calc(100% - 60px);
-            overflow-y: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./stylesheets/staff.css">
 </head>
 <body class="min-h-screen">
     <header class="bg-white shadow-lg sticky top-0 z-50">
@@ -160,10 +20,10 @@
             </div>
 
             <nav class="hidden md:flex space-x-8">
-                <a href="#" class="text-blue-600 font-medium transition-colors border-b-2 border-blue-600">My Tasks</a>
+                <!-- <a href="#" class="text-blue-600 font-medium transition-colors border-b-2 border-blue-600">My Tasks</a>
                 <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Team View</a>
                 <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">SOPs</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Reports</a>
+                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Reports</a> -->
             </nav>
 
             <div class="hidden md:flex items-center space-x-4">
@@ -180,8 +40,8 @@
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i>Profile</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i>Settings</a>
+                        <!-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i>Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i>Settings</a> -->
                         <div class="border-t my-1"></div>
                         <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 logout-btn"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
                     </div>
@@ -197,10 +57,10 @@
         <!-- Mobile menu -->
         <div id="mobileMenu" class="md:hidden bg-white border-t py-4 px-4 hidden">
             <div class="flex flex-col space-y-4">
-                <a href="#" class="text-blue-600 font-medium">My Tasks</a>
+                <!-- <a href="#" class="text-blue-600 font-medium">My Tasks</a>
                 <a href="#" class="text-gray-600 font-medium">Team View</a>
                 <a href="#" class="text-gray-600 font-medium">SOPs</a>
-                <a href="#" class="text-gray-600 font-medium">Reports</a>
+                <a href="#" class="text-gray-600 font-medium">Reports</a> -->
                 <div class="pt-4 border-t flex items-center justify-between">
                     <span id="mobileStaffName" class="text-gray-600 font-medium">Staff Member</span>
                     <button class="text-red-600 font-medium logout-btn">
@@ -214,7 +74,7 @@
     <main class="w-full pt-8 p-4 md:p-8 container mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">My Task Dashboard</h1>
-            <div class="flex items-center space-x-4">
+            <!-- <div class="flex items-center space-x-4">
                 <div class="relative">
                     <input type="text" placeholder="Search tasks..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -223,7 +83,7 @@
                     <i class="fas fa-filter text-gray-600"></i>
                     <span>Filter</span>
                 </button>
-            </div>
+            </div> -->
         </div>
         
         <section class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -272,7 +132,7 @@
                 </div>
             </div>
             
-            <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+            <!-- <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
                 <span>Sort by:</span>
                 <select class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option>Due Date</option>
@@ -280,17 +140,17 @@
                     <option>Location</option>
                     <option>Date Created</option>
                 </select>
-            </div>
+            </div> -->
         </div>
         
         <div class="flex gap-6">
              <aside class="hidden lg:block w-64 bg-white p-4 rounded-xl shadow-lg h-fit sticky top-24">
-                <h3 class="font-bold text-lg mb-4 border-b pb-2 text-gray-700">Quick Tools</h3>
+                <!-- <h3 class="font-bold text-lg mb-4 border-b pb-2 text-gray-700">Quick Tools</h3>
                 <div class="space-y-3 text-sm">
                     <button class="w-full staff-btn-gradient text-white py-2 rounded-lg flex items-center justify-center"><i class="fas fa-map mr-2"></i> Field Map View</button>
                     <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 flex items-center justify-center"><i class="fas fa-search mr-2"></i> Search Inventory</button>
                     <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 flex items-center justify-center"><i class="fas fa-history mr-2"></i> My Resolution History</button>
-                </div>
+                </div> -->
                 
                 <h3 class="font-bold text-lg mt-6 mb-4 border-b pb-2 text-gray-700">Task Stats</h3>
                 <div class="space-y-4">
@@ -323,11 +183,11 @@
                     </div>
                 </div>
                 
-                <h3 class="font-bold text-lg mt-6 mb-4 border-b pb-2 text-gray-700">Quick Actions</h3>
+                <!-- <h3 class="font-bold text-lg mt-6 mb-4 border-b pb-2 text-gray-700">Quick Actions</h3>
                 <div class="space-y-3 text-sm">
                     <button class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200 flex items-center justify-center"><i class="fas fa-plus-circle mr-2"></i> Create Task</button>
                     <button class="w-full bg-purple-100 text-purple-700 py-2 rounded-lg hover:bg-purple-200 flex items-center justify-center"><i class="fas fa-file-export mr-2"></i> Export Report</button>
-                </div>
+                </div> -->
             </aside>
 
             <div class="flex-grow">
@@ -358,9 +218,9 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button id="floatingCreateTaskBtn" class="fixed bottom-8 right-8 staff-btn-gradient text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-40">
+    <!-- <button id="floatingCreateTaskBtn" class="fixed bottom-8 right-8 staff-btn-gradient text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-40">
         <i class="fas fa-plus text-xl"></i>
-    </button>
+    </button> -->
     
     <!-- Notification Panel -->
     <div id="notificationPanel" class="fixed top-16 right-4 w-80 bg-white rounded-xl shadow-2xl z-50 hidden">

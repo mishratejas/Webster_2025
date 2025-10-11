@@ -227,7 +227,7 @@ window.openTaskDetails = function (complaintId) {
                         </div>
 
                         <!-- RIGHT SIDE (Chat) -->
-                        <div class="lg:col-span-2">
+                        <div class="lg:col-span-2 overflow-hidden">
                             <div class="bg-gray-50 p-4 rounded-lg h-full flex flex-col">
                                 <div class="flex justify-between items-center mb-3">
                                     <h3 class="font-semibold text-gray-800 flex items-center">

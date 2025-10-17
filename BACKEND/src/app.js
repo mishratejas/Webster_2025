@@ -25,7 +25,8 @@ const io = new Server(server, {
             'http://localhost:5500',
             'http://127.0.0.1:3000',
             'http://localhost:3000',
-            'https://adak08.github.io'
+            'https://adak08.github.io',
+            'https://webster-2025.onrender.com'
         ],
         methods: ['GET', 'POST'],
         credentials: true

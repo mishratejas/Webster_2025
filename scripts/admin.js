@@ -1,5 +1,5 @@
 console.log("ADMIN.JS LOADED - Starting initialization"); // Import Socket.IO client
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://resolvex-ieis.onrender.com";
 
 // Function to check if token is expired
 function isTokenExpired(token) {

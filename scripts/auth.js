@@ -1,6 +1,6 @@
 class AuthManager {
     constructor() {
-        this.BASE_URL = 'http://localhost:3000';
+        this.BASE_URL = 'https://resolvex-ieis.onrender.com';
         this.tokenKey = 'adminToken';
         this.userKey = 'adminData';
     }

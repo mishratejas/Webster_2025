@@ -214,7 +214,7 @@
 // =======================================================================
 
 // --- CONFIGURATION & GLOBAL VARIABLES ---
-const BASE_URL = "http://127.0.0.1:3000";
+const BASE_URL = "https://resolvex-ieis.onrender.com";
 let currentUser = null;
 let accessToken = localStorage.getItem('accessToken');
 let currentComplaints = [];

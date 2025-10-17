@@ -555,7 +555,7 @@
 
 
 // DEFINE THE BASE URL FOR YOUR BACKEND HERE
-const BASE_URL = "http://127.0.0.1:3000";
+const BASE_URL = "https://resolvex-ieis.onrender.com";
 
 //map
 let map;

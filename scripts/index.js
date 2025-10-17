@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ DOM fully loaded - initializing ResolveX");
     
-    const BASE_URL = "http://localhost:3000";
+    const BASE_URL = "https://resolvex-ieis.onrender.com";
 
     // Navbar scroll effect
     window.addEventListener("scroll", function () {

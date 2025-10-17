@@ -4,7 +4,7 @@
   "description": "BACKEND for RESOLVEX",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "start": "node src/index.js"
   },
   "author": "",
   "license": "ISC",

@@ -38,7 +38,7 @@ class HeatmapManager {
 
     async fetchAndRenderComplaints(department = "all") {
         try {
-            const res = await fetch("https://resolvex-ieis.onrender.com/api/user_issues/locations");
+            const res = await fetch("https://webster-2025.onrender.com/api/user_issues/locations");
             const data = await res.json();
 
             if (!data.success || !Array.isArray(data.data)) {

@@ -1,7 +1,7 @@
 // STAFF.JS - COMPLETE FIXED VERSION
 console.log("STAFF.JS LOADED - Starting initialization");
 
-const BASE_URL = "https://resolvex-ieis.onrender.com";
+const BASE_URL = "https://webster-2025.onrender.com";
 
 // Global variables
 let staffComplaints = [];

@@ -1,6 +1,6 @@
 class AuthManager {
     constructor() {
-        this.BASE_URL = 'https://resolvex-ieis.onrender.com';
+        this.BASE_URL = 'https://webster-2025.onrender.com';
         this.tokenKey = 'adminToken';
         this.userKey = 'adminData';
     }
